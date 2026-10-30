@@ -1,0 +1,55 @@
+name: Build Nullsave Android APK
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Nullsave APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build Debug APK
+        run: |
+          gradle assembleDebug --stacktrace
+          mkdir -p dist
+          find app/build/outputs/apk/debug/ -name "*.apk" -exec cp {} dist/nullsave.apk \;
+          ls -lh dist/
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nullsave-apk
+          path: dist/nullsave.apk
+          retention-days: 14
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, "refs/heads/")
+        with:
+          tag_name: v1.0.0-${{ github.run_number }}
+          name: Nullsave APK v1.0.0 (Build ${{ github.run_number }})
+          body: |
+            ## Nullsave APK (Terminal App)
+            - Automated build from GitHub Actions
+          files: dist/nullsave.apk
+          fail_on_unmatched_files: true

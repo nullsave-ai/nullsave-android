@@ -1,0 +1,602 @@
+
+<!DOCTYPE html>
+<!-- version: v1 -->
+<!-- MK.TRADES Learn Presentation — OPTIONS HEATMAPS (field guide / cheatsheet) -->
+<!-- Self-contained: inline CSS + JS + SVG. Served as a static asset from        -->
+<!-- /learn-presentations/options-heatmaps/. Screenshots live in ./img/.          -->
+<!-- i18n: EN is the source in the HTML. FR/AR live in TRANSLATIONS (bottom) and   -->
+<!-- are swapped in by data-t keys. AR flips ONLY <main>/<footer> to RTL — the top -->
+<!-- bar never mirrors.                                                            -->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MK.TRADES · Options Heatmaps — Field Guide</title>
+<style>
+  :root{
+    --bg:#000; --panel:#0a0a0a; --card:#111; --hover:#1a1a1a;
+    --border:#222; --borderlt:#333;
+    --white:#fff; --text:#e8ecf1; --soft:#c5cdd9; --gray:#999;
+    --muted:#6b7785; --dim:#4d5866;
+    --orange:#ff6d00; --green:#27c49a; --amber:#f5a623; --blue:#3796ff;
+    --red:#ff5252; --purple:#9b59b6;
+    --gold:#ffd89e; --golddeep:#b8823d;
+    --mono:'Courier New','SF Mono','Monaco','Consolas',monospace;
+    --sans:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:var(--sans);scroll-behavior:smooth;}
+  body{font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .mono{font-family:var(--mono)}
+
+  /* ── Sticky top bar ─────────────────────────────────────────── */
+  header.topbar{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;gap:18px;
+    padding:10px 22px;background:rgba(8,8,8,.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+  }
+  .brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .brand .dot{width:9px;height:9px;border-radius:50%;
+    background:var(--orange);box-shadow:0 0 10px var(--orange)}
+  .brand b{font-family:var(--mono);font-size:13px;letter-spacing:2px;color:#fff}
+  .brand span{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--muted)}
+  nav.secnav{display:flex;gap:4px;flex:1;flex-wrap:wrap;justify-content:center}
+  nav.secnav a{
+    font-family:var(--mono);font-size:10px;letter-spacing:.6px;
+    color:var(--soft);padding:4px 9px;border-radius:3px;border:1px solid transparent;
+    text-transform:uppercase;white-space:nowrap;
+  }
+  nav.secnav a:hover{background:var(--hover);border-color:var(--border);text-decoration:none;color:#fff}
+  .langsel{display:flex;gap:0;flex-shrink:0;border:1px solid var(--golddeep);border-radius:4px;overflow:hidden}
+  .langsel button{
+    font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:1px;
+    padding:5px 11px;background:transparent;color:var(--gold);border:none;cursor:pointer;
+  }
+  .langsel button + button{border-inline-start:1px solid var(--golddeep)}
+  .langsel button.active{background:rgba(255,216,158,.16);color:#fff}
+
+  /* ── Layout shell ───────────────────────────────────────────── */
+  main{max-width:980px;margin:0 auto;padding:0 22px 90px}
+
+  /* ── Hero ───────────────────────────────────────────────────── */
+  .hero{padding:54px 0 30px;border-bottom:1px solid var(--border)}
+  .hero .kicker{font-family:var(--mono);font-size:11px;letter-spacing:3px;
+    color:var(--gold);text-transform:uppercase;margin-bottom:14px}
+  .hero h1{font-family:var(--mono);font-size:44px;line-height:1.05;margin:0 0 14px;
+    color:#fff;letter-spacing:1px;font-weight:800}
+  .hero p.lead{font-size:18px;color:var(--soft);max-width:700px;margin:0 0 22px}
+  .pill-warn{display:inline-flex;align-items:center;gap:9px;
+    padding:7px 14px;border-radius:30px;
+    background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.5);
+    color:var(--amber);font-family:var(--mono);font-size:12px;letter-spacing:.5px}
+
+  /* ── Sections ───────────────────────────────────────────────── */
+  section.block{padding:44px 0;border-bottom:1px solid var(--border)}
+  .sec-tag{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--orange);
+    text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .sec-tag .num{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;
+    border:1px solid var(--orange);color:var(--orange);font-size:11px}
+  h2.sec-title{font-family:var(--mono);font-size:27px;color:#fff;margin:0 0 18px;letter-spacing:.5px;font-weight:800}
+  h3{font-family:var(--mono);font-size:16px;color:var(--gold);margin:26px 0 10px;letter-spacing:.5px}
+  p{margin:0 0 14px;color:var(--soft)}
+  strong,b{color:var(--text)}
+  .em{color:var(--orange);font-weight:700}
+  .lead-in{font-size:17px;color:var(--text)}
+
+  /* ── Cards / callouts ───────────────────────────────────────── */
+  .callout{display:flex;gap:14px;padding:16px 18px;border-radius:6px;margin:18px 0;
+    background:var(--card);border:1px solid var(--border);border-inline-start:3px solid var(--gold)}
+  .callout .ic{font-size:20px;line-height:1.2;flex-shrink:0}
+  .callout.tip{border-inline-start-color:var(--blue)}
+  .callout.danger{border-inline-start-color:var(--red);background:rgba(255,82,82,.06)}
+  .callout.proof{border-inline-start-color:var(--green)}
+  .callout h4{margin:0 0 5px;font-family:var(--mono);font-size:13px;letter-spacing:1px;color:#fff;text-transform:uppercase}
+  .callout p{margin:0;font-size:14px;color:var(--soft)}
+
+  /* the 3 layers — full-width stacked cards */
+  .layer{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:18px;margin:16px 0}
+  .layer .lh{display:flex;align-items:baseline;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .layer .tag{font-family:var(--mono);font-size:17px;font-weight:800;letter-spacing:1px}
+  .layer.ow .tag{color:var(--amber)}
+  .layer.oi .tag{color:var(--blue)}
+  .layer.nd .tag{color:var(--green)}
+  .layer .api{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.4px}
+  .layer .what{font-size:13px;margin:8px 0 0}
+  .layer .shows{margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--soft)}
+  .layer .shows b{color:#fff}
+
+  /* expiry two-up */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+  .grid2 figure{margin:0}
+  .grid2 figcaption{font-size:11px;line-height:1.6}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr}}
+  .ecard{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px}
+  .ecard .et{font-family:var(--mono);font-size:15px;font-weight:800;letter-spacing:1px;margin-bottom:6px}
+  .ecard.dte .et{color:var(--orange)}
+  .ecard.swing .et{color:var(--blue)}
+  .ecard p{font-size:13px;margin:6px 0 0}
+
+  /* color legend chips */
+  .legendrow{display:flex;gap:16px;flex-wrap:wrap;margin:14px 0;font-family:var(--mono);font-size:12px;color:var(--soft)}
+  .legendrow .chip{display:flex;align-items:center;gap:8px}
+  .legendrow .sw{width:26px;height:12px;border-radius:3px;display:inline-block}
+
+  ul.ticks{list-style:none;padding:0;margin:14px 0}
+  ul.ticks li{position:relative;padding-inline-start:26px;margin-bottom:10px;color:var(--soft);font-size:14px}
+  ul.ticks li::before{content:"▸";position:absolute;inset-inline-start:0;color:var(--gold)}
+
+  /* ── Figure / SVG / screenshot ──────────────────────────────── */
+  figure{margin:22px 0;background:#070707;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  figure svg{display:block;width:100%;height:auto;background:#070707}
+  figure img{display:block;width:100%;height:auto}
+  figcaption{font-family:var(--mono);font-size:11px;color:var(--muted);padding:10px 14px;border-top:1px solid var(--border);letter-spacing:.3px}
+  figcaption b{color:var(--gold)}
+
+  /* screenshot placeholder (pending operator image) */
+  .shot{margin:16px 0}
+  .shot .frame{border:1.5px dashed var(--borderlt);border-radius:8px;background:
+    repeating-linear-gradient(45deg,#0a0a0a,#0a0a0a 10px,#0c0c0c 10px,#0c0c0c 20px);
+    min-height:200px;display:grid;place-items:center;text-align:center;padding:26px}
+  .shot .frame .ph{font-family:var(--mono)}
+  .shot .frame .ph .ic{font-size:32px;display:block;margin-bottom:10px;opacity:.5}
+  .shot .frame .ph .lbl{font-size:13px;color:var(--gold);letter-spacing:1px;font-weight:800}
+  .shot .frame .ph .ask{font-size:11px;color:var(--muted);margin-top:8px;max-width:440px;line-height:1.6}
+  .shot .frame .ph .fn{font-size:10px;color:var(--dim);margin-top:10px}
+  .shot img{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--border)}
+  .shot figcaption{border:none;padding:8px 2px 0}
+
+  footer{max-width:980px;margin:0 auto;padding:30px 22px 60px;color:var(--dim);font-family:var(--mono);font-size:11px;line-height:1.8}
+  footer .src{margin-top:10px}
+
+  /* RTL — content only (main/footer); the top bar never mirrors */
+  main[dir="rtl"] .hero h1,
+  main[dir="rtl"] h1,
+  main[dir="rtl"] h2.sec-title,
+  main[dir="rtl"] h3{letter-spacing:0}
+  main[dir="rtl"] .mono{direction:ltr;unicode-bidi:embed}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="dot"></span>
+    <b>MK.TRADES</b>
+    <span data-t="brand.sub">· LEARN</span>
+  </div>
+  <nav class="secnav">
+    <a href="#what"    data-t="nav.what">What it is</a>
+    <a href="#layers"  data-t="nav.layers">3 Layers</a>
+    <a href="#expiry"  data-t="nav.expiry">0DTE / Swing</a>
+    <a href="#reading" data-t="nav.reading">Reading it</a>
+    <a href="#menu"    data-t="nav.menu">The menu</a>
+    <a href="#use"     data-t="nav.use">How to use</a>
+    <a href="#notes"   data-t="nav.notes">Good to know</a>
+  </nav>
+  <div class="langsel">
+    <button data-lang="en" class="active" onclick="setLang('en')">EN</button>
+    <button data-lang="fr" onclick="setLang('fr')">FR</button>
+    <button data-lang="ar" onclick="setLang('ar')">AR</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── HERO ─────────────────────────────────────────────────── -->
+  <div class="hero">
+    <div class="kicker" data-t="hero.kicker">Quant Field Guide · No. 02</div>
+    <h1 data-t="hero.title">Options Heatmaps</h1>
+    <p class="lead" data-t="hero.lead">The options market, painted straight onto your price chart — so you can see the strikes that act like walls, magnets, and battle-lines before price gets there.</p>
+    <span class="pill-warn"><span>▦</span><span data-t="hero.warn"><b>3 types</b> of heatmap × <b>2 expiries</b> each = <b>6 maps</b> you can layer on the chart.</span></span>
+  </div>
+
+  <!-- ── 1 · WHAT IT IS ───────────────────────────────────────── -->
+  <section class="block" id="what">
+    <div class="sec-tag"><span class="num">1</span><span data-t="s1.tag">What an options heatmap is</span></div>
+    <h2 class="sec-title" data-t="s1.title">The options chain, drawn on the chart</h2>
+
+    <p class="lead-in" data-t="s1.p1">Behind every market sits an <b>options chain</b> — thousands of contracts stacked at different strike prices. An options heatmap takes that chain and paints it onto your chart as colour at each price level, so the strikes that matter light up exactly where price will meet them.</p>
+
+    <p data-t="s1.p2">MK.TRADES gives you <b>three different heatmaps</b>, each measuring the chain a different way, and each available in <b>two expiry horizons</b>. That's <b>3 × 2 = 6 maps</b> you can switch on and off independently from the <b>HEAT</b> menu.</p>
+
+    <figure>
+      <img src="img/s1_heatmap_main.png" alt="A full options heatmap painted across a price chart — bright fire-coloured weight zones plus horizontal strike walls" />
+      <figcaption data-t="s1.fig">All the heat at once: the bright fire-coloured zones are <b>option weight</b>, the horizontal lines are <b>open-interest / net-delta walls</b>. Where price meets a heavy area, expect a reaction. The rest of this guide breaks the layers apart so you can read each one.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ── 2 · THE 3 LAYERS ─────────────────────────────────────── -->
+  <section class="block" id="layers">
+    <div class="sec-tag"><span class="num">2</span><span data-t="s2.tag">The three heatmaps</span></div>
+    <h2 class="sec-title" data-t="s2.title">Three ways to read the chain</h2>
+    <p data-t="s2.p1">Each heatmap answers a different question about the same options chain. Turn them on one at a time to learn what each looks like, then combine them.</p>
+
+    <!-- OPTION WEIGHT -->
+    <div class="layer ow">
+      <div class="lh"><span class="tag">OPTIONS WEIGHT</span><span class="api">heatmaps · option_weight</span></div>
+      <p class="what" data-t="s2.ow.what"><b>What it shows:</b> where option <em class="em">activity and value</em> concentrate across all strikes — a dense, smooth grid. The brighter the cell, the more option weight sitting at that price.</p>
+      <div class="shows" data-t="s2.ow.shows">Read it as: <b>zones of attention</b> — the areas the options market cares about most right now.</div>
+      <div class="shot" data-shot="ow">
+        <img src="img/ow_example.png" alt="Options Weight heatmap on a gold chart — a dense block of blue-to-red cells across price levels" />
+        <figcaption data-t="shot.ow.cap">Options Weight — the dense grid. On the DEPTH palette, hot cells (yellow → red) are the most-weighted price zones; cool cells (blue) are light.</figcaption>
+      </div>
+    </div>
+
+    <!-- OPEN INTEREST -->
+    <div class="layer oi">
+      <div class="lh"><span class="tag">OPEN INTEREST</span><span class="api">heatmaps · open_interest</span></div>
+      <p class="what" data-t="s2.oi.what"><b>What it shows:</b> how many contracts are <em class="em">open</em> at each strike — drawn as horizontal <b>walls</b>. A tall wall = a strike packed with positions that tends to act as support or resistance.</p>
+      <div class="shows" data-t="s2.oi.shows">Read it as: <b>structural levels</b> — the strikes where a lot of money is already parked.</div>
+      <div class="shot" data-shot="oi">
+        <img src="img/oi_example.png" alt="Open Interest heatmap on a gold chart — horizontal strike walls spanning the chart at key prices" />
+        <figcaption data-t="shot.oi.cap">Open Interest — horizontal strike walls. The brightest/strongest walls are the key support / resistance levels.</figcaption>
+      </div>
+    </div>
+
+    <!-- NET DELTA -->
+    <div class="layer nd">
+      <div class="lh"><span class="tag">NET DELTA EXP</span><span class="api">heatmaps · net_delta</span></div>
+      <p class="what" data-t="s2.nd.what"><b>What it shows:</b> the <em class="em">directional lean</em> at each strike — also drawn as walls, but <b>signed</b>: the colour tells you whether positioning at that level leans long or short.</p>
+      <div class="legendrow">
+        <span class="chip"><span class="sw" style="background:var(--green)"></span><span data-t="s2.nd.pos">positive Δ — long / upward lean</span></span>
+        <span class="chip"><span class="sw" style="background:var(--red)"></span><span data-t="s2.nd.neg">negative Δ — short / downward lean</span></span>
+      </div>
+      <div class="shows" data-t="s2.nd.shows">Read it as: <b>which way the level leans</b> — not just that a strike is heavy, but the side it favours.</div>
+      <div class="shot" data-shot="nd">
+        <img src="img/nd_example.png" alt="Net Delta Exposure heatmap on a gold chart — signed walls, some teal/green and some red" />
+        <figcaption data-t="shot.nd.cap">Net Delta Exp — signed walls. The colour (teal/green vs red) shows the long/short lean at each strike, not just its size.</figcaption>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 3 · EXPIRY TYPES ─────────────────────────────────────── -->
+  <section class="block" id="expiry">
+    <div class="sec-tag"><span class="num">3</span><span data-t="s3.tag">Two expiry horizons</span></div>
+    <h2 class="sec-title" data-t="s3.title">0DTE vs Swing</h2>
+    <p data-t="s3.p1">Every one of the three heatmaps comes in two flavours, because near-dated and longer-dated options tell different stories. You pick the horizon in the same HEAT menu.</p>
+
+    <div class="grid2">
+      <div class="ecard dte">
+        <div class="et" data-t="s3.dte.t">0DTE</div>
+        <p data-t="s3.dte.p">Options expiring <b>today</b>. Tight, fast-moving levels that matter for <b>intraday scalping</b> — where the market is fighting right now. Sparse but sharp.</p>
+      </div>
+      <div class="ecard swing">
+        <div class="et" data-t="s3.swing.t">SWING</div>
+        <p data-t="s3.swing.p">The <b>full</b>, longer-dated chain. Broader, more stable levels for the <b>bigger picture</b> — the walls that hold over days and weeks.</p>
+      </div>
+    </div>
+
+    <h3 data-t="s3.ow.h">Options Weight — 0DTE vs Swing</h3>
+    <div class="grid2">
+      <figure>
+        <img src="img/ow_0dte.png" alt="Options Weight 0DTE — a tight near-term block of weight" />
+        <figcaption data-t="s3.ow.0dte"><b>0DTE</b> — today's expiry: a tighter, near-term block of weight focused on the current fight.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/ow_swing.png" alt="Options Weight Swing — a broader grid over more price and time" />
+        <figcaption data-t="s3.ow.swing"><b>SWING</b> — the full chain: a broader grid spanning more price and further forward.</figcaption>
+      </figure>
+    </div>
+
+    <h3 data-t="s3.nd.h">Net Delta Exp — 0DTE vs Swing</h3>
+    <div class="grid2">
+      <figure>
+        <img src="img/nd_0dte.png" alt="Net Delta 0DTE — short signed walls clustered around price" />
+        <figcaption data-t="s3.nd.0dte"><b>0DTE</b> — short, signed walls clustered around current price for the intraday battle.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/nd_swing.png" alt="Net Delta Swing — fewer, longer signed walls marking bigger levels" />
+        <figcaption data-t="s3.nd.swing"><b>SWING</b> — fewer but longer signed walls marking the bigger, slower-moving levels.</figcaption>
+      </figure>
+    </div>
+
+    <div class="callout tip">
+      <div class="ic">💡</div>
+      <div>
+        <h4 data-t="s3.tip.h">How to combine</h4>
+        <p data-t="s3.tip.p">Use <b>SWING</b> to map the major levels for the day, then switch to <b>0DTE</b> to time entries against the levels in play right now. When a 0DTE wall lands on a swing wall, that level is doubly important.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 4 · READING IT ───────────────────────────────────────── -->
+  <section class="block" id="reading">
+    <div class="sec-tag"><span class="num">4</span><span data-t="s4.tag">Reading the map</span></div>
+    <h2 class="sec-title" data-t="s4.title">Grid vs walls, bright vs dim</h2>
+
+    <ul class="ticks">
+      <li data-t="s4.l1"><b>Dense grid (Option Weight)</b> — read the <em>brightness</em>. Bright = lots of weight at that price; dim = thin. Bright bands are zones price tends to slow down in.</li>
+      <li data-t="s4.l2"><b>Walls (Open Interest &amp; Net Delta)</b> — read the <em>height/length</em>. A long wall is a strong level; short walls are minor.</li>
+      <li data-t="s4.l3"><b>Colour on Net Delta</b> — green leans long/up, red leans short/down. It's the only layer where colour means <em>direction</em>, not just intensity.</li>
+      <li data-t="s4.l4"><b>Distance from price</b> — levels right above/below price matter most now; far levels are targets, not triggers.</li>
+      <li data-t="s4.l5"><b>Confluence</b> — when two layers (or both expiries) mark the same price, treat it as a stronger level.</li>
+    </ul>
+  </section>
+
+  <!-- ── 5 · THE MENU ─────────────────────────────────────────── -->
+  <section class="block" id="menu">
+    <div class="sec-tag"><span class="num">5</span><span data-t="s5.tag">The HEAT menu</span></div>
+    <h2 class="sec-title" data-t="s5.title">Turning heatmaps on</h2>
+    <p data-t="s5.p1">Everything lives in the <b>HEAT</b> menu on the main chart. The labels below match the panel:</p>
+
+    <div class="shot" data-shot="menu">
+      <img src="img/menu.png" alt="The HEAT menu with controls A to E labelled" />
+      <figcaption data-t="shot.menu.cap">The HEAT menu — <b>A</b> heat type · <b>B</b> expiry · <b>C</b> period · <b>D</b> palette · <b>E</b> visuals.</figcaption>
+    </div>
+
+    <ul class="ticks">
+      <li data-t="s5.a"><b>A · Heat type</b> — pick which heatmap to display: <b>Options Weight</b>, <b>Open Interest</b>, or <b>Net Delta Exp</b>. You <em>can</em> turn on more than one at a time, but it's clearest to read them one at a time.</li>
+      <li data-t="s5.b"><b>B · Expiry</b> — choose the horizon for that layer: <b>0DTE</b> (today's expiry) or <b>SWING</b> (the longer-dated chain).</li>
+      <li data-t="s5.c"><b>C · Period</b> — how much history the heat covers: <b>1 WEEK</b> = the current week, <b>1 MONTH</b> = the current month, <b>FULL</b> = up to about two months of data. FULL is the heaviest to draw and can slow a weaker device — start small and widen only if it stays smooth.</li>
+      <li data-t="s5.d"><b>D · Palette</b> — the colour scheme for <b>Options Weight</b> and <b>Open Interest</b> (e.g. DEPTH: blue = low → red = high). Net Delta is coloured by sign instead, so the palette doesn't change it.</li>
+      <li data-t="s5.e"><b>E · Visuals</b> — fine-tune how the heat looks:
+        <br>• <b>Opacity</b> — the transparency of the heat over your candles.
+        <br>• <b>Contrast</b> — how sharply strong levels stand out from weak ones: raise it and the hot zones pop while the faint background fades.
+        <br>• <b>Threshold</b> — raise it to start removing the weakest levels, leaving only the strongest on the chart.</li>
+    </ul>
+  </section>
+
+  <!-- ── 6 · HOW TO USE ───────────────────────────────────────── -->
+  <section class="block" id="use">
+    <div class="sec-tag"><span class="num">6</span><span data-t="s6.tag">How to use them</span></div>
+    <h2 class="sec-title" data-t="s6.title">Walls as levels, weight as zones</h2>
+    <p data-t="s6.p1">Heatmaps don't give signals — they give <em class="em">levels</em>. They tell you where price is likely to react; you supply the trade with confirmation.</p>
+
+    <ul class="ticks">
+      <li data-t="s6.l1"><b>Support / resistance</b> — trade reactions at the tall OI / net-delta walls the way you'd trade any key level: wait for rejection or a clean break.</li>
+      <li data-t="s6.l2"><b>Magnets</b> — heavy weight zones often pull price toward them, especially into expiry. A big wall just above can be a target.</li>
+      <li data-t="s6.l3"><b>0DTE for timing</b> — once the swing map sets your bias, use the 0DTE walls to find the exact intraday level to act at.</li>
+      <li data-t="s6.l4"><b>Confluence with cones</b> — a heatmap wall that lands on a cone band (see the Forecast Cones guide) is a high-conviction level: two independent models agreeing.</li>
+    </ul>
+
+    <div class="shot" data-shot="trade">
+      <img src="img/trade_example.png" alt="Gold M30 — price rallies into an upper OI wall and a cone band, gets rejected, then sells off to a lower OI wall that holds as support" />
+      <figcaption data-t="shot.trade.cap">Confluence in action on Gold. Price rallied into the <b>upper OI wall</b> (red) — which lined up with the <b>top cone band</b> — and was firmly rejected. It then sold off all the way down to the <b>lower OI wall</b> (orange), which caught it as support. Both levels were drawn <b>before</b> price got there: two independent models marking the same turns.</figcaption>
+    </div>
+
+    <h3 data-t="s6.more.h">The same setup, seen through the other layers</h3>
+    <div class="shot" data-shot="trade2">
+      <img src="img/trade_netdelta.png" alt="The same gold setup with Net Delta Exp walls sitting on the same OI levels" />
+      <figcaption data-t="shot.trade2.cap"><b>Net Delta Exp</b> on the same chart: the signed walls sit right on the OI levels — a second, independent layer confirming the same support and resistance.</figcaption>
+    </div>
+    <div class="shot" data-shot="trade3">
+      <img src="img/trade_ow_magnet.png" alt="Options Weight 0DTE zone acting as a magnet — price leaves the bright zone, snaps back, and bounces at its lower edge" />
+      <figcaption data-t="shot.trade3.cap"><b>Options Weight 0DTE</b> as a magnet: price pushed out of the bright zone, snapped back into it, and bounced at its lower edge. These hot zones tend to pull price back toward them.</figcaption>
+    </div>
+  </section>
+
+  <!-- ── 7 · GOOD TO KNOW ─────────────────────────────────────── -->
+  <section class="block" id="notes" style="border-bottom:none">
+    <div class="sec-tag"><span class="num">7</span><span data-t="s7.tag">Good to know</span></div>
+    <h2 class="sec-title" data-t="s7.title">A few honest caveats</h2>
+    <ul class="ticks">
+      <li data-t="s7.l1"><b>Levels, not promises.</b> A wall is where a reaction is <em>likely</em>, not guaranteed. Always wait for price to confirm.</li>
+      <li data-t="s7.l2"><b>US assets are RTH.</b> On US instruments the heat is placed on regular-trading-hours candles by design — outside-hours placement isn't shown.</li>
+      <li data-t="s7.l3"><b>Freshness matters.</b> Over weekends / holidays the options data can go stale; the terminal flags staleness — don't lean on a frozen map.</li>
+      <li data-t="s7.l4"><b>Performance.</b> Keep the render window at 1W unless you need more — FULL draws far more cells.</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div data-t="foot.disc">⚠ Educational reference. Heatmaps map where reactions are likely, not certain — always cross-check the live terminal before acting. Nothing here is financial advice.</div>
+  <div class="src">MK.TRADES · Learn · Options Heatmaps · v1 &nbsp;|&nbsp; <span data-t="foot.lang">Language: English</span></div>
+</footer>
+
+<script>
+/* ──────────────────────────────────────────────────────────────
+   i18n. EN is the source already in the DOM. On first run we cache
+   every [data-t] element's original innerHTML as its EN value. FR/AR
+   are swapped in from TRANSLATIONS; missing keys fall back to EN.
+   RTL (Arabic) is applied to <main>/<footer> only — the top bar
+   never mirrors.
+   ────────────────────────────────────────────────────────────── */
+const TRANSLATIONS = {
+  // ── FRANÇAIS ──────────────────────────────────────────────────
+  fr: {
+    'brand.sub': `· APPRENDRE`,
+    'nav.what': `Définition`,
+    'nav.layers': `3 couches`,
+    'nav.expiry': `0DTE / Swing`,
+    'nav.reading': `Comment lire`,
+    'nav.menu': `Le menu`,
+    'nav.use': `Utilisation`,
+    'nav.notes': `À savoir`,
+    'hero.kicker': `Guide quant · N° 02`,
+    'hero.title': `Heatmaps d'options`,
+    'hero.lead': `Le marché des options, peint directement sur votre graphique — pour voir les strikes qui agissent comme des murs, des aimants et des lignes de front avant que le prix n'y arrive.`,
+    'hero.warn': `<b>3 types</b> de heatmap × <b>2 échéances</b> chacun = <b>6 cartes</b> à superposer sur le graphique.`,
+    's1.tag': `Qu'est-ce qu'une heatmap d'options`,
+    's1.title': `La chaîne d'options, dessinée sur le graphique`,
+    's1.p1': `Derrière chaque marché se trouve une <b>chaîne d'options</b> — des milliers de contrats empilés à différents prix d'exercice (strikes). Une heatmap d'options prend cette chaîne et la peint sur votre graphique sous forme de couleur à chaque niveau de prix, de sorte que les strikes importants s'illuminent exactement là où le prix va les rencontrer.`,
+    's1.p2': `MK.TRADES vous offre <b>trois heatmaps différentes</b>, chacune mesurant la chaîne d'une façon différente, et chacune disponible sur <b>deux horizons d'échéance</b>. Soit <b>3 × 2 = 6 cartes</b> que vous activez et désactivez indépendamment depuis le menu <b>HEAT</b>.`,
+    's1.fig': `Chaque strike de la chaîne devient un niveau coloré sur votre graphique. Là où le prix rencontre un niveau lourd, attendez-vous à une réaction.`,
+    's2.tag': `Les trois heatmaps`,
+    's2.title': `Trois façons de lire la chaîne`,
+    's2.p1': `Chaque heatmap répond à une question différente sur la même chaîne d'options. Activez-les une à la fois pour apprendre à quoi ressemble chacune, puis combinez-les.`,
+    's2.ow.what': `<b>Ce qu'elle montre :</b> où l'<em class="em">activité et la valeur</em> des options se concentrent sur l'ensemble des strikes — une grille dense et lisse. Plus la cellule est vive, plus il y a de poids d'options à ce prix.`,
+    's2.ow.shows': `À lire comme : des <b>zones d'attention</b> — les zones qui intéressent le plus le marché des options en ce moment.`,
+    'shot.ow.cap': `Options Weight — la grille dense. Avec la palette DEPTH, les cellules chaudes (jaune → rouge) sont les zones de prix les plus pondérées ; les cellules froides (bleu) sont légères.`,
+    's2.oi.what': `<b>Ce qu'elle montre :</b> combien de contrats sont <em class="em">ouverts</em> à chaque strike — tracés en <b>murs</b> horizontaux. Un mur haut = un strike rempli de positions qui tend à agir comme support ou résistance.`,
+    's2.oi.shows': `À lire comme : des <b>niveaux structurels</b> — les strikes où beaucoup d'argent est déjà placé.`,
+    'shot.oi.cap': `Open Interest — des murs de strikes horizontaux. Les murs les plus vifs / forts sont les principaux supports / résistances.`,
+    's2.nd.what': `<b>Ce qu'elle montre :</b> le <em class="em">biais directionnel</em> à chaque strike — également tracé en murs, mais <b>signé</b> : la couleur indique si le positionnement à ce niveau penche à la hausse ou à la baisse.`,
+    's2.nd.pos': `Δ positif — biais long / haussier`,
+    's2.nd.neg': `Δ négatif — biais short / baissier`,
+    's2.nd.shows': `À lire comme : <b>le sens vers lequel penche le niveau</b> — pas seulement qu'un strike est lourd, mais le côté qu'il privilégie.`,
+    'shot.nd.cap': `Net Delta Exp — des murs signés. La couleur (turquoise/vert vs rouge) indique le biais long/short à chaque strike, pas seulement sa taille.`,
+    's3.tag': `Deux horizons d'échéance`,
+    's3.title': `0DTE vs Swing`,
+    's3.p1': `Chacune des trois heatmaps existe en deux versions, car les options à court terme et celles à plus longue échéance racontent des histoires différentes. Vous choisissez l'horizon dans le même menu HEAT.`,
+    's3.dte.t': `0DTE`,
+    's3.dte.p': `Options expirant <b>aujourd'hui</b>. Niveaux serrés et rapides qui comptent pour le <b>scalping intraday</b> — là où le marché se bat maintenant. Clairsemés mais nets.`,
+    's3.swing.t': `SWING`,
+    's3.swing.p': `La chaîne <b>complète</b>, à plus longue échéance. Niveaux plus larges et plus stables pour la <b>vue d'ensemble</b> — les murs qui tiennent sur des jours et des semaines.`,
+    's3.ow.h': `Options Weight — 0DTE vs Swing`,
+    's3.ow.0dte': `<b>0DTE</b> — échéance du jour : un bloc de poids plus resserré et à court terme, centré sur le combat en cours.`,
+    's3.ow.swing': `<b>SWING</b> — la chaîne complète : une grille plus large couvrant plus de prix et s'étendant plus loin.`,
+    's3.nd.h': `Net Delta Exp — 0DTE vs Swing`,
+    's3.nd.0dte': `<b>0DTE</b> — des murs signés courts, regroupés autour du prix actuel pour la bataille intraday.`,
+    's3.nd.swing': `<b>SWING</b> — des murs signés moins nombreux mais plus longs, marquant les niveaux plus grands et plus lents.`,
+    's3.tip.h': `Comment combiner`,
+    's3.tip.p': `Utilisez <b>SWING</b> pour cartographier les niveaux majeurs de la journée, puis passez en <b>0DTE</b> pour minuter les entrées sur les niveaux en jeu maintenant. Quand un mur 0DTE tombe sur un mur swing, ce niveau est doublement important.`,
+    's4.tag': `Lire la carte`,
+    's4.title': `Grille vs murs, vif vs terne`,
+    's4.l1': `<b>Grille dense (Options Weight)</b> — lisez la <em>luminosité</em>. Vif = beaucoup de poids à ce prix ; terne = mince. Les bandes vives sont des zones où le prix tend à ralentir.`,
+    's4.l2': `<b>Murs (Open Interest &amp; Net Delta)</b> — lisez la <em>hauteur/longueur</em>. Un mur long est un niveau fort ; les murs courts sont mineurs.`,
+    's4.l3': `<b>Couleur sur Net Delta</b> — le vert penche long/haut, le rouge penche short/bas. C'est la seule couche où la couleur signifie une <em>direction</em>, pas seulement une intensité.`,
+    's4.l4': `<b>Distance au prix</b> — les niveaux juste au-dessus/en-dessous du prix comptent le plus maintenant ; les niveaux lointains sont des cibles, pas des déclencheurs.`,
+    's4.l5': `<b>Confluence</b> — quand deux couches (ou les deux échéances) marquent le même prix, considérez-le comme un niveau plus fort.`,
+    's5.tag': `Le menu HEAT`,
+    's5.title': `Activer les heatmaps`,
+    's5.p1': `Tout se trouve dans le menu <b>HEAT</b> du graphique principal. Les repères ci-dessous correspondent au panneau :`,
+    'shot.menu.cap': `Le menu HEAT — <b>A</b> type · <b>B</b> échéance · <b>C</b> période · <b>D</b> palette · <b>E</b> visuels.`,
+    's5.a': `<b>A · Type</b> — choisissez quelle heatmap afficher : <b>Options Weight</b>, <b>Open Interest</b> ou <b>Net Delta Exp</b>. Vous <em>pouvez</em> en activer plusieurs à la fois, mais c'est plus clair une à la fois.`,
+    's5.b': `<b>B · Échéance</b> — choisissez l'horizon de cette couche : <b>0DTE</b> (échéance du jour) ou <b>SWING</b> (la chaîne à plus longue échéance).`,
+    's5.c': `<b>C · Période</b> — la quantité d'historique couverte : <b>1 WEEK</b> = la semaine en cours, <b>1 MONTH</b> = le mois en cours, <b>FULL</b> = jusqu'à environ deux mois de données. FULL est le plus lourd à dessiner et peut ralentir un appareil faible — commencez petit et n'élargissez que si ça reste fluide.`,
+    's5.d': `<b>D · Palette</b> — le schéma de couleurs pour <b>Options Weight</b> et <b>Open Interest</b> (ex. DEPTH : bleu = bas → rouge = haut). Net Delta est coloré par signe, donc la palette ne le change pas.`,
+    's5.e': `<b>E · Visuels</b> — affinez l'apparence de la heat :<br>• <b>Opacity</b> — la transparence de la heat par-dessus vos bougies.<br>• <b>Contrast</b> — à quel point les niveaux forts se détachent des faibles : augmentez-le et les zones chaudes ressortent tandis que le fond pâle s'efface.<br>• <b>Threshold</b> — augmentez-le pour commencer à retirer les niveaux les plus faibles, ne laissant que les plus forts sur le graphique.`,
+    's6.tag': `Comment les utiliser`,
+    's6.title': `Les murs comme niveaux, le poids comme zones`,
+    's6.p1': `Les heatmaps ne donnent pas de signaux — elles donnent des <em class="em">niveaux</em>. Elles vous disent où le prix est susceptible de réagir ; c'est vous qui apportez le trade avec une confirmation.`,
+    's6.l1': `<b>Support / résistance</b> — tradez les réactions sur les hauts murs OI / net-delta comme n'importe quel niveau clé : attendez un rejet ou une cassure nette.`,
+    's6.l2': `<b>Aimants</b> — les zones de poids élevé attirent souvent le prix vers elles, surtout à l'approche de l'échéance. Un grand mur juste au-dessus peut être une cible.`,
+    's6.l3': `<b>0DTE pour le timing</b> — une fois que la carte swing fixe votre biais, utilisez les murs 0DTE pour trouver le niveau intraday exact où agir.`,
+    's6.l4': `<b>Confluence avec les cônes</b> — un mur de heatmap qui tombe sur une bande de cône (voir le guide Cônes de prévision) est un niveau à forte conviction : deux modèles indépendants qui s'accordent.`,
+    'shot.trade.cap': `La confluence en action sur l'or. Le prix est monté dans le <b>mur OI supérieur</b> (rouge) — aligné avec la <b>bande de cône haute</b> — et a été nettement rejeté. Il a ensuite chuté jusqu'au <b>mur OI inférieur</b> (orange), qui l'a soutenu. Les deux niveaux étaient tracés <b>avant</b> que le prix n'y arrive : deux modèles indépendants marquant les mêmes retournements.`,
+    's6.more.h': `Le même setup, vu par les autres couches`,
+    'shot.trade2.cap': `<b>Net Delta Exp</b> sur le même graphique : les murs signés se posent exactement sur les niveaux OI — une seconde couche indépendante confirmant les mêmes support et résistance.`,
+    'shot.trade3.cap': `<b>Options Weight 0DTE</b> comme aimant : le prix est sorti de la zone vive, y est revenu d'un coup, puis a rebondi sur son bord inférieur. Ces zones chaudes ont tendance à attirer le prix vers elles.`,
+    's7.tag': `À savoir`,
+    's7.title': `Quelques mises en garde honnêtes`,
+    's7.l1': `<b>Des niveaux, pas des promesses.</b> Un mur est l'endroit où une réaction est <em>probable</em>, pas garantie. Attendez toujours que le prix confirme.`,
+    's7.l2': `<b>Les actifs US sont en RTH.</b> Sur les instruments US, la heat est placée sur les bougies des heures de marché régulières (RTH) — le placement hors séance n'est pas affiché.`,
+    's7.l3': `<b>La fraîcheur compte.</b> Les week-ends / jours fériés, les données d'options peuvent devenir périmées ; le terminal signale l'obsolescence — ne vous fiez pas à une carte figée.`,
+    's7.l4': `<b>Performance.</b> Gardez la fenêtre de rendu sur 1W sauf besoin — FULL dessine bien plus de cellules.`,
+    'foot.disc': `⚠ Référence éducative. Les heatmaps indiquent où des réactions sont probables, pas certaines — vérifiez toujours sur le terminal en direct avant d'agir. Rien ici ne constitue un conseil financier.`,
+    'foot.lang': `Langue : Français`
+  },
+  // ── العربية ───────────────────────────────────────────────────
+  ar: {
+    'brand.sub': `· تعلّم`,
+    'nav.what': `ما هي`,
+    'nav.layers': `٣ طبقات`,
+    'nav.expiry': `0DTE / Swing`,
+    'nav.reading': `كيف تقرؤها`,
+    'nav.menu': `القائمة`,
+    'nav.use': `الاستخدام`,
+    'nav.notes': `معلومات مهمّة`,
+    'hero.kicker': `دليل كمّي · رقم ٠٢`,
+    'hero.title': `خرائط حرارة الخيارات (Options Heatmaps)`,
+    'hero.lead': `سوق الخيارات مرسوماً مباشرةً على شارت السعر — لترى الـ strikes التي تعمل كجدران ومغناطيسات وخطوط مواجهة قبل أن يصل إليها السعر.`,
+    'hero.warn': `<b>٣ أنواع</b> من الخرائط × <b>تاريخَي انتهاء</b> لكلٍّ منها = <b>٦ خرائط</b> يمكنك طبقها على الشارت.`,
+    's1.tag': `ما هي خريطة حرارة الخيارات`,
+    's1.title': `سلسلة الخيارات، مرسومةً على الشارت`,
+    's1.p1': `خلف كل سوق توجد <b>سلسلة خيارات (options chain)</b> — آلاف العقود المتراكمة عند أسعار تنفيذ (strikes) مختلفة. تأخذ خريطة الحرارة هذه السلسلة وترسمها على شارتك كلوْن عند كل مستوى سعري، فتُضيء الـ strikes المهمّة تماماً حيث سيلتقي بها السعر.`,
+    's1.p2': `يمنحك MK.TRADES <b>ثلاث خرائط حرارة مختلفة</b>، كلٌّ تقيس السلسلة بطريقة مختلفة، وكلٌّ متاحة على <b>أفقَي انتهاء</b>. أي <b>٣ × ٢ = ٦ خرائط</b> تشغّلها وتطفئها بشكل مستقل من قائمة <b>HEAT</b>.`,
+    's1.fig': `كل strike في السلسلة يصبح مستوىً ملوّناً على شارتك. وحيث يلتقي السعر بمستوى ثقيل، توقّع ردّ فعل.`,
+    's2.tag': `الخرائط الثلاث`,
+    's2.title': `ثلاث طرق لقراءة السلسلة`,
+    's2.p1': `كل خريطة تجيب عن سؤال مختلف حول سلسلة الخيارات نفسها. شغّلها واحدةً تلو الأخرى لتتعلّم شكل كلٍّ منها، ثم اجمع بينها.`,
+    's2.ow.what': `<b>ماذا تُظهر:</b> أين يتركّز <em class="em">نشاط الخيارات وقيمتها</em> عبر كل الـ strikes — شبكة كثيفة وناعمة. كلما كانت الخلية أكثر إشراقاً، زاد وزن الخيارات عند ذلك السعر.`,
+    's2.ow.shows': `اقرأها كـ: <b>مناطق اهتمام</b> — المناطق التي يهتم بها سوق الخيارات أكثر الآن.`,
+    'shot.ow.cap': `Options Weight — الشبكة الكثيفة. مع باليتة DEPTH، الخلايا الساخنة (أصفر ← أحمر) هي أكثر مناطق السعر وزناً؛ والخلايا الباردة (أزرق) خفيفة.`,
+    's2.oi.what': `<b>ماذا تُظهر:</b> كم عقداً <em class="em">مفتوحاً</em> عند كل strike — مرسوماً كـ <b>جدران</b> أفقية. الجدار العالي = strike مزدحم بالمراكز ويميل للعمل كدعم أو مقاومة.`,
+    's2.oi.shows': `اقرأها كـ: <b>مستويات هيكلية</b> — الـ strikes حيث رُكِن الكثير من المال مسبقاً.`,
+    'shot.oi.cap': `Open Interest — جدران strikes أفقية. أكثر الجدران سطوعاً/قوةً هي مستويات الدعم / المقاومة الرئيسية.`,
+    's2.nd.what': `<b>ماذا تُظهر:</b> <em class="em">الميل الاتجاهي</em> عند كل strike — مرسوماً أيضاً كجدران، لكن <b>بإشارة</b>: اللون يخبرك إن كان التموضع عند ذلك المستوى يميل للشراء أو للبيع.`,
+    's2.nd.pos': `Δ موجب — ميل شرائي / صعودي`,
+    's2.nd.neg': `Δ سالب — ميل بيعي / هبوطي`,
+    's2.nd.shows': `اقرأها كـ: <b>إلى أي جهة يميل المستوى</b> — ليس فقط أن الـ strike ثقيل، بل الجهة التي يفضّلها.`,
+    'shot.nd.cap': `Net Delta Exp — جدران ذات إشارة. اللون (تركوازي/أخضر مقابل أحمر) يُظهر الميل الشرائي/البيعي عند كل strike، لا حجمه فقط.`,
+    's3.tag': `أفقا انتهاء`,
+    's3.title': `0DTE مقابل Swing`,
+    's3.p1': `كل واحدة من الخرائط الثلاث تأتي بنكهتين، لأن الخيارات قريبة الأجل وطويلة الأجل تروي قصصاً مختلفة. تختار الأفق من قائمة HEAT نفسها.`,
+    's3.dte.t': `0DTE`,
+    's3.dte.p': `خيارات تنتهي <b>اليوم</b>. مستويات ضيّقة وسريعة الحركة تهمّ <b>السكالبينج اللحظي</b> — حيث يتصارع السوق الآن. متفرّقة لكن حادّة.`,
+    's3.swing.t': `SWING`,
+    's3.swing.p': `السلسلة <b>الكاملة</b> الأطول أجلاً. مستويات أوسع وأكثر استقراراً لـ <b>الصورة الكبرى</b> — الجدران التي تصمد لأيام وأسابيع.`,
+    's3.ow.h': `Options Weight — 0DTE مقابل Swing`,
+    's3.ow.0dte': `<b>0DTE</b> — انتهاء اليوم: كتلة وزن أضيق وقريبة الأجل تتركّز على المعركة الحالية.`,
+    's3.ow.swing': `<b>SWING</b> — السلسلة الكاملة: شبكة أوسع تغطّي سعراً أكبر وتمتدّ أبعد للأمام.`,
+    's3.nd.h': `Net Delta Exp — 0DTE مقابل Swing`,
+    's3.nd.0dte': `<b>0DTE</b> — جدران قصيرة ذات إشارة، متجمّعة حول السعر الحالي لمعركة اللحظة.`,
+    's3.nd.swing': `<b>SWING</b> — جدران ذات إشارة أقل عدداً لكن أطول، تُعلّم المستويات الأكبر والأبطأ.`,
+    's3.tip.h': `كيف تجمع بينها`,
+    's3.tip.p': `استخدم <b>SWING</b> لرسم المستويات الكبرى لليوم، ثم انتقل إلى <b>0DTE</b> لتوقيت الدخولات على المستويات الفاعلة الآن. وحين يقع جدار 0DTE على جدار swing، يصبح ذلك المستوى مهمّاً مضاعَفاً.`,
+    's4.tag': `قراءة الخريطة`,
+    's4.title': `شبكة مقابل جدران، ساطع مقابل باهت`,
+    's4.l1': `<b>الشبكة الكثيفة (Options Weight)</b> — اقرأ <em>السطوع</em>. ساطع = وزن كبير عند ذلك السعر؛ باهت = ضعيف. النطاقات الساطعة مناطق يميل السعر للتباطؤ فيها.`,
+    's4.l2': `<b>الجدران (Open Interest و Net Delta)</b> — اقرأ <em>الارتفاع/الطول</em>. الجدار الطويل مستوى قوي؛ والجدران القصيرة ثانوية.`,
+    's4.l3': `<b>اللون على Net Delta</b> — الأخضر يميل شراء/صعود، والأحمر يميل بيع/هبوط. هي الطبقة الوحيدة التي يعني فيها اللون <em>اتجاهاً</em>، لا مجرّد شدّة.`,
+    's4.l4': `<b>البعد عن السعر</b> — المستويات فوق/تحت السعر مباشرةً هي الأهم الآن؛ والبعيدة أهداف لا محفّزات.`,
+    's4.l5': `<b>التقاطع (Confluence)</b> — حين تُعلّم طبقتان (أو كلا الأفقين) السعر نفسه، اعتبره مستوىً أقوى.`,
+    's5.tag': `قائمة HEAT`,
+    's5.title': `تشغيل الخرائط`,
+    's5.p1': `كل شيء في قائمة <b>HEAT</b> على الشارت الرئيسي. الرموز أدناه تطابق اللوحة:`,
+    'shot.menu.cap': `قائمة HEAT — <b>A</b> النوع · <b>B</b> الانتهاء · <b>C</b> الفترة · <b>D</b> الباليتة · <b>E</b> العرض.`,
+    's5.a': `<b>A · النوع</b> — اختر أي خريطة تُعرض: <b>Options Weight</b> أو <b>Open Interest</b> أو <b>Net Delta Exp</b>. <em>يمكنك</em> تشغيل أكثر من واحدة معاً، لكن الأوضح قراءتها واحدةً تلو الأخرى.`,
+    's5.b': `<b>B · الانتهاء</b> — اختر أفق هذه الطبقة: <b>0DTE</b> (انتهاء اليوم) أو <b>SWING</b> (السلسلة الأطول أجلاً).`,
+    's5.c': `<b>C · الفترة</b> — كمّ التاريخ الذي تغطّيه الحرارة: <b>1 WEEK</b> = الأسبوع الحالي، <b>1 MONTH</b> = الشهر الحالي، <b>FULL</b> = حتى نحو شهرين من البيانات. FULL هو الأثقل رسماً وقد يُبطئ جهازاً ضعيفاً — ابدأ صغيراً ووسّع فقط إن بقي سلساً.`,
+    's5.d': `<b>D · الباليتة</b> — نظام الألوان لـ <b>Options Weight</b> و <b>Open Interest</b> (مثل DEPTH: أزرق = منخفض ← أحمر = مرتفع). أما Net Delta فيُلوَّن بالإشارة، لذا لا تغيّره الباليتة.`,
+    's5.e': `<b>E · العرض</b> — اضبط شكل الحرارة بدقّة:<br>• <b>Opacity</b> — شفافية الحرارة فوق الشموع.<br>• <b>Contrast</b> — مدى بروز المستويات القوية عن الضعيفة: ارفعه فتبرز المناطق الساخنة ويتلاشى الخلف الباهت.<br>• <b>Threshold</b> — ارفعه لتبدأ بإزالة أضعف المستويات، فلا يبقى سوى الأقوى على الشارت.`,
+    's6.tag': `كيفية استخدامها`,
+    's6.title': `الجدران كمستويات، والوزن كمناطق`,
+    's6.p1': `الخرائط لا تعطي إشارات — بل تعطي <em class="em">مستويات</em>. تخبرك أين يُرجَّح أن يتفاعل السعر؛ وأنت من يصنع الصفقة بتأكيد.`,
+    's6.l1': `<b>دعم / مقاومة</b> — تعامل مع ردود الفعل عند جدران OI / net-delta العالية كأي مستوى رئيسي: انتظر رفضاً أو اختراقاً نظيفاً.`,
+    's6.l2': `<b>مغناطيسات</b> — مناطق الوزن الثقيل تجذب السعر إليها غالباً، خصوصاً قرب الانتهاء. جدار كبير فوق السعر مباشرةً قد يكون هدفاً.`,
+    's6.l3': `<b>0DTE للتوقيت</b> — بعد أن تحدّد خريطة swing انحيازك، استخدم جدران 0DTE لإيجاد المستوى اللحظي الدقيق للتحرّك عنده.`,
+    's6.l4': `<b>التقاطع مع الأقماع (cones)</b> — جدار خريطة يقع على نطاق قمع (انظر دليل Forecast Cones) هو مستوى عالي الثقة: نموذجان مستقلان يتّفقان.`,
+    'shot.trade.cap': `التقاطع عملياً على الذهب. ارتفع السعر إلى <b>جدار OI العلوي</b> (الأحمر) — المتوافق مع <b>نطاق القمع العلوي</b> — ورُفض بقوّة. ثم هبط حتى <b>جدار OI السفلي</b> (البرتقالي)، الذي أمسكه كدعم. كلا المستويين رُسما <b>قبل</b> وصول السعر: نموذجان مستقلان يُعلّمان الانعطافات نفسها.`,
+    's6.more.h': `نفس الإعداد، من خلال الطبقات الأخرى`,
+    'shot.trade2.cap': `<b>Net Delta Exp</b> على الشارت نفسه: الجدران ذات الإشارة تقع تماماً على مستويات OI — طبقة ثانية مستقلة تؤكّد الدعم والمقاومة نفسيهما.`,
+    'shot.trade3.cap': `<b>Options Weight 0DTE</b> كمغناطيس: خرج السعر من المنطقة الساطعة، ثم ارتدّ عائداً إليها، وارتدّ عند حافتها السفلى. هذه المناطق الساخنة تميل إلى جذب السعر نحوها.`,
+    's7.tag': `معلومات مهمّة`,
+    's7.title': `بعض التنبيهات الصادقة`,
+    's7.l1': `<b>مستويات، لا وعود.</b> الجدار هو حيث يكون ردّ الفعل <em>محتمَلاً</em>، لا مضموناً. انتظر دائماً تأكيد السعر.`,
+    's7.l2': `<b>الأصول الأمريكية بتوقيت RTH.</b> على الأدوات الأمريكية تُوضع الحرارة على شموع ساعات التداول الرسمية (RTH) بالتصميم — ولا يُعرض التوضّع خارج تلك الساعات.`,
+    's7.l3': `<b>الحداثة مهمّة.</b> في العطل ونهايات الأسبوع قد تتقادم بيانات الخيارات؛ والمنصّة تُنبّه إلى التقادم — لا تعتمد على خريطة مجمّدة.`,
+    's7.l4': `<b>الأداء.</b> أبقِ نافذة الرسم على 1W ما لم تحتج أكثر — FULL يرسم خلايا أكثر بكثير.`,
+    'foot.disc': `⚠ مرجع تعليمي. الخرائط تُظهر أين يُرجَّح حدوث ردود الفعل لا أين تتأكّد — تحقّق دائماً من المنصّة المباشرة قبل التصرّف. لا شيء هنا يُعدّ نصيحة مالية.`,
+    'foot.lang': `اللغة: العربية`
+  }
+};
+
+let _enCache = null;
+function cacheEN(){
+  _enCache = {};
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    _enCache[el.getAttribute('data-t')] = el.innerHTML;
+  });
+}
+function setLang(lang){
+  if(!_enCache) cacheEN();
+  document.documentElement.lang = lang;
+  const dir = (lang === 'ar') ? 'rtl' : 'ltr';
+  document.querySelectorAll('main, footer').forEach(el => el.setAttribute('dir', dir));
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    const key = el.getAttribute('data-t');
+    if(lang === 'en'){ el.innerHTML = _enCache[key]; return; }
+    const dict = TRANSLATIONS[lang] || {};
+    el.innerHTML = (key in dict) ? dict[key] : _enCache[key];
+  });
+  document.querySelectorAll('.langsel button').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+  });
+  try{ localStorage.setItem('mk_learn_heatmaps_lang', lang); }catch(e){}
+}
+window.addEventListener('DOMContentLoaded', ()=>{
+  cacheEN();
+  let saved = 'en';
+  try{ saved = localStorage.getItem('mk_learn_heatmaps_lang') || 'en'; }catch(e){}
+  if(saved !== 'en') setLang(saved);
+});
+</script>
+</body>
+</html>

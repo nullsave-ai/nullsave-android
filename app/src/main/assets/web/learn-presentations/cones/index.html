@@ -1,0 +1,696 @@
+�<!DOCTYPE html>
+<!-- version: v1 -->
+<!-- MK.TRADES Learn Presentation — FORECAST CONES (field guide / cheatsheet) -->
+<!-- Self-contained: inline CSS + JS + SVG. Built with the terminal, served as a -->
+<!-- static asset from /learn-presentations/cones/. Screenshots live in ./img/.  -->
+<!-- i18n: EN is the source in the HTML. FR/AR live in the TRANSLATIONS object at -->
+<!-- the bottom and are swapped in by data-t keys. AR flips the body to RTL.       -->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MK.TRADES · Forecast Cones — Field Guide</title>
+<style>
+  :root{
+    --bg:#000; --panel:#0a0a0a; --card:#111; --hover:#1a1a1a;
+    --border:#222; --borderlt:#333;
+    --white:#fff; --text:#e8ecf1; --soft:#c5cdd9; --gray:#999;
+    --muted:#6b7785; --dim:#4d5866;
+    --orange:#ff6d00; --green:#27c49a; --amber:#f5a623; --blue:#3796ff;
+    --red:#ff5252;
+    --gold:#ffd89e; --golddeep:#b8823d;
+    --mono:'Courier New','SF Mono','Monaco','Consolas',monospace;
+    --sans:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:var(--sans);scroll-behavior:smooth;}
+  body{font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .mono{font-family:var(--mono)}
+
+  /* ── Sticky top bar ─────────────────────────────────────────── */
+  header.topbar{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;gap:18px;
+    padding:10px 22px;background:rgba(8,8,8,.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+  }
+  .brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .brand .dot{width:9px;height:9px;border-radius:50%;
+    background:var(--orange);box-shadow:0 0 10px var(--orange)}
+  .brand b{font-family:var(--mono);font-size:13px;letter-spacing:2px;color:#fff}
+  .brand span{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--muted)}
+  nav.secnav{display:flex;gap:4px;flex:1;flex-wrap:wrap;justify-content:center}
+  nav.secnav a{
+    font-family:var(--mono);font-size:10px;letter-spacing:.6px;
+    color:var(--soft);padding:4px 9px;border-radius:3px;border:1px solid transparent;
+    text-transform:uppercase;white-space:nowrap;
+  }
+  nav.secnav a:hover{background:var(--hover);border-color:var(--border);text-decoration:none;color:#fff}
+  .langsel{display:flex;gap:0;flex-shrink:0;border:1px solid var(--golddeep);border-radius:4px;overflow:hidden}
+  .langsel button{
+    font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:1px;
+    padding:5px 11px;background:transparent;color:var(--gold);border:none;cursor:pointer;
+  }
+  .langsel button + button{border-inline-start:1px solid var(--golddeep)}
+  .langsel button.active{background:rgba(255,216,158,.16);color:#fff}
+
+  /* ── Layout shell ───────────────────────────────────────────── */
+  main{max-width:980px;margin:0 auto;padding:0 22px 90px}
+
+  /* ── Hero ───────────────────────────────────────────────────── */
+  .hero{padding:54px 0 30px;border-bottom:1px solid var(--border)}
+  .hero .kicker{font-family:var(--mono);font-size:11px;letter-spacing:3px;
+    color:var(--gold);text-transform:uppercase;margin-bottom:14px}
+  .hero h1{font-family:var(--mono);font-size:46px;line-height:1.05;margin:0 0 14px;
+    color:#fff;letter-spacing:1px;font-weight:800}
+  .hero p.lead{font-size:18px;color:var(--soft);max-width:680px;margin:0 0 22px}
+  .pill-warn{display:inline-flex;align-items:center;gap:9px;
+    padding:7px 14px;border-radius:30px;
+    background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.5);
+    color:var(--amber);font-family:var(--mono);font-size:12px;letter-spacing:.5px}
+
+  /* ── Sections ───────────────────────────────────────────────── */
+  section.block{padding:44px 0;border-bottom:1px solid var(--border)}
+  .sec-tag{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--orange);
+    text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .sec-tag .num{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;
+    border:1px solid var(--orange);color:var(--orange);font-size:11px}
+  h2.sec-title{font-family:var(--mono);font-size:27px;color:#fff;margin:0 0 18px;letter-spacing:.5px;font-weight:800}
+  h3{font-family:var(--mono);font-size:16px;color:var(--gold);margin:26px 0 10px;letter-spacing:.5px}
+  p{margin:0 0 14px;color:var(--soft)}
+  strong,b{color:var(--text)}
+  .em{color:var(--orange);font-weight:700}
+  .lead-in{font-size:17px;color:var(--text)}
+
+  /* ── Cards / callouts ───────────────────────────────────────── */
+  .callout{display:flex;gap:14px;padding:16px 18px;border-radius:6px;margin:18px 0;
+    background:var(--card);border:1px solid var(--border);border-inline-start:3px solid var(--gold)}
+  .callout .ic{font-size:20px;line-height:1.2;flex-shrink:0}
+  .callout.proof{border-inline-start-color:var(--green)}
+  .callout.danger{border-inline-start-color:var(--red);background:rgba(255,82,82,.06)}
+  .callout.tip{border-inline-start-color:var(--blue)}
+  .callout h4{margin:0 0 5px;font-family:var(--mono);font-size:13px;letter-spacing:1px;color:#fff;text-transform:uppercase}
+  .callout p{margin:0;font-size:14px;color:var(--soft)}
+
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}
+  @media(max-width:760px){.grid3{grid-template-columns:1fr}}
+  .model{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:16px;display:flex;flex-direction:column}
+  .model .mh{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+  .model .tag{font-family:var(--mono);font-size:18px;font-weight:800;letter-spacing:1px}
+  .model.gbm .tag{color:var(--green)}
+  .model.mjd .tag{color:var(--amber)}
+  .model.bates .tag{color:var(--orange)}
+  .model .sub{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.5px}
+  .model p{font-size:13px;margin:8px 0 0}
+  .model .use{margin-top:auto;padding-top:10px;font-family:var(--mono);font-size:11px;color:var(--soft)}
+  .model .use b{color:#fff}
+
+  /* legend table */
+  table.legend{width:100%;border-collapse:collapse;margin:18px 0;font-size:13px}
+  table.legend th,table.legend td{text-align:start;padding:9px 12px;border-bottom:1px solid var(--border)}
+  table.legend th{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
+  table.legend td.line{font-family:var(--mono);font-weight:800;white-space:nowrap}
+  table.legend td .sw{display:inline-block;width:22px;height:3px;vertical-align:middle;margin-inline-end:8px;border-radius:2px}
+  table.legend td .odds{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+  /* ── Figure / SVG / screenshot ──────────────────────────────── */
+  figure{margin:22px 0;background:#070707;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  figure svg{display:block;width:100%;height:auto;background:#070707}
+  figure img{display:block;width:100%;height:auto}
+  .model-shot{display:block;width:100%;height:auto;margin:12px 0 0;border-radius:5px;border:1px solid var(--border)}
+  .exgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+  .exgrid figure{margin:0}
+  .exgrid figcaption{font-size:11px;line-height:1.6}
+  @media(max-width:760px){.exgrid{grid-template-columns:1fr}}
+  figcaption{font-family:var(--mono);font-size:11px;color:var(--muted);padding:10px 14px;border-top:1px solid var(--border);letter-spacing:.3px}
+  figcaption b{color:var(--gold)}
+
+  /* screenshot placeholder (pending operator image) */
+  .shot{margin:22px 0}
+  .shot .frame{border:1.5px dashed var(--borderlt);border-radius:8px;background:
+    repeating-linear-gradient(45deg,#0a0a0a,#0a0a0a 10px,#0c0c0c 10px,#0c0c0c 20px);
+    min-height:230px;display:grid;place-items:center;text-align:center;padding:30px}
+  .shot .frame .ph{font-family:var(--mono)}
+  .shot .frame .ph .ic{font-size:34px;display:block;margin-bottom:10px;opacity:.5}
+  .shot .frame .ph .lbl{font-size:13px;color:var(--gold);letter-spacing:1px;font-weight:800}
+  .shot .frame .ph .ask{font-size:11px;color:var(--muted);margin-top:8px;max-width:430px;line-height:1.6}
+  .shot .frame .ph .fn{font-size:10px;color:var(--dim);margin-top:10px}
+  .shot img{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--border)}
+  .shot figcaption{border:none;padding:8px 2px 0}
+
+  /* numbered workflow */
+  ol.flow{list-style:none;counter-reset:step;padding:0;margin:18px 0}
+  ol.flow li{counter-increment:step;position:relative;padding:14px 16px 14px 56px;margin-bottom:10px;
+    background:var(--card);border:1px solid var(--border);border-radius:6px}
+  ol.flow li::before{content:counter(step);position:absolute;inset-inline-start:14px;top:14px;
+    width:28px;height:28px;display:grid;place-items:center;border-radius:50%;
+    background:rgba(255,109,0,.14);color:var(--orange);font-family:var(--mono);font-weight:800;font-size:13px;border:1px solid var(--orange)}
+  ol.flow li b{color:#fff}
+  ol.flow li p{margin:4px 0 0;font-size:13px}
+
+  ul.ticks{list-style:none;padding:0;margin:14px 0}
+  ul.ticks li{position:relative;padding-inline-start:26px;margin-bottom:10px;color:var(--soft);font-size:14px}
+  ul.ticks li::before{content:"▸";position:absolute;inset-inline-start:0;color:var(--gold)}
+
+  /* footer */
+  footer{max-width:980px;margin:0 auto;padding:30px 22px 60px;color:var(--dim);font-family:var(--mono);font-size:11px;line-height:1.8}
+  footer a{color:var(--muted)}
+  footer .src{margin-top:10px}
+
+  /* RTL — applied to content only (main/footer); the top bar never mirrors */
+  main[dir="rtl"] .hero h1,
+  main[dir="rtl"] h1,
+  main[dir="rtl"] h2.sec-title,
+  main[dir="rtl"] h3{letter-spacing:0}
+  /* keep latin/technical tokens and the proof refs reading left-to-right */
+  main[dir="rtl"] .mono{direction:ltr;unicode-bidi:embed}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="dot"></span>
+    <b>MK.TRADES</b>
+    <span data-t="brand.sub">· LEARN</span>
+  </div>
+  <nav class="secnav">
+    <a href="#what"      data-t="nav.what">What it is</a>
+    <a href="#models"    data-t="nav.models">3 Models</a>
+    <a href="#reading"   data-t="nav.reading">Reading lines</a>
+    <a href="#find"      data-t="nav.find">Where to find</a>
+    <a href="#not"       data-t="nav.not">What it is NOT</a>
+    <a href="#behavior"  data-t="nav.behavior">Behavior</a>
+    <a href="#use"       data-t="nav.use">How to use</a>
+  </nav>
+  <div class="langsel">
+    <button data-lang="en" class="active" onclick="setLang('en')">EN</button>
+    <button data-lang="fr" onclick="setLang('fr')">FR</button>
+    <button data-lang="ar" onclick="setLang('ar')">AR</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── HERO ─────────────────────────────────────────────────── -->
+  <div class="hero">
+    <div class="kicker" data-t="hero.kicker">Quant Field Guide · No. 01</div>
+    <h1 data-t="hero.title">Forecast Cones</h1>
+    <p class="lead" data-t="hero.lead">A plain-language map of where price could travel next — and how to read it on your chart without fooling yourself.</p>
+    <span class="pill-warn"><span>⚠</span><span data-t="hero.warn">Cones show price <b>boundaries</b>, not price <b>direction</b>.</span></span>
+  </div>
+
+  <!-- ── 1 · WHAT IT IS ───────────────────────────────────────── -->
+  <section class="block" id="what">
+    <div class="sec-tag"><span class="num">1</span><span data-t="s1.tag">What a cone is</span></div>
+    <h2 class="sec-title" data-t="s1.title">A probability map, not a prediction</h2>
+
+    <p class="lead-in" data-t="s1.p1">A forecast cone is a series of calculations that estimate the <b>range of prices</b> an asset is likely to stay within over the coming hours and days — drawn straight onto your chart as a fan that opens toward the future.</p>
+
+    <p data-t="s1.p2">The engine learns how this specific asset <em class="em">behaves</em> — how much it normally moves, how violently, how often it gaps — then simulates <b>thousands of possible futures</b> from the current price. It keeps the statistical edges of all those futures and draws them as lines. The middle line is the most ordinary outcome; the outer lines are the rare ones.</p>
+
+    <figure>
+      <img src="img/s1_cone_example.png" alt="A real forecast cone on the GBP/JPY chart, fanning out from the anchor" />
+      <figcaption data-t="s1.fig">A real forecast cone on <b>GBP/JPY</b>. From the anchor (centre, last price), the lines fan out toward the future. The flat dotted line is the <b>mean</b>; the curves above and below are the <b>standard-deviation (SD) bands</b> — the statistical edges of thousands of simulated futures.</figcaption>
+    </figure>
+
+    <div class="callout proof">
+      <div class="ic">🎓</div>
+      <div>
+        <h4 data-t="s1.proof.h">Is this real math or marketing?</h4>
+        <p data-t="s1.proof.p">Real, and old. The same engine — <b>Geometric Brownian Motion</b> simulated by <b>Monte Carlo</b> — is the foundation of the <b>Black–Scholes–Merton</b> option-pricing model that won the 1997 Nobel Prize in Economics and prices trillions in derivatives every day. We use it to draw a range, not to sell options. <span class="mono" style="font-size:11px;color:var(--muted)">Refs: <a href="https://www.columbia.edu/~ks20/FE-Notes/4700-07-Notes-GBM.pdf" target="_blank" rel="noopener">Columbia FE — GBM</a> · <a href="https://www.nobelprize.org/prizes/economic-sciences/1997/summary/" target="_blank" rel="noopener">Nobel 1997 (Merton &amp; Scholes)</a></span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 2 · THE 3 MODELS ─────────────────────────────────────── -->
+  <section class="block" id="models">
+    <div class="sec-tag"><span class="num">2</span><span data-t="s2.tag">The three models</span></div>
+    <h2 class="sec-title" data-t="s2.title">Three cones, three personalities</h2>
+    <p data-t="s2.p1">The same chart can show three different cones because there are three engines, each making a different assumption about how the market misbehaves. Switch between them in the <b>CONES</b> menu and compare.</p>
+
+    <div class="grid3">
+      <div class="model gbm">
+        <div class="mh"><span class="tag">GBM</span></div>
+        <div class="sub" data-t="s2.gbm.sub">Geometric Brownian Motion</div>
+        <img class="model-shot" src="img/model_gbm.png" alt="GBM cone example on GBP/JPY — green, smooth and symmetric" />
+        <p data-t="s2.gbm.p">The calm baseline. Assumes price drifts and wiggles <b>smoothly</b>, with no sudden surprises. Cleanest, most symmetric fan.</p>
+        <div class="use" data-t="s2.gbm.use"><b>Best for:</b> quiet, trending markets — your default read.</div>
+      </div>
+
+      <div class="model mjd">
+        <div class="mh"><span class="tag">MJD</span></div>
+        <div class="sub" data-t="s2.mjd.sub">Merton Jump-Diffusion</div>
+        <img class="model-shot" src="img/model_mjd.png" alt="MJD cone example on GBP/JPY — gold, jump-aware wider tails" />
+        <p data-t="s2.mjd.p">Adds <b>sudden jumps</b> — news, data releases, shocks. The cone allows for price to gap, so the tails open wider and faster.</p>
+        <div class="use" data-t="s2.mjd.use"><b>Best for:</b> event risk — CPI, FOMC, earnings, headlines.</div>
+      </div>
+
+      <div class="model bates">
+        <div class="mh"><span class="tag">BATES</span></div>
+        <div class="sub" data-t="s2.bates.sub">Bates · jumps + stochastic vol</div>
+        <img class="model-shot" src="img/model_bates.png" alt="Bates cone example on GBP/JPY — purple, turbulent stochastic-vol cone" />
+        <p data-t="s2.bates.p">The turbulent case. Allows jumps <b>and</b> a volatility that itself rises and falls. When markets get stormy and stay stormy, this cone is the widest and most honest.</p>
+        <div class="use" data-t="s2.bates.use"><b>Best for:</b> high-volatility regimes, crises, clustered chaos.</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="ic">💡</div>
+      <div>
+        <h4 data-t="s2.tip.h">How to think about it</h4>
+        <p data-t="s2.tip.p">GBM is the <b>calm</b> assumption, MJD adds <b>shocks</b>, BATES adds <b>shocks + a mood that changes</b>. If the three cones agree, the range is robust. If BATES is far wider than GBM, the market is pricing in danger — respect the wider edges.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 3 · READING THE LINES ────────────────────────────────── -->
+  <section class="block" id="reading">
+    <div class="sec-tag"><span class="num">3</span><span data-t="s3.tag">Reading the lines</span></div>
+    <h2 class="sec-title" data-t="s3.title">What each line means</h2>
+    <p data-t="s3.p1">The dotted centre line is the <b>mean</b> — the most ordinary path. Around it sit pairs of <b>standard-deviation</b> bands: <b>SD 1, SD 2, SD 3</b> above and <b>SD -1, SD -2, SD -3</b> below. Each band is a measure of how far price has stretched from normal — the further out, the rarer.</p>
+
+    <figure>
+      <img src="img/s3_deviations.png" alt="A GBM cone labelled with mean and SD 1/2/3 above and SD -1/-2/-3 below" />
+      <figcaption data-t="s3.fig">The same cone with every line named. <b>mean</b> in the middle, then <b>SD 1 / 2 / 3</b> fanning up and <b>SD -1 / -2 / -3</b> fanning down. Notice real price spends almost all of its time between SD -1 and SD 1.</figcaption>
+    </figure>
+
+    <table class="legend">
+      <thead><tr>
+        <th data-t="s3.th1">Band</th><th data-t="s3.th2">What it tells you</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="line" style="color:var(--gold)"><span class="sw" style="background:var(--gold)"></span>mean</td><td data-t="s3.r1b">The centre line — the "fair" path. Price drifts above and below it all the time.</td></tr>
+        <tr><td class="line" style="color:var(--green)"><span class="sw" style="background:var(--green)"></span>SD ±1</td><td data-t="s3.r2b">The normal zone. Price spends most of its life between SD -1 and SD +1 — nothing unusual.</td></tr>
+        <tr><td class="line" style="color:var(--amber)"><span class="sw" style="background:var(--amber)"></span>SD ±2</td><td data-t="s3.r3b">Stretched. Price has pushed a good distance from fair value — watch for a fade back toward the mean.</td></tr>
+        <tr><td class="line" style="color:var(--orange)"><span class="sw" style="background:var(--orange)"></span>SD ±3</td><td data-t="s3.r4b">Extreme. A rare, far stretch — a true outlier that usually doesn't hold.</td></tr>
+      </tbody>
+    </table>
+    <p data-t="s3.p2"><b>The simple read:</b> price near the <b>mean</b> or inside <b>SD 1</b> = calm and normal. Pushing out to <b>SD 2 / SD 3</b> = stretched, watch for a snap back. A decisive <b>close beyond a band</b> = something changed — the market may be leaving its old range.</p>
+  </section>
+
+  <!-- ── 4 · WHERE TO FIND THEM ───────────────────────────────── -->
+  <section class="block" id="find">
+    <div class="sec-tag"><span class="num">4</span><span data-t="s4.tag">Where to find them</span></div>
+    <h2 class="sec-title" data-t="s4.title">Turning cones on, on your chart</h2>
+    <p data-t="s4.p1">Cones live in the <b>CONES</b> menu on the main chart. From there you choose the model (GBM / MJD / BATES), the <b>anchor</b> (where the cone starts), and the <b>horizon</b> (how far forward it projects).</p>
+
+    <!-- SCREENSHOT A -->
+    <div class="shot" data-shot="a">
+      <img src="img/a_cones_menu.png" alt="The CONES menu open on the main chart, with arrows marking the dropdown, anchor type and cone type" />
+      <figcaption data-t="shotA.cap"><b>A</b> opens the <b>CONES</b> dropdown · <b>B</b> sets the <b>anchor type</b> (where the cone starts) · <b>C</b> is the <b>cone type / model selector</b> (GBM · MJD · BATES). Everything you need lives in this one panel.</figcaption>
+    </div>
+
+    <h3 data-t="s4.h2">Anchors &amp; horizons — different perspectives</h3>
+    <p data-t="s4.p2">The <b>anchor</b> is where the cone starts. The same asset can carry several cones at once, each anchored to a different point in time, and each tells a <em class="em">different story</em>:</p>
+    <ul class="ticks">
+      <li data-t="s4.b1"><b>Quarterly anchor</b> — the big-picture, slow-moving range. The widest cone; your macro bias.</li>
+      <li data-t="s4.b2"><b>Monthly anchor</b> — the swing perspective. Where price sits over weeks.</li>
+      <li data-t="s4.b3"><b>Weekly anchor</b> — the near-term, tighter range. Closest to the current action.</li>
+    </ul>
+    <p data-t="s4.p3">A cone anchored further back projects a wider fan; a closer anchor stays tighter. Reading them together is the heart of the workflow in section 7.</p>
+
+    <!-- SCREENSHOT B -->
+    <div class="shot" data-shot="b">
+      <img src="img/b_anchors_horizons.png" alt="One chart with three cones — quarterly (white), monthly (red), weekly (yellow) — showing two mean-reversions and one breakout" />
+      <figcaption data-t="shotB.cap">Three anchors on one chart: <b style="color:#fff">quarterly (white)</b>, <b style="color:#ff5252">monthly (red)</b>, <b style="color:#e8d44a">weekly (yellow)</b>. The blue arrows show the setups each one revealed — <b>two mean-reversions off the lower bands</b> and <b>one breakout</b>. Same price, three perspectives, three different trades.</figcaption>
+    </div>
+  </section>
+
+  <!-- ── 5 · WHAT IT IS NOT (awareness) ───────────────────────── -->
+  <section class="block" id="not">
+    <div class="sec-tag"><span class="num">5</span><span data-t="s5.tag">Read this twice</span></div>
+    <h2 class="sec-title" data-t="s5.title">What a cone is NOT</h2>
+
+    <div class="callout danger">
+      <div class="ic">🚫</div>
+      <div>
+        <h4 data-t="s5.d.h">A cone does not predict price movement</h4>
+        <p data-t="s5.d.p">It draws <b>boundaries</b>, not a path. No line says "price will go here." The cone tells you what is <em class="em">normal</em> vs <em class="em">extreme</em> — it is a map of probability, and you supply the trade.</p>
+      </div>
+    </div>
+
+    <ul class="ticks">
+      <li data-t="s5.l1"><b>Not a target.</b> SD 2 is not "where price is heading." It is an edge price rarely passes.</li>
+      <li data-t="s5.l2"><b>Not a guarantee.</b> The bands <em>get</em> touched — SD 2 roughly 1 day in 20, by design. A tag is not a broken model.</li>
+      <li data-t="s5.l3"><b>Not a signal on its own.</b> A cone is context. Pair it with structure, confirmation and your own plan before acting.</li>
+      <li data-t="s5.l4"><b>Not repainting.</b> Once a cone is projected from its anchor it is <b>fixed</b> — it does not move, redraw or repaint as new candles print. A different anchor simply gives you a different cone; each one stays locked to where it started.</li>
+    </ul>
+  </section>
+
+  <!-- ── 6 · BEHAVIOR / EXAMPLES ──────────────────────────────── -->
+  <section class="block" id="behavior">
+    <div class="sec-tag"><span class="num">6</span><span data-t="s6.tag">How price behaves at the edges</span></div>
+    <h2 class="sec-title" data-t="s6.title">Revert, or break</h2>
+    <p data-t="s6.p1">Almost everything price does around a cone is one of two stories: it <b>reverts</b> from a band back toward the mean, or it <b>breaks</b> a band and continues to the next one. The cone never tells you <em>which</em> will happen — but it tells you <em class="em">where</em>: the bands are the most probable places for price to turn, and the next band is the most probable target if it breaks. That is the edge — probabilities that add confidence to your own analysis.</p>
+
+    <figure>
+      <img src="img/behavior_revert_break.png" alt="One weekly cone showing a mean reversion off SD 1 and a break-and-retest of SD -1 that continued to SD -2" />
+      <figcaption data-t="s6.fig">One weekly cone, two textbook reactions (blue arrows): a clean <b>mean reversion</b> off SD 1, and a <b>break &amp; retest</b> of SD -1 that continued to SD -2. Both played out on lines drawn <b>days earlier</b>.</figcaption>
+    </figure>
+
+    <h3 data-t="s6.h1">① Mean reversion — rejected at the band</h3>
+    <p data-t="s6.p2">Price pushes from the mean out to <b>SD 1</b>, gets rejected right at the band, and travels straight back to the mean. The band became the ceiling the cone said it most likely would — a textbook reversion.</p>
+
+    <h3 data-t="s6.h2">② Break &amp; retest — continuation to the next band</h3>
+    <p data-t="s6.p3">Price <b>breaks SD -1</b>, rallies back to retest it, but the broken band now acts as resistance and <b>rejects</b> the retest — so price continues to the next target, <b>SD -2</b>. When a band breaks cleanly, the cone shows you where price is most likely heading next.</p>
+
+    <div class="callout proof">
+      <div class="ic">🎯</div>
+      <div>
+        <h4 data-t="s6.proof.h">Coincidence, or the math?</h4>
+        <p data-t="s6.proof.p">Both reactions landed on <b>exact levels calculated days before</b> — and one was an aggressive rejection on a <b>news event</b>. Why would price bounce precisely off the mean the moment a headline hit? Not luck. The cone is a real estimate of the asset's <b>price drift and volatility</b>; when price reaches a level the math already flagged as stretched, the odds of a reaction are genuinely higher. It won't be right every time — but levels that keep getting respected are doing exactly what the calculation predicted.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 7 · HOW TO USE THEM ──────────────────────────────────── -->
+  <section class="block" id="use" style="border-bottom:none">
+    <div class="sec-tag"><span class="num">7</span><span data-t="s7.tag">How to use them</span></div>
+    <h2 class="sec-title" data-t="s7.title">Top-down: from bias to entry</h2>
+    <p data-t="s7.p1">The strongest way to use cones is as a <b>drop-down analysis</b> — read the big picture on a higher timeframe, then zoom in for the entry. The higher timeframe gives you <em class="em">bias and range</em>; the lower timeframe gives you <em class="em">timing</em>.</p>
+
+    <ol class="flow">
+      <li data-t="s7.step1"><b>Start high.</b> On a higher-timeframe cone, find where price sits in the range. Near the lower edge → upside bias. Near the upper edge → downside bias. Mid-cone → no edge, stand aside.</li>
+      <li data-t="s7.step2"><b>Note the boundaries.</b> Mark the higher-timeframe SD 1 / SD 2 bands. These are your zones of interest — where reversion or breaks are most likely to matter.</li>
+      <li data-t="s7.step3"><b>Drop down.</b> Switch to a lower timeframe at one of those zones. Now you are looking for the trade <em>at</em> a level the big picture already flagged.</li>
+      <li data-t="s7.step4"><b>Wait for confirmation.</b> Reversion (rejection wick, failure to extend) or break-and-retest of the lower-timeframe mean. No confirmation, no trade.</li>
+      <li data-t="s7.step5"><b>Trade with the higher-timeframe bias.</b> Take entries that agree with the big-picture read. Targets: the next cone line. Invalidation: a decisive close beyond your zone.</li>
+    </ol>
+
+    <div class="callout tip">
+      <div class="ic">✅</div>
+      <div>
+        <h4 data-t="s7.tip.h">Quick checklist</h4>
+        <p data-t="s7.tip.p"><b>Where in the range?</b> (band = interesting, middle = wait) · <b>Which model?</b> (calm = GBM, event = MJD, storm = BATES) · <b>Revert or break?</b> · <b>Confirmed on the lower timeframe?</b> · <b>Does it agree with the higher-timeframe bias?</b></p>
+      </div>
+    </div>
+
+    <!-- ── Worked examples ── -->
+    <h3 data-t="s7.exh" style="font-size:18px;color:#fff;margin-top:34px">Worked example 1 · Daily cone on 5-min Gold</h3>
+    <p data-t="s7.ex1.intro">A short setup. The <b>daily cone</b> is projected onto a <b>5-minute gold</b> chart, so the daily mean is the level in play. Watch how patience and confirmation build the trade — the labels A → D run in order.</p>
+
+    <figure>
+      <img src="img/trade_example_1.png" alt="Daily cone on a 5-minute gold chart, annotated A B C D through a short entry sequence" />
+      <figcaption data-t="s7.ex1.fig">Daily cone on 5-min Gold. <b>A</b> first mean break (no entry) · <b>B</b> accumulation / rejections under the mean · <b>C</b> the break · <b>D</b> confirmation = 5-min close below the last internal low.</figcaption>
+    </figure>
+
+    <ul class="ticks">
+      <li data-t="s7.ex1.a"><b>A — First mean break: do nothing.</b> Price broke the mean, but with no confirmation we stay out. It went straight back up — no trade, and the patience paid off.</li>
+      <li data-t="s7.ex1.b"><b>B — Accumulation at the mean.</b> On the next approach, price stalls under the mean with multiple rejections — a clear supply / rejection zone forms.</li>
+      <li data-t="s7.ex1.c"><b>C — The break.</b> Price breaks down through the mean. Still not an entry — we want confirmation: either a rejected retest or a lower low.</li>
+      <li data-t="s7.ex1.d"><b>D — Confirmation: trigger.</b> A 5-minute close below the last internal low — pure price-action confirmation. Now we act.</li>
+    </ul>
+
+    <div class="callout tip">
+      <div class="ic">📐</div>
+      <div>
+        <h4 data-t="s7.ex1.trade.h">The trade</h4>
+        <p data-t="s7.ex1.trade.p"><b>Entry:</b> on the 5-min close below the last internal low (D). · <b>Stop:</b> above the last rejection zone (B). · <b>Target:</b> the next most-probable level, <b>SD -1</b> — or just ahead of it (price doesn't have to touch SD -1 exactly).</p>
+      </div>
+    </div>
+
+    <!-- Worked example 2 -->
+    <h3 data-t="s7.ex2h" style="font-size:18px;color:#fff;margin-top:34px">Worked example 2 · 4-hour Gold, combining anchors</h3>
+    <p data-t="s7.ex2.intro">A long setup after a sharp dip — and a lesson in <b>combining anchors</b>. One cone frames the <b>entry</b> (price stretched all the way to its SD -1), while a longer <b>monthly</b> cone frames the <b>targets</b>. When levels from two different anchors line up, the read gets stronger.</p>
+
+    <div class="exgrid">
+      <figure><img src="img/ex2_a.png" alt="4h gold: price dips and reaches SD -1, first rejection"/><figcaption data-t="s7.ex2.a"><b>A —</b> After a steep dip, price reaches <b>SD -1</b> and is rejected — the first reaction at a precalculated band.</figcaption></figure>
+      <figure><img src="img/ex2_b.png" alt="4h gold: a second rejection confirms; trade located with entry, stop and target"/><figcaption data-t="s7.ex2.b"><b>B —</b> Confirmation: a <b>second rejection</b>. Trade located — entry 4076.93, stop 4018.83 (below the reaction low), first target 4243.95 ≈ <b>2.9 : 1</b>.</figcaption></figure>
+      <figure><img src="img/ex2_c.png" alt="4h gold: first target at the next deviation of the monthly cone"/><figcaption data-t="s7.ex2.c"><b>C —</b> Target 1 — the <b>next deviation of the monthly cone</b>.</figcaption></figure>
+      <figure><img src="img/ex2_d.png" alt="4h gold: extended target at the mean of the monthly cone"/><figcaption data-t="s7.ex2.d"><b>D —</b> Target 2, extended — the <b>mean of the monthly cone</b>.</figcaption></figure>
+    </div>
+
+    <div class="callout proof">
+      <div class="ic">🧭</div>
+      <div>
+        <h4 data-t="s7.ex2.note.h">Combining anchors</h4>
+        <p data-t="s7.ex2.note.p">The entry came from one cone's <b>SD -1</b>; the targets came from the <b>monthly</b> cone — its next deviation, then its mean. Price reacted at lines drawn from <b>two different anchors</b>, and that confluence is exactly what raises the probability. Read the anchors together: the closer cone <em>times</em> the entry, the bigger cone <em>maps</em> the destination.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div data-t="foot.disc">⚠ Educational reference. Cones map probability, not certainty — always cross-check the live terminal before acting. Nothing here is financial advice.</div>
+  <div class="src">MK.TRADES · Learn · Forecast Cones · v1 &nbsp;|&nbsp; <span data-t="foot.lang">Language: English</span></div>
+</footer>
+
+<script>
+/* ──────────────────────────────────────────────────────────────
+   i18n. EN is the source already in the DOM. On first run we cache
+   every [data-t] element's original innerHTML as its EN value. FR/AR
+   are swapped in from TRANSLATIONS; missing keys fall back to EN.
+   ────────────────────────────────────────────────────────────── */
+const TRANSLATIONS = {
+  // ── FRANÇAIS ──────────────────────────────────────────────────
+  fr: {
+    'brand.sub': `· APPRENDRE`,
+    'nav.what': `Définition`,
+    'nav.models': `3 modèles`,
+    'nav.reading': `Lire les lignes`,
+    'nav.find': `Où les trouver`,
+    'nav.not': `Ce que ce n'est PAS`,
+    'nav.behavior': `Comportement`,
+    'nav.use': `Comment l'utiliser`,
+    'hero.kicker': `Guide quant · N° 01`,
+    'hero.title': `Cônes de prévision`,
+    'hero.lead': `Une carte en langage simple de la zone où le prix peut évoluer ensuite — et comment la lire sur votre graphique sans vous tromper.`,
+    'hero.warn': `Les cônes montrent les <b>limites</b> du prix, pas sa <b>direction</b>.`,
+    's1.tag': `Qu'est-ce qu'un cône`,
+    's1.title': `Une carte de probabilités, pas une prédiction`,
+    's1.p1': `Un cône de prévision est une série de calculs qui estiment la <b>fourchette de prix</b> dans laquelle un actif a de fortes chances de rester au cours des prochaines heures et journées — tracée directement sur votre graphique sous forme d'éventail qui s'ouvre vers le futur.`,
+    's1.p2': `Le moteur apprend comment cet actif précis <em class="em">se comporte</em> — son amplitude habituelle, sa violence, la fréquence de ses gaps — puis simule <b>des milliers de futurs possibles</b> à partir du prix actuel. Il conserve les bords statistiques de tous ces futurs et les trace en lignes. La ligne centrale est le résultat le plus ordinaire ; les lignes extérieures sont les plus rares.`,
+    's1.fig': `Un vrai cône de prévision sur <b>GBP/JPY</b>. Depuis l'ancre (centre, dernier prix), les lignes s'évasent vers le futur. La ligne pointillée plate est la <b>mean</b> ; les courbes au-dessus et en-dessous sont les <b>bandes d'écart-type (SD)</b> — les bords statistiques de milliers de futurs simulés.`,
+    's1.proof.h': `Vraies maths ou marketing ?`,
+    's1.proof.p': `Vraies, et anciennes. Le même moteur — le <b>mouvement brownien géométrique</b> simulé par <b>Monte Carlo</b> — est le fondement du modèle d'évaluation d'options <b>Black–Scholes–Merton</b>, qui a remporté le prix Nobel d'économie 1997 et valorise chaque jour des milliers de milliards de produits dérivés. Nous l'utilisons pour tracer une fourchette, pas pour vendre des options. <span class="mono" style="font-size:11px;color:var(--muted)">Réf. : <a href="https://www.columbia.edu/~ks20/FE-Notes/4700-07-Notes-GBM.pdf" target="_blank" rel="noopener">Columbia FE — GBM</a> · <a href="https://www.nobelprize.org/prizes/economic-sciences/1997/summary/" target="_blank" rel="noopener">Nobel 1997 (Merton &amp; Scholes)</a></span>`,
+    's2.tag': `Les trois modèles`,
+    's2.title': `Trois cônes, trois personnalités`,
+    's2.p1': `Un même graphique peut afficher trois cônes différents car il existe trois moteurs, chacun supposant une façon différente dont le marché dérape. Basculez entre eux dans le menu <b>CONES</b> et comparez.`,
+    's2.gbm.sub': `Mouvement brownien géométrique`,
+    's2.gbm.p': `La référence calme. Suppose que le prix dérive et oscille <b>en douceur</b>, sans surprise brutale. L'éventail le plus net et le plus symétrique.`,
+    's2.gbm.use': `<b>Idéal pour :</b> les marchés calmes et en tendance — votre lecture par défaut.`,
+    's2.mjd.sub': `Diffusion à sauts de Merton`,
+    's2.mjd.p': `Ajoute des <b>sauts soudains</b> — actualités, publications de données, chocs. Le cône autorise les gaps, donc les queues s'ouvrent plus largement et plus vite.`,
+    's2.mjd.use': `<b>Idéal pour :</b> le risque d'événement — CPI, FOMC, résultats, gros titres.`,
+    's2.bates.sub': `Bates · sauts + vol stochastique`,
+    's2.bates.p': `Le cas turbulent. Autorise les sauts <b>et</b> une volatilité qui monte et descend elle-même. Quand les marchés deviennent orageux et le restent, ce cône est le plus large et le plus honnête.`,
+    's2.bates.use': `<b>Idéal pour :</b> les régimes de forte volatilité, les crises, le chaos en grappes.`,
+    's2.tip.h': `Comment y penser`,
+    's2.tip.p': `GBM est l'hypothèse <b>calme</b>, MJD ajoute les <b>chocs</b>, BATES ajoute des <b>chocs + une humeur changeante</b>. Si les trois cônes concordent, la fourchette est robuste. Si BATES est bien plus large que GBM, le marché intègre du danger — respectez les bords plus larges.`,
+    's3.tag': `Lire les lignes`,
+    's3.title': `Ce que signifie chaque ligne`,
+    's3.p1': `La ligne centrale pointillée est la <b>mean</b> — le chemin le plus ordinaire. Autour d'elle se trouvent des paires de bandes d'<b>écart-type</b> : <b>SD 1, SD 2, SD 3</b> au-dessus et <b>SD -1, SD -2, SD -3</b> en-dessous. Chaque bande mesure à quel point le prix s'est éloigné de la normale — plus c'est loin, plus c'est rare.`,
+    's3.fig': `Le même cône, chaque ligne nommée. La <b>mean</b> au milieu, puis <b>SD 1 / 2 / 3</b> qui s'évasent vers le haut et <b>SD -1 / -2 / -3</b> vers le bas. Remarquez que le prix réel passe presque tout son temps entre SD -1 et SD 1.`,
+    's3.th1': `Bande`,
+    's3.th2': `Ce qu'elle vous dit`,
+    's3.r1b': `La ligne centrale — le prix « juste ». Le prix dérive sans cesse au-dessus et en-dessous.`,
+    's3.r2b': `La zone normale. Le prix passe l'essentiel de son temps entre SD -1 et SD +1 — rien d'inhabituel.`,
+    's3.r3b': `Étiré. Le prix s'est nettement éloigné de la valeur juste — surveillez un repli vers la mean.`,
+    's3.r4b': `Extrême. Un étirement rare et lointain — une vraie anomalie qui tient rarement.`,
+    's3.p2': `<b>La lecture simple :</b> prix près de la <b>mean</b> ou dans <b>SD 1</b> = calme et normal. Poussée vers <b>SD 2 / SD 3</b> = étiré, surveillez un retour brusque. Une <b>clôture franche au-delà d'une bande</b> = quelque chose a changé — le marché quitte peut-être son ancienne fourchette.`,
+    's4.tag': `Où les trouver`,
+    's4.title': `Activer les cônes sur votre graphique`,
+    's4.p1': `Les cônes se trouvent dans le menu <b>CONES</b> du graphique principal. Vous y choisissez le modèle (GBM / MJD / BATES), l'<b>ancre</b> (où commence le cône) et l'<b>horizon</b> (jusqu'où il se projette).`,
+    'shotA.cap': `<b>A</b> ouvre le menu <b>CONES</b> · <b>B</b> définit le <b>type d'ancre</b> (où commence le cône) · <b>C</b> est le <b>sélecteur de type / modèle</b> (GBM · MJD · BATES). Tout ce dont vous avez besoin tient dans ce seul panneau.`,
+    's4.h2': `Ancres &amp; horizons — des perspectives différentes`,
+    's4.p2': `L'<b>ancre</b> est le point de départ du cône. Un même actif peut porter plusieurs cônes à la fois, chacun ancré à un moment différent, et chacun raconte une <em class="em">histoire différente</em> :`,
+    's4.b1': `<b>Ancre trimestrielle</b> — la vue d'ensemble, fourchette lente. Le cône le plus large ; votre biais macro.`,
+    's4.b2': `<b>Ancre mensuelle</b> — la perspective swing. Où se situe le prix sur plusieurs semaines.`,
+    's4.b3': `<b>Ancre hebdomadaire</b> — le court terme, fourchette plus serrée. Au plus près de l'action en cours.`,
+    's4.p3': `Un cône ancré plus loin dans le passé projette un éventail plus large ; une ancre plus proche reste plus serrée. Les lire ensemble est au cœur de la méthode de la section 7.`,
+    'shotB.cap': `Trois ancres sur un graphique : <b style="color:#fff">trimestrielle (blanc)</b>, <b style="color:#ff5252">mensuelle (rouge)</b>, <b style="color:#e8d44a">hebdomadaire (jaune)</b>. Les flèches bleues montrent les configurations révélées par chacune — <b>deux retours à la moyenne sur les bandes basses</b> et <b>une cassure</b>. Même prix, trois perspectives, trois trades différents.`,
+    's5.tag': `À lire deux fois`,
+    's5.title': `Ce qu'un cône n'est PAS`,
+    's5.d.h': `Un cône ne prédit pas le mouvement du prix`,
+    's5.d.p': `Il trace des <b>limites</b>, pas un chemin. Aucune ligne ne dit « le prix ira ici ». Le cône vous dit ce qui est <em class="em">normal</em> ou <em class="em">extrême</em> — c'est une carte de probabilités, et c'est vous qui apportez le trade.`,
+    's5.l1': `<b>Pas une cible.</b> SD 2 n'est pas « là où va le prix ». C'est un bord que le prix franchit rarement.`,
+    's5.l2': `<b>Pas une garantie.</b> Les bandes <em>sont</em> touchées — SD 2 environ 1 jour sur 20, par construction. Un contact n'est pas un modèle cassé.`,
+    's5.l3': `<b>Pas un signal en soi.</b> Un cône est un contexte. Associez-le à la structure, à une confirmation et à votre propre plan avant d'agir.`,
+    's5.l4': `<b>Sans repaint.</b> Une fois projeté depuis son ancre, un cône est <b>figé</b> — il ne bouge pas, ne se redessine pas et ne repaint pas à mesure que de nouvelles bougies apparaissent. Une autre ancre donne simplement un autre cône ; chacun reste verrouillé à son point de départ.`,
+    's6.tag': `Comment le prix réagit aux bords`,
+    's6.title': `Rebondir, ou casser`,
+    's6.p1': `Presque tout ce que fait le prix autour d'un cône relève de deux scénarios : il <b>rebondit</b> d'une bande vers la mean, ou il <b>casse</b> une bande et continue vers la suivante. Le cône ne dit jamais <em>lequel</em> arrivera — mais il dit <em class="em">où</em> : les bandes sont les endroits les plus probables de retournement, et la bande suivante est la cible la plus probable en cas de cassure. C'est ça l'avantage — des probabilités qui renforcent votre propre analyse.`,
+    's6.fig': `Un cône hebdomadaire, deux réactions d'école (flèches bleues) : un <b>retour à la moyenne</b> net depuis SD 1, et une <b>cassure &amp; retest</b> de SD -1 qui s'est poursuivie jusqu'à SD -2. Les deux se sont jouées sur des lignes tracées <b>plusieurs jours plus tôt</b>.`,
+    's6.h1': `① Retour à la moyenne — rejeté à la bande`,
+    's6.p2': `Le prix s'éloigne de la mean jusqu'à <b>SD 1</b>, se fait rejeter pile à la bande, et revient droit vers la mean. La bande est devenue le plafond que le cône avait le plus probablement annoncé — un retour d'école.`,
+    's6.h2': `② Cassure &amp; retest — continuation vers la bande suivante`,
+    's6.p3': `Le prix <b>casse SD -1</b>, remonte pour le retester, mais la bande cassée fait désormais office de résistance et <b>rejette</b> le retest — le prix continue donc vers la cible suivante, <b>SD -2</b>. Quand une bande casse nettement, le cône vous montre où le prix se dirige le plus probablement ensuite.`,
+    's6.proof.h': `Coïncidence, ou les maths ?`,
+    's6.proof.p': `Les deux réactions ont touché des <b>niveaux exacts calculés plusieurs jours avant</b> — et l'une fut un rejet agressif sur une <b>actualité</b>. Pourquoi le prix rebondirait-il précisément sur la mean au moment où un titre tombe ? Pas de la chance. Le cône est une vraie estimation de la <b>dérive et de la volatilité</b> de l'actif ; quand le prix atteint un niveau déjà signalé comme étiré par les maths, les chances de réaction sont réellement plus élevées. Ce ne sera pas juste à chaque fois — mais les niveaux sans cesse respectés font exactement ce que le calcul prévoyait.`,
+    's7.tag': `Comment les utiliser`,
+    's7.title': `Top-down : du biais à l'entrée`,
+    's7.p1': `La façon la plus puissante d'utiliser les cônes est l'<b>analyse descendante</b> — lisez la vue d'ensemble sur une unité de temps supérieure, puis zoomez pour l'entrée. L'unité supérieure donne le <em class="em">biais et la fourchette</em> ; l'unité inférieure donne le <em class="em">timing</em>.`,
+    's7.step1': `<b>Commencez en haut.</b> Sur un cône d'unité supérieure, repérez où se situe le prix dans la fourchette. Près du bord bas → biais haussier. Près du bord haut → biais baissier. Au milieu → pas d'avantage, restez à l'écart.`,
+    's7.step2': `<b>Notez les limites.</b> Marquez les bandes SD 1 / SD 2 de l'unité supérieure. Ce sont vos zones d'intérêt — là où un rebond ou une cassure compte le plus.`,
+    's7.step3': `<b>Descendez.</b> Passez à une unité inférieure sur l'une de ces zones. Vous cherchez maintenant le trade <em>à</em> un niveau déjà signalé par la vue d'ensemble.`,
+    's7.step4': `<b>Attendez la confirmation.</b> Rebond (mèche de rejet, échec à étendre) ou cassure-retest de la mean de l'unité inférieure. Pas de confirmation, pas de trade.`,
+    's7.step5': `<b>Tradez dans le sens du biais supérieur.</b> Prenez les entrées qui concordent avec la vue d'ensemble. Cibles : la ligne de cône suivante. Invalidation : une clôture franche au-delà de votre zone.`,
+    's7.tip.h': `Checklist rapide`,
+    's7.tip.p': `<b>Où dans la fourchette ?</b> (bande = intéressant, milieu = attendre) · <b>Quel modèle ?</b> (calme = GBM, événement = MJD, tempête = BATES) · <b>Rebond ou cassure ?</b> · <b>Confirmé sur l'unité inférieure ?</b> · <b>Concorde-t-il avec le biais supérieur ?</b>`,
+    's7.exh': `Exemple détaillé 1 · Cône journalier sur l'or en 5 min`,
+    's7.ex1.intro': `Une configuration vendeuse. Le <b>cône journalier</b> est projeté sur un graphique <b>or en 5 minutes</b>, donc la mean journalière est le niveau en jeu. Observez comment la patience et la confirmation construisent le trade — les repères A → D se suivent dans l'ordre.`,
+    's7.ex1.fig': `Cône journalier sur l'or en 5 min. <b>A</b> première cassure de la mean (pas d'entrée) · <b>B</b> accumulation / rejets sous la mean · <b>C</b> la cassure · <b>D</b> confirmation = clôture 5 min sous le dernier plus-bas interne.`,
+    's7.ex1.a': `<b>A — Première cassure de la mean : ne rien faire.</b> Le prix a cassé la mean, mais sans confirmation on reste à l'écart. Il est aussitôt remonté — pas de trade, et la patience a payé.`,
+    's7.ex1.b': `<b>B — Accumulation à la mean.</b> Lors de l'approche suivante, le prix bute sous la mean avec plusieurs rejets — une zone d'offre / de rejet nette se forme.`,
+    's7.ex1.c': `<b>C — La cassure.</b> Le prix casse la mean à la baisse. Toujours pas d'entrée — on veut une confirmation : soit un retest rejeté, soit un plus-bas plus bas.`,
+    's7.ex1.d': `<b>D — Confirmation : déclencheur.</b> Une clôture 5 min sous le dernier plus-bas interne — confirmation pure en price action. On agit.`,
+    's7.ex1.trade.h': `Le trade`,
+    's7.ex1.trade.p': `<b>Entrée :</b> à la clôture 5 min sous le dernier plus-bas interne (D). · <b>Stop :</b> au-dessus de la dernière zone de rejet (B). · <b>Cible :</b> le niveau le plus probable suivant, <b>SD -1</b> — ou juste avant (le prix n'a pas à toucher SD -1 exactement).`,
+    's7.ex2h': `Exemple détaillé 2 · Or en 4 h, combiner les ancres`,
+    's7.ex2.intro': `Une configuration acheteuse après une forte baisse — et une leçon sur la <b>combinaison des ancres</b>. Un cône cadre l'<b>entrée</b> (le prix s'est étiré jusqu'à son SD -1), tandis qu'un cône <b>mensuel</b> plus long cadre les <b>cibles</b>. Quand des niveaux de deux ancres différentes s'alignent, la lecture devient plus forte.`,
+    's7.ex2.a': `<b>A —</b> Après une chute marquée, le prix atteint <b>SD -1</b> et se fait rejeter — la première réaction sur une bande précalculée.`,
+    's7.ex2.b': `<b>B —</b> Confirmation : un <b>deuxième rejet</b>. Trade localisé — entrée 4076.93, stop 4018.83 (sous le plus-bas de réaction), première cible 4243.95 ≈ <b>2,9 : 1</b>.`,
+    's7.ex2.c': `<b>C —</b> Cible 1 — la <b>déviation suivante du cône mensuel</b>.`,
+    's7.ex2.d': `<b>D —</b> Cible 2, étendue — la <b>mean du cône mensuel</b>.`,
+    's7.ex2.note.h': `Combiner les ancres`,
+    's7.ex2.note.p': `L'entrée venait du <b>SD -1</b> d'un cône ; les cibles venaient du cône <b>mensuel</b> — sa déviation suivante, puis sa mean. Le prix a réagi sur des lignes tracées depuis <b>deux ancres différentes</b>, et c'est cette confluence qui augmente la probabilité. Lisez les ancres ensemble : le cône le plus proche <em>cale le timing</em> de l'entrée, le plus grand <em>cartographie</em> la destination.`,
+    'foot.disc': `⚠ Référence éducative. Les cônes cartographient la probabilité, pas la certitude — vérifiez toujours sur le terminal en direct avant d'agir. Rien ici ne constitue un conseil financier.`,
+    'foot.lang': `Langue : Français`
+  },
+  // ── العربية ───────────────────────────────────────────────────
+  ar: {
+    'brand.sub': `· تعلّم`,
+    'nav.what': `ما هو`,
+    'nav.models': `٣ نماذج`,
+    'nav.reading': `قراءة الخطوط`,
+    'nav.find': `أين تجدها`,
+    'nav.not': `ما ليست عليه`,
+    'nav.behavior': `السلوك`,
+    'nav.use': `كيفية الاستخدام`,
+    'hero.kicker': `دليل كمّي · رقم ٠١`,
+    'hero.title': `أقماع التوقّع (Forecast Cones)`,
+    'hero.lead': `خريطة بلغة بسيطة توضّح إلى أين قد يتحرّك السعر لاحقاً — وكيف تقرؤها على الشارت دون أن تخدع نفسك.`,
+    'hero.warn': `الأقماع تُظهر <b>حدود</b> السعر، وليس <b>اتجاهه</b>.`,
+    's1.tag': `ما هو القمع (cone)`,
+    's1.title': `خريطة احتمالات، وليست تنبؤاً`,
+    's1.p1': `قمع التوقّع هو سلسلة من الحسابات تقدّر <b>نطاق الأسعار</b> الذي يُرجَّح أن يبقى ضمنه الأصل خلال الساعات والأيام القادمة — ويُرسم مباشرةً على الشارت على شكل مروحة تنفتح نحو المستقبل.`,
+    's1.p2': `يتعلّم المحرّك كيف <em class="em">يتصرّف</em> هذا الأصل تحديداً — كم يتحرّك عادةً، وبأي عنف، وكم مرّة يقفز (gap) — ثم يحاكي <b>آلاف الاحتمالات المستقبلية</b> انطلاقاً من السعر الحالي. يحتفظ بالحواف الإحصائية لكل تلك الاحتمالات ويرسمها كخطوط. الخط الأوسط هو النتيجة الأكثر اعتيادية، والخطوط الخارجية هي الأندر.`,
+    's1.fig': `قمع توقّع حقيقي على <b>GBP/JPY</b>. من نقطة الـ anchor (المركز، آخر سعر) تتوسّع الخطوط نحو المستقبل. الخط المنقّط المسطّح هو الـ <b>mean</b>؛ والمنحنيات فوقه وتحته هي <b>نطاقات الانحراف المعياري (SD)</b> — الحواف الإحصائية لآلاف الاحتمالات المُحاكاة.`,
+    's1.proof.h': `هل هذه رياضيات حقيقية أم تسويق؟`,
+    's1.proof.p': `حقيقية وقديمة. المحرّك نفسه — <b>الحركة البراونية الهندسية (GBM)</b> المُحاكاة عبر <b>Monte Carlo</b> — هو أساس نموذج تسعير الخيارات <b>Black–Scholes–Merton</b> الذي فاز بجائزة نوبل في الاقتصاد عام ١٩٩٧ ويُسعّر تريليونات المشتقّات يومياً. نستخدمه لرسم نطاق، لا لبيع خيارات. <span class="mono" style="font-size:11px;color:var(--muted)">مراجع: <a href="https://www.columbia.edu/~ks20/FE-Notes/4700-07-Notes-GBM.pdf" target="_blank" rel="noopener">Columbia FE — GBM</a> · <a href="https://www.nobelprize.org/prizes/economic-sciences/1997/summary/" target="_blank" rel="noopener">Nobel 1997 (Merton &amp; Scholes)</a></span>`,
+    's2.tag': `النماذج الثلاثة`,
+    's2.title': `ثلاثة أقماع، ثلاث شخصيات`,
+    's2.p1': `يمكن للشارت نفسه أن يُظهر ثلاثة أقماع مختلفة لأن هناك ثلاثة محرّكات، كلٌّ منها يفترض طريقة مختلفة لـ«سوء تصرّف» السوق. بدّل بينها من قائمة <b>CONES</b> وقارن.`,
+    's2.gbm.sub': `الحركة البراونية الهندسية`,
+    's2.gbm.p': `الأساس الهادئ. يفترض أن السعر ينجرف ويتمايل <b>بسلاسة</b> دون مفاجآت مفاجئة. أنظف مروحة وأكثرها تناظراً.`,
+    's2.gbm.use': `<b>الأنسب لـ:</b> الأسواق الهادئة وذات الاتجاه — قراءتك الافتراضية.`,
+    's2.mjd.sub': `ميرتون للقفز والانتشار`,
+    's2.mjd.p': `يضيف <b>قفزات مفاجئة</b> — أخبار، بيانات اقتصادية، صدمات. يسمح القمع للسعر بالقفز (gap)، فتنفتح الأطراف أوسع وأسرع.`,
+    's2.mjd.use': `<b>الأنسب لـ:</b> مخاطر الأحداث — CPI، FOMC، نتائج الشركات، العناوين الإخبارية.`,
+    's2.bates.sub': `Bates · قفزات + تقلّب عشوائي`,
+    's2.bates.p': `الحالة المضطربة. يسمح بالقفزات <b>و</b> بتقلّب يرتفع وينخفض بنفسه. حين تصبح الأسواق عاصفة وتبقى كذلك، يكون هذا القمع الأوسع والأكثر صدقاً.`,
+    's2.bates.use': `<b>الأنسب لـ:</b> فترات التقلّب العالي والأزمات والفوضى المتتالية.`,
+    's2.tip.h': `كيف تفكّر بها`,
+    's2.tip.p': `GBM هو الافتراض <b>الهادئ</b>، وMJD يضيف <b>الصدمات</b>، وBATES يضيف <b>صدمات + مزاجاً متغيّراً</b>. إذا اتّفقت الأقماع الثلاثة، فالنطاق متين. وإذا كان BATES أوسع بكثير من GBM، فالسوق يُسعّر خطراً — احترم الحواف الأوسع.`,
+    's3.tag': `قراءة الخطوط`,
+    's3.title': `ماذا يعني كل خط`,
+    's3.p1': `الخط الأوسط المنقّط هو الـ <b>mean</b> — المسار الأكثر اعتيادية. وحوله أزواج من نطاقات <b>الانحراف المعياري</b>: <b>SD 1, SD 2, SD 3</b> في الأعلى و<b>SD -1, SD -2, SD -3</b> في الأسفل. كل نطاق يقيس مدى ابتعاد السعر عن المعتاد — كلما ابتعد، كان أندر.`,
+    's3.fig': `القمع نفسه مع تسمية كل خط. الـ <b>mean</b> في الوسط، ثم <b>SD 1 / 2 / 3</b> تتوسّع للأعلى و<b>SD -1 / -2 / -3</b> للأسفل. لاحظ أن السعر الحقيقي يقضي معظم وقته بين SD -1 و SD 1.`,
+    's3.th1': `النطاق`,
+    's3.th2': `ماذا يخبرك`,
+    's3.r1b': `الخط الأوسط — السعر «العادل». يتأرجح السعر فوقه وتحته باستمرار.`,
+    's3.r2b': `المنطقة الطبيعية. يقضي السعر معظم وقته بين SD -1 و SD +1 — لا شيء غير اعتيادي.`,
+    's3.r3b': `ممتدّ. ابتعد السعر مسافة كبيرة عن القيمة العادلة — راقب ارتداداً نحو الـ mean.`,
+    's3.r4b': `متطرّف. امتداد نادر وبعيد — حالة شاذّة حقيقية نادراً ما تصمد.`,
+    's3.p2': `<b>القراءة المبسّطة:</b> السعر قرب الـ <b>mean</b> أو داخل <b>SD 1</b> = هدوء وطبيعي. الاندفاع إلى <b>SD 2 / SD 3</b> = ممتدّ، راقب ارتداداً سريعاً. <b>إغلاق حاسم خارج النطاق</b> = شيء ما تغيّر — قد يكون السوق يغادر نطاقه القديم.`,
+    's4.tag': `أين تجدها`,
+    's4.title': `تشغيل الأقماع على الشارت`,
+    's4.p1': `تجد الأقماع في قائمة <b>CONES</b> على الشارت الرئيسي. منها تختار النموذج (GBM / MJD / BATES) و<b>الـ anchor</b> (من أين يبدأ القمع) و<b>الأفق</b> (إلى أي مدى يمتدّ للأمام).`,
+    'shotA.cap': `<b>A</b> يفتح قائمة <b>CONES</b> · <b>B</b> يحدّد <b>نوع الـ anchor</b> (من أين يبدأ القمع) · <b>C</b> هو <b>مُحدِّد نوع القمع / النموذج</b> (GBM · MJD · BATES). كل ما تحتاجه في هذه اللوحة الواحدة.`,
+    's4.h2': `الـ anchors والآفاق — وجهات نظر مختلفة`,
+    's4.p2': `الـ <b>anchor</b> هو نقطة بداية القمع. يمكن للأصل نفسه أن يحمل عدّة أقماع في آنٍ واحد، كلٌّ مثبّت عند لحظة زمنية مختلفة، وكلٌّ يروي <em class="em">قصة مختلفة</em>:`,
+    's4.b1': `<b>anchor ربع سنوي</b> — الصورة الكبرى، نطاق بطيء الحركة. أوسع قمع؛ انحيازك الكلّي (macro).`,
+    's4.b2': `<b>anchor شهري</b> — منظور الـ swing. أين يقف السعر على مدى أسابيع.`,
+    's4.b3': `<b>anchor أسبوعي</b> — المدى القريب، نطاق أضيق. الأقرب إلى الحركة الحالية.`,
+    's4.p3': `القمع المثبّت أبعد في الماضي يُسقط مروحة أوسع؛ والـ anchor الأقرب يبقى أضيق. قراءتها معاً هي جوهر المنهجية في القسم ٧.`,
+    'shotB.cap': `ثلاثة anchors على شارت واحد: <b style="color:#fff">ربع سنوي (أبيض)</b>، <b style="color:#ff5252">شهري (أحمر)</b>، <b style="color:#e8d44a">أسبوعي (أصفر)</b>. تُظهر الأسهم الزرقاء الإعدادات التي كشفها كلٌّ منها — <b>ارتدادان نحو المتوسط من النطاقات السفلى</b> و<b>اختراق واحد</b>. السعر نفسه، ثلاث وجهات نظر، ثلاث صفقات مختلفة.`,
+    's5.tag': `اقرأ هذا مرّتين`,
+    's5.title': `ما ليس عليه القمع`,
+    's5.d.h': `القمع لا يتنبّأ بحركة السعر`,
+    's5.d.p': `يرسم <b>حدوداً</b>، لا مساراً. لا يوجد خط يقول «سيذهب السعر إلى هنا». يخبرك القمع بما هو <em class="em">طبيعي</em> مقابل <em class="em">متطرّف</em> — إنه خريطة احتمالات، وأنت من يصنع الصفقة.`,
+    's5.l1': `<b>ليس هدفاً.</b> SD 2 ليس «وجهة السعر». بل حافّة نادراً ما يتجاوزها.`,
+    's5.l2': `<b>ليس ضماناً.</b> النطاقات <em>تُلمَس</em> فعلاً — SD 2 نحو يوم من كل ٢٠، وهذا بالتصميم. لمسها لا يعني أن النموذج مكسور.`,
+    's5.l3': `<b>ليس إشارة بمفرده.</b> القمع سياق. اقرنه بالبنية والتأكيد وخطّتك الخاصة قبل التحرّك.`,
+    's5.l4': `<b>لا يُعيد الرسم (no repaint).</b> بمجرّد إسقاط القمع من نقطة الـ anchor يصبح <b>ثابتاً</b> — لا يتحرّك ولا يُعاد رسمه ولا يُعيد الطلاء مع ظهور شموع جديدة. الـ anchor المختلف يمنحك ببساطة قمعاً مختلفاً؛ وكلٌّ يبقى مثبّتاً عند نقطة بدايته.`,
+    's6.tag': `كيف يتصرّف السعر عند الحواف`,
+    's6.title': `ارتداد أو اختراق`,
+    's6.p1': `كل ما يفعله السعر تقريباً حول القمع هو أحد سيناريوهين: إمّا أن <b>يرتدّ</b> من نطاق عائداً نحو الـ mean، أو <b>يخترق</b> نطاقاً ويواصل إلى التالي. لا يخبرك القمع <em>أيّهما</em> سيحدث — لكنه يخبرك <em class="em">أين</em>: النطاقات هي أكثر الأماكن احتمالاً لانعكاس السعر، والنطاق التالي هو الهدف الأرجح عند الاختراق. هذه هي الأفضلية — احتمالات تضيف ثقة إلى تحليلك الخاص.`,
+    's6.fig': `قمع أسبوعي واحد، وردّتا فعل نموذجيّتان (أسهم زرقاء): <b>ارتداد نحو المتوسط</b> نظيف من SD 1، و<b>اختراق وإعادة اختبار</b> لـ SD -1 تواصل حتى SD -2. كلاهما حدث على خطوط رُسمت <b>قبل أيام</b>.`,
+    's6.h1': `① ارتداد نحو المتوسط — رفض عند النطاق`,
+    's6.p2': `يندفع السعر من الـ mean حتى <b>SD 1</b>، فيُرفض تماماً عند النطاق، ويعود مباشرةً إلى الـ mean. أصبح النطاق السقف الذي رجّح القمع أن يكونه — ارتداد نموذجي.`,
+    's6.h2': `② اختراق وإعادة اختبار — استمرار نحو النطاق التالي`,
+    's6.p3': `<b>يخترق السعر SD -1</b>، ثم يرتدّ لإعادة اختباره، لكن النطاق المكسور يعمل الآن كمقاومة و<b>يرفض</b> إعادة الاختبار — فيواصل السعر نحو الهدف التالي، <b>SD -2</b>. حين يُخترق نطاق بوضوح، يُظهر لك القمع وجهة السعر الأرجح تالياً.`,
+    's6.proof.h': `صدفة، أم الرياضيات؟`,
+    's6.proof.p': `ارتطمت ردّتا الفعل بـ <b>مستويات دقيقة حُسبت قبل أيام</b> — وكانت إحداهما رفضاً عنيفاً على <b>خبر اقتصادي</b>. لماذا يرتدّ السعر تحديداً عند الـ mean لحظة صدور العنوان؟ ليست صدفة. القمع تقدير حقيقي لـ <b>انجراف السعر وتقلّبه</b>؛ وحين يبلغ السعر مستوىً سبق أن وصفته الرياضيات بأنه ممتدّ، تكون احتمالات حدوث ردّ فعل أعلى فعلاً. لن يصيب في كل مرة — لكن المستويات التي تُحترم مراراً تفعل تماماً ما توقّعه الحساب.`,
+    's7.tag': `كيفية استخدامها`,
+    's7.title': `من الأعلى للأسفل: من الانحياز إلى الدخول`,
+    's7.p1': `أقوى طريقة لاستخدام الأقماع هي <b>التحليل من الأعلى للأسفل</b> — اقرأ الصورة الكبرى على فريم أعلى، ثم قرّب للدخول. الفريم الأعلى يمنحك <em class="em">الانحياز والنطاق</em>؛ والفريم الأدنى يمنحك <em class="em">التوقيت</em>.`,
+    's7.step1': `<b>ابدأ من الأعلى.</b> على قمع فريم أعلى، حدّد موقع السعر ضمن النطاق. قرب الحافة السفلى ← انحياز صعودي. قرب الحافة العليا ← انحياز هبوطي. في الوسط ← لا أفضلية، ابقَ جانباً.`,
+    's7.step2': `<b>دوّن الحدود.</b> علّم نطاقات SD 1 / SD 2 على الفريم الأعلى. هذه مناطق اهتمامك — حيث يكون الارتداد أو الاختراق أكثر أهمية.`,
+    's7.step3': `<b>انزل للأسفل.</b> انتقل إلى فريم أدنى عند إحدى تلك المناطق. الآن تبحث عن الصفقة <em>عند</em> مستوى سبق أن أبرزته الصورة الكبرى.`,
+    's7.step4': `<b>انتظر التأكيد.</b> ارتداد (ذيل رفض، فشل في الامتداد) أو اختراق وإعادة اختبار لـ mean الفريم الأدنى. لا تأكيد، لا صفقة.`,
+    's7.step5': `<b>تداول مع انحياز الفريم الأعلى.</b> خذ الدخولات المتوافقة مع قراءة الصورة الكبرى. الأهداف: خط القمع التالي. الإبطال: إغلاق حاسم خارج منطقتك.`,
+    's7.tip.h': `قائمة تحقّق سريعة`,
+    's7.tip.p': `<b>أين ضمن النطاق؟</b> (نطاق = مهمّ، الوسط = انتظر) · <b>أي نموذج؟</b> (هدوء = GBM، حدث = MJD، عاصفة = BATES) · <b>ارتداد أم اختراق؟</b> · <b>مؤكَّد على الفريم الأدنى؟</b> · <b>هل يتوافق مع انحياز الفريم الأعلى؟</b>`,
+    's7.exh': `مثال تطبيقي ١ · قمع يومي على الذهب فريم ٥ دقائق`,
+    's7.ex1.intro': `إعداد بيعي (short). يُسقَط <b>القمع اليومي</b> على شارت <b>ذهب فريم ٥ دقائق</b>، فيكون الـ mean اليومي هو المستوى محلّ الاهتمام. لاحظ كيف يبني الصبرُ والتأكيدُ الصفقةَ — الرموز A ← D تسير بالترتيب.`,
+    's7.ex1.fig': `قمع يومي على الذهب فريم ٥ دقائق. <b>A</b> أول كسر للـ mean (لا دخول) · <b>B</b> تجميع / رفض تحت الـ mean · <b>C</b> الكسر · <b>D</b> التأكيد = إغلاق ٥ دقائق أسفل آخر قاع داخلي.`,
+    's7.ex1.a': `<b>A — أول كسر للـ mean: لا تفعل شيئاً.</b> كسر السعر الـ mean، لكن بلا تأكيد نبقى خارجاً. ارتدّ صعوداً مباشرةً — لا صفقة، والصبر أثمر.`,
+    's7.ex1.b': `<b>B — تجميع عند الـ mean.</b> في الاقتراب التالي، يتوقّف السعر تحت الـ mean مع رفض متكرّر — تتشكّل منطقة عرض / رفض واضحة.`,
+    's7.ex1.c': `<b>C — الكسر.</b> يكسر السعر الـ mean هبوطاً. لا دخول بعد — نريد تأكيداً: إمّا إعادة اختبار مرفوضة أو قاعاً أدنى.`,
+    's7.ex1.d': `<b>D — التأكيد: المُحفِّز.</b> إغلاق ٥ دقائق أسفل آخر قاع داخلي — تأكيد صافٍ بحركة السعر. الآن نتحرّك.`,
+    's7.ex1.trade.h': `الصفقة`,
+    's7.ex1.trade.p': `<b>الدخول:</b> عند إغلاق ٥ دقائق أسفل آخر قاع داخلي (D). · <b>الوقف:</b> فوق آخر منطقة رفض (B). · <b>الهدف:</b> المستوى التالي الأرجح، <b>SD -1</b> — أو قبله بقليل (لا يلزم أن يلمس السعر SD -1 تماماً).`,
+    's7.ex2h': `مثال تطبيقي ٢ · الذهب فريم ٤ ساعات، دمج الـ anchors`,
+    's7.ex2.intro': `إعداد شرائي (long) بعد هبوط حادّ — ودرس في <b>دمج الـ anchors</b>. قمع واحد يحدّد <b>الدخول</b> (امتدّ السعر حتى SD -1 الخاص به)، بينما قمع <b>شهري</b> أطول يحدّد <b>الأهداف</b>. حين تصطفّ مستويات من anchorين مختلفين، تصبح القراءة أقوى.`,
+    's7.ex2.a': `<b>A —</b> بعد هبوط حادّ، يبلغ السعر <b>SD -1</b> ويُرفض — أول ردّ فعل عند نطاق محسوب مسبقاً.`,
+    's7.ex2.b': `<b>B —</b> التأكيد: <b>رفض ثانٍ</b>. تحدَّدت الصفقة — دخول 4076.93، وقف 4018.83 (أسفل قاع ردّ الفعل)، الهدف الأول 4243.95 ≈ <b>2.9 : 1</b>.`,
+    's7.ex2.c': `<b>C —</b> الهدف ١ — <b>الانحراف التالي للقمع الشهري</b>.`,
+    's7.ex2.d': `<b>D —</b> الهدف ٢، الممتدّ — <b>mean القمع الشهري</b>.`,
+    's7.ex2.note.h': `دمج الـ anchors`,
+    's7.ex2.note.p': `جاء الدخول من <b>SD -1</b> لأحد الأقماع؛ وجاءت الأهداف من القمع <b>الشهري</b> — انحرافه التالي، ثم الـ mean الخاص به. تفاعل السعر مع خطوط مرسومة من <b>anchorين مختلفين</b>، وهذا التقاطع تحديداً هو ما يرفع الاحتمال. اقرأ الـ anchors معاً: القمع الأقرب <em>يضبط توقيت</em> الدخول، والأكبر <em>يرسم</em> الوجهة.`,
+    'foot.disc': `⚠ مرجع تعليمي. الأقماع ترسم الاحتمال لا اليقين — تحقّق دائماً من المنصة المباشرة قبل التصرّف. لا شيء هنا يُعدّ نصيحة مالية.`,
+    'foot.lang': `اللغة: العربية`
+  }
+};
+
+let _enCache = null;
+function cacheEN(){
+  _enCache = {};
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    _enCache[el.getAttribute('data-t')] = el.innerHTML;
+  });
+}
+function setLang(lang){
+  if(!_enCache) cacheEN();
+  document.documentElement.lang = lang;
+  // RTL applies to the readable CONTENT only (main + footer). The top bar
+  // — brand, section nav, language selector — stays LTR so it never mirrors.
+  const dir = (lang === 'ar') ? 'rtl' : 'ltr';
+  document.querySelectorAll('main, footer').forEach(el => el.setAttribute('dir', dir));
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    const key = el.getAttribute('data-t');
+    if(lang === 'en'){ el.innerHTML = _enCache[key]; return; }
+    const dict = TRANSLATIONS[lang] || {};
+    el.innerHTML = (key in dict) ? dict[key] : _enCache[key];
+  });
+  document.querySelectorAll('.langsel button').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+  });
+  try{ localStorage.setItem('mk_learn_cones_lang', lang); }catch(e){}
+}
+window.addEventListener('DOMContentLoaded', ()=>{
+  cacheEN();
+  let saved = 'en';
+  try{ saved = localStorage.getItem('mk_learn_cones_lang') || 'en'; }catch(e){}
+  if(saved !== 'en') setLang(saved);
+});
+</script>
+</body>
+</html>

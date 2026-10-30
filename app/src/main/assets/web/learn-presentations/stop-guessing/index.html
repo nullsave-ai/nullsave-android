@@ -1,0 +1,856 @@
+
+<!DOCTYPE html>
+<!-- version: v1 -->
+<!-- MK.TRADES Learn Presentation — STOP GUESSING THE LEVELS. (bridge / persuasion deck)   -->
+<!-- Audience: beginner CFD traders fluent in Fibonacci / ICT / price action.              -->
+<!-- Angle: validate their belief in levels, reveal the mechanical reality behind their    -->
+<!-- vocabulary, sell simplicity (3 pictures) + CFD-native prices. Never mocks the reader. -->
+<!--                                                                                        -->
+<!-- Self-contained: inline CSS + JS + SVG (zero image dependencies). Served as a static   -->
+<!-- asset from /learn-presentations/stop-guessing/.                                       -->
+<!--                                                                                        -->
+<!-- SLIDE DECK, not a scroll guide: each .slide is a full-screen panel; only              -->
+<!-- .slide.active is shown. Advance with ← / → / Space, edge click-zones, the bottom      -->
+<!-- controls, the progress dots, or swipe. Framework mirrors why-mk-terminal/index.html.  -->
+<!--                                                                                        -->
+<!-- i18n: EN is the source in the DOM; FR/AR live in the TRANSLATIONS object at the       -->
+<!-- bottom and are swapped in by data-t keys. AR flips the .deck to RTL; the top bar +    -->
+<!-- controls stay LTR. In-SVG chart labels are kept in English by design.                 -->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MK.TRADES · Stop Guessing the Levels</title>
+<style>
+  :root{
+    --bg:#000; --panel:#0a0a0a; --card:#111; --hover:#1a1a1a;
+    --border:#222; --borderlt:#333;
+    --white:#fff; --text:#e8ecf1; --soft:#c5cdd9; --gray:#999;
+    --muted:#6b7785; --dim:#4d5866;
+    --orange:#ff6d00; --green:#27c49a; --amber:#f5a623; --blue:#3796ff;
+    --red:#ff5252;
+    --gold:#ffd89e; --golddeep:#b8823d;
+    --mono:'Courier New','SF Mono','Monaco','Consolas',monospace;
+    --sans:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{
+    margin:0;padding:0;height:100%;background:var(--bg);color:var(--text);
+    font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased;
+  }
+  body{font-size:16px;line-height:1.65}
+  .mono{font-family:var(--mono)}
+  b,strong{color:var(--white)}
+  .em{color:var(--gold);font-weight:600}
+  .emo{color:var(--orange);font-weight:600}
+
+  /* ── Deck shell ─────────────────────────────────────────────── */
+  .deck{position:fixed;inset:0;overflow:hidden}
+
+  .slide{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:clamp(34px,7vh,90px) clamp(28px,9vw,150px);
+    opacity:0;visibility:hidden;
+    transform:translateY(22px);
+    transition:opacity .5s ease, transform .5s ease, visibility .5s;
+    overflow-y:auto;
+  }
+  .slide.active{opacity:1;visibility:visible;transform:none;z-index:2}
+  .slide.prev{transform:translateY(-22px)}
+
+  /* faint per-slide accent wash, top-left */
+  .slide::before{
+    content:"";position:absolute;top:-10%;inset-inline-start:-6%;
+    width:60%;height:60%;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, var(--wash,rgba(255,109,0,.10)), transparent 62%);
+    pointer-events:none;z-index:0;filter:blur(8px);
+  }
+  .slide > *{position:relative;z-index:1}
+
+  .inner{width:100%;max-width:960px;margin:0 auto}
+
+  /* ── Shared slide typography ────────────────────────────────── */
+  .kicker{
+    font-family:var(--mono);font-size:12px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--gold);margin-bottom:22px;display:flex;align-items:center;gap:12px;
+  }
+  .kicker .n{
+    display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 7px;
+    border:1px solid var(--golddeep);border-radius:5px;color:var(--gold);
+    font-size:11px;font-weight:700;letter-spacing:1px;
+  }
+  h1.head{
+    font-family:var(--mono);font-weight:800;letter-spacing:.5px;
+    font-size:clamp(26px,4vw,48px);line-height:1.1;margin:0 0 22px;color:var(--white);
+  }
+  h1.head .hl{color:var(--orange)}
+  h1.head .hg{color:var(--gold)}
+  p.lead{font-size:clamp(16px,1.5vw,21px);color:var(--soft);max-width:780px;margin:0 0 16px}
+  p.body{font-size:clamp(15px,1.25vw,18px);color:var(--soft);max-width:740px;margin:0 0 14px}
+  p.body b{color:var(--text)}
+
+  /* ── Cover (slide 1) ────────────────────────────────────────── */
+  .cover{align-items:center;text-align:center}
+  .cover .brandmark{display:flex;align-items:center;gap:12px;margin-bottom:40px}
+  .cover .brandmark .dot{width:11px;height:11px;border-radius:50%;
+    background:var(--orange);box-shadow:0 0 14px var(--orange)}
+  .cover .brandmark b{font-family:var(--mono);font-size:15px;letter-spacing:4px;color:#fff}
+  .cover .brandmark span{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--muted)}
+  .cover h1{
+    font-family:var(--mono);font-weight:800;
+    font-size:clamp(34px,6.4vw,80px);line-height:1.05;letter-spacing:1px;margin:0 0 26px;
+    color:#fff;text-shadow:0 0 40px rgba(255,109,0,.18);
+  }
+  .cover h1 .q{color:var(--orange)}
+  .cover .sub{font-size:clamp(17px,2vw,24px);color:var(--gold);font-family:var(--mono);
+    letter-spacing:.5px;margin-bottom:20px}
+  .cover .fine{font-size:15px;color:var(--muted);max-width:600px;line-height:1.7}
+  .cover .startcue{margin-top:46px;font-family:var(--mono);font-size:12px;letter-spacing:2px;
+    color:var(--dim);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+  .cover .startcue .key{border:1px solid var(--borderlt);border-radius:4px;padding:3px 9px;color:var(--soft)}
+
+  /* ── Big pull-quote slides ──────────────────────────────────── */
+  .quote{align-items:center;text-align:center}
+  .quote .big{
+    font-family:var(--mono);font-weight:800;letter-spacing:.5px;
+    font-size:clamp(28px,5.4vw,66px);line-height:1.08;margin:0 0 24px;color:#fff;
+  }
+  .quote .big .x{color:var(--orange)}
+  .quote .qsub{font-size:clamp(17px,2vw,26px);color:var(--gold);font-family:var(--mono);
+    margin:0 0 26px;max-width:800px;line-height:1.4}
+  .quote p.body{margin-inline:auto;text-align:center}
+
+  /* ── Cards (3-picture slide) ────────────────────────────────── */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:8px 0 18px}
+  .cards.three{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:900px){.cards,.cards.three{grid-template-columns:1fr}}
+  .icard{background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:18px 18px 16px;border-top:3px solid var(--accent,var(--orange))}
+  .icard .ct{font-family:var(--mono);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--accent,var(--orange));margin-bottom:6px;font-weight:700}
+  .icard h3{font-family:var(--mono);font-size:17px;color:#fff;margin:0 0 8px;letter-spacing:.3px}
+  .icard p{font-size:14px;color:var(--soft);margin:0;line-height:1.55}
+  .icard p b{color:var(--text)}
+  .icard .msvg{display:block;width:100%;height:auto;margin:2px 0 10px;
+    background:#070707;border:1px solid var(--border);border-radius:8px}
+
+  /* ── Chart / diagram panel ──────────────────────────────────── */
+  .diagram{background:#070707;border:1px solid var(--border);border-radius:10px;
+    padding:14px;margin:6px 0 6px}
+  .diagram svg{display:block;width:100%;height:auto}
+  .dcap{font-family:var(--mono);font-size:11.5px;color:var(--muted);
+    margin:8px 0 14px;text-align:center}
+
+  /* ── Contrast / translation table ───────────────────────────── */
+  .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:0 0;margin:6px 0 14px;
+    border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  .vs .vhead{padding:14px 20px;font-family:var(--mono);font-size:12px;letter-spacing:2px;
+    text-transform:uppercase;font-weight:700}
+  .vs .vhead.old{background:rgba(255,82,82,.06);color:var(--red);grid-column:1}
+  .vs .vhead.mid{background:#0c0c0c;grid-column:2}
+  .vs .vhead.new{background:rgba(39,196,154,.07);color:var(--green);grid-column:3;text-align:end}
+  .vs .vrow{display:contents}
+  .vs .vc{padding:13px 20px;border-top:1px solid var(--border);font-size:15px;display:flex;align-items:center}
+  .vs .vc.old{color:var(--soft);background:rgba(255,82,82,.025)}
+  .vs .vc.mid{color:var(--dim);background:#080808;justify-content:center;font-family:var(--mono);font-size:13px}
+  .vs .vc.new{color:var(--text);background:rgba(39,196,154,.03);justify-content:flex-end;text-align:end;font-weight:600}
+  @media(max-width:760px){
+    .vs .vc{font-size:13px;padding:11px 12px}
+    .vs .vhead{padding:11px 12px;font-size:10px}
+  }
+
+  /* ── Morning-routine steps ──────────────────────────────────── */
+  .steps{display:flex;flex-direction:column;gap:13px;margin:8px 0 16px}
+  .step{display:flex;gap:16px;align-items:flex-start;background:var(--card);
+    border:1px solid var(--border);border-radius:10px;padding:15px 18px}
+  .step .sn{font-family:var(--mono);font-weight:800;font-size:16px;color:var(--gold);
+    border:1px solid var(--golddeep);border-radius:6px;min-width:34px;height:34px;
+    display:grid;place-items:center;flex:0 0 auto}
+  .step h3{margin:0 0 4px;font-family:var(--mono);font-size:16px;color:#fff;letter-spacing:.3px}
+  .step p{margin:0;font-size:14.5px;color:var(--soft);line-height:1.55}
+  .step p b{color:var(--text)}
+
+  /* ── Top bar ────────────────────────────────────────────────── */
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:30;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 22px;pointer-events:none}
+  .topbar .brand{display:flex;align-items:center;gap:9px;opacity:.92}
+  .topbar .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);
+    box-shadow:0 0 9px var(--orange)}
+  .topbar .brand b{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:#fff}
+  .topbar .brand span{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--muted)}
+  .topbar .tright{display:flex;align-items:center;gap:16px;pointer-events:auto}
+  .topbar .counter{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:var(--muted)}
+  .topbar .counter b{color:var(--gold)}
+  .langsel{display:flex;gap:0;border:1px solid var(--golddeep);border-radius:4px;overflow:hidden}
+  .langsel button{
+    font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:1px;
+    padding:5px 11px;background:transparent;color:var(--gold);border:none;cursor:pointer;
+  }
+  .langsel button + button{border-inline-start:1px solid var(--golddeep)}
+  .langsel button.active{background:rgba(255,216,158,.16);color:#fff}
+
+  /* progress fill line under topbar */
+  .progline{position:fixed;top:0;left:0;height:2px;z-index:31;
+    background:linear-gradient(90deg,var(--orange),var(--gold));
+    width:0;transition:width .45s ease;box-shadow:0 0 8px rgba(255,109,0,.5)}
+
+  /* ── Bottom controls ────────────────────────────────────────── */
+  .ctrls{position:fixed;bottom:0;left:0;right:0;z-index:30;
+    display:flex;align-items:center;justify-content:center;gap:18px;
+    padding:16px 22px 20px;direction:ltr}
+  .dots{display:flex;gap:8px;align-items:center}
+  .dots button{width:9px;height:9px;border-radius:50%;border:none;cursor:pointer;padding:0;
+    background:var(--borderlt);transition:background .2s,transform .2s,width .2s}
+  .dots button:hover{background:var(--muted)}
+  .dots button.on{background:var(--gold);width:22px;border-radius:5px}
+  .navbtn{background:var(--card);border:1px solid var(--borderlt);color:var(--soft);
+    width:40px;height:40px;border-radius:8px;cursor:pointer;font-size:18px;
+    display:grid;place-items:center;transition:background .15s,border-color .15s,color .15s}
+  .navbtn:hover{background:var(--hover);border-color:var(--gold);color:#fff}
+  .navbtn:disabled{opacity:.3;cursor:default}
+  .navbtn:disabled:hover{background:var(--card);border-color:var(--borderlt);color:var(--soft)}
+
+  /* edge click zones */
+  .zone{position:fixed;top:54px;bottom:74px;z-index:20;cursor:pointer}
+  .zone.left{left:0;width:11vw;max-width:120px}
+  .zone.right{right:0;width:34vw;max-width:420px}
+  @media(max-width:760px){.zone.left{width:18vw}.zone.right{width:40vw}}
+
+  /* hint that fades */
+  .swipehint{position:fixed;bottom:74px;right:26px;z-index:25;
+    font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px;
+    display:flex;align-items:center;gap:7px;pointer-events:none;
+    animation:fade 5.5s ease forwards}
+  @keyframes fade{0%,55%{opacity:1}100%{opacity:0}}
+
+  .disc{font-family:var(--mono);font-size:11px;color:var(--dim);line-height:1.6;
+    max-width:680px;margin:18px auto 0;text-align:center}
+
+  /* ── RTL (Arabic) — flip slide content only; bars stay LTR ──── */
+  .deck[dir="rtl"] .inner{text-align:right}
+  .deck[dir="rtl"] .quote .inner,
+  .deck[dir="rtl"] .cover{text-align:center}
+  .deck[dir="rtl"] .vs{direction:ltr}          /* keep the old→new table reading L→R */
+  .deck[dir="rtl"] .icard{text-align:right}
+  .deck[dir="rtl"] .step{text-align:right}
+  .deck[dir="rtl"] h1.head,
+  .deck[dir="rtl"] .quote .big{letter-spacing:0;line-height:1.25}
+  .deck[dir="rtl"]{font-family:var(--sans)}
+</style>
+</head>
+<body>
+
+<!-- Shared SVG assets: candle chart + fib lines, reused by slides 2 and 4 via <use>. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="mred" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#ff5252"/>
+    </marker>
+    <marker id="mgreen" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#27c49a"/>
+    </marker>
+    <marker id="mgold" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#ffd89e"/>
+    </marker>
+
+    <!-- Price action: impulse down, retrace up into the 0.618, rejection, roll over -->
+    <g id="candles">
+      <!-- down impulse -->
+      <line x1="80"  y1="70"  x2="80"  y2="96"  stroke="#ff5252" stroke-width="1.4"/><rect x="71"  y="80"  width="18" height="12" fill="#ff5252" rx="1"/>
+      <line x1="114" y1="86"  x2="114" y2="122" stroke="#ff5252" stroke-width="1.4"/><rect x="105" y="92"  width="18" height="26" fill="#ff5252" rx="1"/>
+      <line x1="148" y1="112" x2="148" y2="154" stroke="#ff5252" stroke-width="1.4"/><rect x="139" y="118" width="18" height="30" fill="#ff5252" rx="1"/>
+      <line x1="182" y1="143" x2="182" y2="177" stroke="#ff5252" stroke-width="1.4"/><rect x="173" y="148" width="18" height="24" fill="#ff5252" rx="1"/>
+      <line x1="216" y1="156" x2="216" y2="176" stroke="#27c49a" stroke-width="1.4"/><rect x="207" y="160" width="18" height="12" fill="#27c49a" rx="1"/>
+      <line x1="250" y1="154" x2="250" y2="210" stroke="#ff5252" stroke-width="1.4"/><rect x="241" y="160" width="18" height="45" fill="#ff5252" rx="1"/>
+      <line x1="284" y1="191" x2="284" y2="209" stroke="#27c49a" stroke-width="1.4"/><rect x="275" y="196" width="18" height="9"  fill="#27c49a" rx="1"/>
+      <line x1="318" y1="190" x2="318" y2="250" stroke="#ff5252" stroke-width="1.4"/><rect x="309" y="196" width="18" height="46" fill="#ff5252" rx="1"/>
+      <!-- retracement up -->
+      <line x1="352" y1="220" x2="352" y2="246" stroke="#27c49a" stroke-width="1.4"/><rect x="343" y="224" width="18" height="18" fill="#27c49a" rx="1"/>
+      <line x1="386" y1="219" x2="386" y2="235" stroke="#ff5252" stroke-width="1.4"/><rect x="377" y="224" width="18" height="7"  fill="#ff5252" rx="1"/>
+      <line x1="420" y1="203" x2="420" y2="234" stroke="#27c49a" stroke-width="1.4"/><rect x="411" y="207" width="18" height="24" fill="#27c49a" rx="1"/>
+      <line x1="454" y1="185" x2="454" y2="211" stroke="#27c49a" stroke-width="1.4"/><rect x="445" y="189" width="18" height="18" fill="#27c49a" rx="1"/>
+      <line x1="488" y1="184" x2="488" y2="199" stroke="#ff5252" stroke-width="1.4"/><rect x="479" y="189" width="18" height="7"  fill="#ff5252" rx="1"/>
+      <line x1="522" y1="167" x2="522" y2="198" stroke="#27c49a" stroke-width="1.4"/><rect x="513" y="171" width="18" height="25" fill="#27c49a" rx="1"/>
+      <line x1="556" y1="152" x2="556" y2="174" stroke="#27c49a" stroke-width="1.4"/><rect x="547" y="157" width="18" height="14" fill="#27c49a" rx="1"/>
+      <line x1="590" y1="153" x2="590" y2="168" stroke="#ff5252" stroke-width="1.4"/><rect x="581" y="157" width="18" height="7"  fill="#ff5252" rx="1"/>
+      <line x1="624" y1="141" x2="624" y2="167" stroke="#27c49a" stroke-width="1.4"/><rect x="615" y="145" width="18" height="19" fill="#27c49a" rx="1"/>
+      <!-- the touch + rejection at the 0.618 -->
+      <line x1="658" y1="135" x2="658" y2="147" stroke="#27c49a" stroke-width="1.4"/><rect x="649" y="140" width="18" height="5"  fill="#27c49a" rx="1"/>
+      <line x1="692" y1="136" x2="692" y2="153" stroke="#ff5252" stroke-width="1.4"/><rect x="683" y="140" width="18" height="11" fill="#ff5252" rx="1"/>
+      <line x1="726" y1="147" x2="726" y2="172" stroke="#ff5252" stroke-width="1.4"/><rect x="717" y="151" width="18" height="18" fill="#ff5252" rx="1"/>
+      <line x1="760" y1="165" x2="760" y2="190" stroke="#ff5252" stroke-width="1.4"/><rect x="751" y="169" width="18" height="18" fill="#ff5252" rx="1"/>
+      <line x1="794" y1="183" x2="794" y2="209" stroke="#ff5252" stroke-width="1.4"/><rect x="785" y="187" width="18" height="19" fill="#ff5252" rx="1"/>
+    </g>
+
+    <!-- Hand-drawn fib retracement of the impulse (labels EN by design) -->
+    <g id="fibs" font-family="Courier New, monospace" font-size="12">
+      <line x1="70" y1="70"    x2="830" y2="70"    stroke="#4d5866" stroke-width="1" stroke-dasharray="5 6"/>
+      <text x="72" y="64"  fill="#6b7785">1.000</text>
+      <line x1="70" y1="108.5" x2="830" y2="108.5" stroke="#4d5866" stroke-width="1" stroke-dasharray="5 6"/>
+      <text x="72" y="102" fill="#6b7785">0.786</text>
+      <line x1="70" y1="138.8" x2="830" y2="138.8" stroke="#b8823d" stroke-width="1.4" stroke-dasharray="5 6"/>
+      <text x="72" y="132" fill="#ffd89e" font-weight="700">0.618</text>
+      <line x1="70" y1="160"   x2="830" y2="160"   stroke="#4d5866" stroke-width="1" stroke-dasharray="5 6"/>
+      <text x="72" y="154" fill="#6b7785">0.500</text>
+      <line x1="70" y1="181"   x2="830" y2="181"   stroke="#4d5866" stroke-width="1" stroke-dasharray="5 6"/>
+      <text x="72" y="175" fill="#6b7785">0.382</text>
+      <line x1="70" y1="207.5" x2="830" y2="207.5" stroke="#4d5866" stroke-width="1" stroke-dasharray="5 6"/>
+      <text x="72" y="201" fill="#6b7785">0.236</text>
+      <line x1="70" y1="250"   x2="830" y2="250"   stroke="#4d5866" stroke-width="1" stroke-dasharray="5 6"/>
+      <text x="72" y="266" fill="#6b7785">0.000</text>
+    </g>
+  </defs>
+</svg>
+
+<div class="progline" id="progline"></div>
+
+<header class="topbar">
+  <div class="brand"><span class="dot"></span><b>MK.TRADES</b><span data-t="brand.sub">· LEARN</span></div>
+  <div class="tright">
+    <div class="counter"><b id="cur">1</b> / <span id="tot">12</span></div>
+    <div class="langsel">
+      <button data-lang="en" class="active" onclick="setLang('en')">EN</button>
+      <button data-lang="fr" onclick="setLang('fr')">FR</button>
+      <button data-lang="ar" onclick="setLang('ar')">AR</button>
+    </div>
+  </div>
+</header>
+
+<div class="deck" id="deck">
+
+  <!-- ── 1 · COVER ────────────────────────────────────────────── -->
+  <section class="slide cover active" style="--wash:rgba(255,109,0,.14)">
+    <div class="brandmark"><span class="dot"></span><b>MK.TRADES</b><span>TERMINAL</span></div>
+    <h1 data-t="c.title">STOP GUESSING<br>THE LEVELS<span class="q">.</span></h1>
+    <div class="sub" data-t="c.sub">For Fibonacci, ICT &amp; price-action traders.</div>
+    <p class="fine" data-t="c.fine">You already believe price turns at invisible lines — and you're right.
+       This is about swapping the lines you guess for the ones that are actually there.</p>
+    <div class="startcue"><span class="key">→</span> <span data-t="c.cue">press to begin</span></div>
+  </section>
+
+  <!-- ── 2 · YOU DO THIS EVERY DAY ────────────────────────────── -->
+  <section class="slide" style="--wash:rgba(55,150,255,.10)">
+    <div class="inner">
+      <div class="kicker"><span class="n">01</span><span data-t="s2.kick">You do this every day</span></div>
+      <h1 class="head" data-t="s2.head">You already trade levels.<br>You've just never seen one.</h1>
+      <p class="lead" data-t="s2.lead">Swing high to swing low. Stretch the fib. Mark the order block, box the
+         liquidity, wait for the kill zone. Then you put real money on a line <b>you drew</b>.</p>
+      <div class="diagram">
+        <svg viewBox="0 0 900 290" role="img" aria-label="A candle chart with a hand-drawn Fibonacci retracement; price touches the 0.618 and rejects">
+          <use href="#fibs"/>
+          <use href="#candles"/>
+          <circle cx="658" cy="139" r="17" fill="none" stroke="#ffd89e" stroke-width="1.4" stroke-dasharray="3 3"/>
+          <line x1="658" y1="98" x2="658" y2="116" stroke="#ffd89e" stroke-width="1.3" marker-end="url(#mgold)"/>
+          <text x="600" y="92" fill="#ffd89e" font-family="Courier New, monospace" font-size="13" font-weight="700">why here?</text>
+        </svg>
+      </div>
+      <div class="dcap" data-t="s2.cap">The retracement you draw every morning — a hand-picked swing, hand-drawn levels.</div>
+      <p class="body" data-t="s2.body">That instinct is correct — price really does turn at invisible levels.
+         The problem was never your belief. It's that you've been finding those levels
+         <span class="em">by drawing</span>, when they can be <span class="em">measured</span>.</p>
+    </div>
+  </section>
+
+  <!-- ── 3 · THE UNCOMFORTABLE QUESTION ───────────────────────── -->
+  <section class="slide" style="--wash:rgba(255,82,82,.09)">
+    <div class="inner">
+      <div class="kicker"><span class="n">02</span><span data-t="s3.kick">The uncomfortable question</span></div>
+      <h1 class="head" data-t="s3.head">Sometimes it holds.<br>Sometimes it doesn't. Why?</h1>
+      <p class="lead" data-t="s3.lead">When your 0.618 holds, it's not because the market loves ratios.
+         It's because <b>something real was sitting at that price</b> — size defending a level.
+         When nothing real was there, price went straight through your line.</p>
+      <p class="body" data-t="s3.body">The difference between your winners and your losers was never the
+         drawing. It was whether the level was real — <span class="em">and you had no way
+         to know.</span> Until now.</p>
+    </div>
+  </section>
+
+  <!-- ── 4 · THE REVEAL ───────────────────────────────────────── -->
+  <section class="slide" style="--wash:rgba(255,109,0,.14)">
+    <div class="inner">
+      <div class="kicker"><span class="n">03</span><span data-t="s4.kick">The reveal</span></div>
+      <h1 class="head" data-t="s4.head">The level was real.<br>Your fib just landed near it.</h1>
+      <div class="diagram">
+        <svg viewBox="0 0 900 290" role="img" aria-label="The same chart with the terminal layer on: a real sell wall of options positioning sits exactly where the fib appeared to work">
+          <use href="#fibs" opacity="0.22"/>
+          <rect x="70" y="126" width="760" height="26" rx="4" fill="rgba(255,82,82,.13)" stroke="#ff5252" stroke-width="1.3" stroke-dasharray="6 5"/>
+          <use href="#candles"/>
+          <!-- positioning-size bars, anchored right -->
+          <rect x="740" y="133" width="90" height="12" fill="rgba(255,82,82,.55)" rx="2"/>
+          <rect x="800" y="103" width="30" height="9"  fill="rgba(255,216,158,.22)" rx="2"/>
+          <rect x="790" y="156" width="40" height="9"  fill="rgba(255,216,158,.28)" rx="2"/>
+          <rect x="805" y="177" width="25" height="9"  fill="rgba(255,216,158,.20)" rx="2"/>
+          <rect x="795" y="203" width="35" height="9"  fill="rgba(255,216,158,.24)" rx="2"/>
+          <text x="828" y="95" fill="#6b7785" font-family="Courier New, monospace" font-size="11" text-anchor="end">← positioning size</text>
+          <text x="78" y="120" fill="#ff5252" font-family="Courier New, monospace" font-size="13" font-weight="700">SELL WALL · heavy real positioning · measured pre-open</text>
+        </svg>
+      </div>
+      <div class="dcap" data-t="s4.cap">Same chart, terminal layer on. The wall was computed from live options positioning — before the session opened.</div>
+      <p class="body" data-t="s4.body">The rejection you'd credit to the 0.618 happened at a <b>wall of real
+         options positioning</b> — size that had to defend that price. It was measurable
+         <span class="em">before the session opened</span>. You were sketching it blind;
+         the terminal had it drawn.</p>
+    </div>
+  </section>
+
+  <!-- ── 5 · THE TRANSLATION ──────────────────────────────────── -->
+  <section class="slide" style="--wash:rgba(255,216,158,.12)">
+    <div class="inner">
+      <div class="kicker"><span class="n">04</span><span data-t="s5.kick">The translation</span></div>
+      <h1 class="head" data-t="s5.head">Your vocabulary was pointing<br>at this all along.</h1>
+      <div class="vs">
+        <div class="vhead old" data-t="s5.oldh">What you call it</div>
+        <div class="vhead mid">→</div>
+        <div class="vhead new" data-t="s5.newh">What it actually is</div>
+        <div class="vrow"><div class="vc old" data-t="s5.o1">"Liquidity grab"</div><div class="vc mid">→</div><div class="vc new" data-t="s5.n1">Dealers hedging — mechanical &amp; measurable</div></div>
+        <div class="vrow"><div class="vc old" data-t="s5.o2">"Order block"</div><div class="vc mid">→</div><div class="vc new" data-t="s5.n2">Real positioning left behind by size</div></div>
+        <div class="vrow"><div class="vc old" data-t="s5.o3">"Smart money"</div><div class="vc mid">→</div><div class="vc new" data-t="s5.n3">Market makers forced to trade at known levels</div></div>
+        <div class="vrow"><div class="vc old" data-t="s5.o4">"Kill zone"</div><div class="vc mid">→</div><div class="vc new" data-t="s5.n4">Session &amp; volatility structure on a visible clock</div></div>
+      </div>
+      <p class="body" data-t="s5.body">ICT taught you to reverse-engineer the shadows on the wall.
+         <span class="em">The terminal shows you the thing casting them.</span></p>
+    </div>
+  </section>
+
+  <!-- ── 6 · WHERE THE DATA COMES FROM ────────────────────────── -->
+  <section class="slide" style="--wash:rgba(55,150,255,.11)">
+    <div class="inner">
+      <div class="kicker"><span class="n">05</span><span data-t="s6.kick">Where the data comes from</span></div>
+      <h1 class="head" data-t="s6.head">Big players can't hide.<br>They have to hedge.</h1>
+      <p class="lead" data-t="s6.lead">Every large position gets hedged in the options market. That hedging is
+         <b>public, measurable data</b> — and it forces mechanical buying and selling at
+         specific prices.</p>
+      <p class="body" data-t="s6.body">The terminal computes those prices live. And the part built for you:
+         <b>everything is already converted into your broker's CFD prices.</b> No futures
+         account, no contract math, no conversion. The level on the terminal is the price
+         on <span class="em">your</span> chart.</p>
+    </div>
+  </section>
+
+  <!-- ── 7 · DRAWING VS MEASUREMENT (pull-quote) ──────────────── -->
+  <section class="slide quote" style="--wash:rgba(255,109,0,.16)">
+    <div class="inner">
+      <div class="kicker" style="justify-content:center"><span class="n">06</span><span data-t="s7.kick">Drawing vs. measurement</span></div>
+      <div class="big" data-t="s7.big">A drawing isn't a level.<br><span class="x">A measurement is.</span></div>
+      <div class="qsub" data-t="s7.qsub">One is a guess that works when it gets lucky. The other exists whether you draw it or not.</div>
+      <p class="body" data-t="s7.body">Your fib needs two swing points you chose, and hope. A wall is computed
+         from actual positioning — it's there before you open the chart, and it moves when
+         the money moves.</p>
+    </div>
+  </section>
+
+  <!-- ── 8 · THE 3 PICTURES ───────────────────────────────────── -->
+  <section class="slide" style="--wash:rgba(39,196,154,.10)">
+    <div class="inner">
+      <div class="kicker"><span class="n">07</span><span data-t="s8.kick">The whole system</span></div>
+      <h1 class="head" data-t="s8.head">Three pictures.<br>That's the whole system.</h1>
+      <div class="cards three">
+        <div class="icard" style="--accent:var(--red)">
+          <div class="ct" data-t="s8.c1t">The Wall</div>
+          <svg class="msvg" viewBox="0 0 260 120" role="img" aria-label="Price approaches a wall and stalls">
+            <rect x="10" y="18" width="240" height="10" rx="2" fill="rgba(255,82,82,.45)"/>
+            <path d="M10,105 L60,70 L90,84 L130,34 L150,58 L185,32 L205,60 L250,88"
+                  fill="none" stroke="#e8ecf1" stroke-width="2"/>
+          </svg>
+          <h3 data-t="s8.c1h">Price stalls here</h3>
+          <p data-t="s8.c1p">Heavy positioning has to defend this price. Expect stalls, rejections, fights.</p>
+        </div>
+        <div class="icard" style="--accent:var(--blue)">
+          <div class="ct" data-t="s8.c2t">The Magnet</div>
+          <svg class="msvg" viewBox="0 0 260 120" role="img" aria-label="Price drifts toward a magnet level">
+            <line x1="10" y1="30" x2="250" y2="30" stroke="#3796ff" stroke-width="1.6" stroke-dasharray="6 5"/>
+            <path d="M10,105 C60,95 90,80 130,62 C170,46 210,38 250,33"
+                  fill="none" stroke="#e8ecf1" stroke-width="2"/>
+            <line x1="70" y1="62" x2="70" y2="42" stroke="#3796ff" stroke-width="1.5" marker-end="url(#mgold)"/>
+            <line x1="180" y1="8" x2="180" y2="20" stroke="#3796ff" stroke-width="1.5" marker-end="url(#mgold)"/>
+          </svg>
+          <h3 data-t="s8.c2h">Price gets pulled here</h3>
+          <p data-t="s8.c2p">Where positioning pays off, price tends to drift. Expect gravity.</p>
+        </div>
+        <div class="icard" style="--accent:var(--green)">
+          <div class="ct" data-t="s8.c3t">The Band</div>
+          <svg class="msvg" viewBox="0 0 260 120" role="img" aria-label="An expanding band of normal range with price inside">
+            <path d="M10,60 L250,18 L250,102 Z" fill="rgba(39,196,154,.12)" stroke="rgba(39,196,154,.4)" stroke-width="1"/>
+            <line x1="10" y1="60" x2="250" y2="60" stroke="#27c49a" stroke-width="1" stroke-dasharray="5 5" opacity=".6"/>
+            <path d="M10,60 C60,52 90,72 130,58 C170,44 210,70 250,54"
+                  fill="none" stroke="#e8ecf1" stroke-width="2"/>
+          </svg>
+          <h3 data-t="s8.c3h">Today's normal range</h3>
+          <p data-t="s8.c3p">The quant models draw what's normal vs. stretched. Outside the band, snap-backs get likely.</p>
+        </div>
+      </div>
+      <p class="body" data-t="s8.body">You don't need the math — machines compute it for you, every few minutes,
+         all session. <span class="em">You just read three pictures.</span> That's less to
+         learn than one ICT course module.</p>
+    </div>
+  </section>
+
+  <!-- ── 9 · KEEP YOUR STYLE ──────────────────────────────────── -->
+  <section class="slide" style="--wash:rgba(245,166,35,.11)">
+    <div class="inner">
+      <div class="kicker"><span class="n">08</span><span data-t="s9.kick">Keep your style</span></div>
+      <h1 class="head" data-t="s9.head">Keep your entries.<br>Upgrade your levels.</h1>
+      <p class="lead" data-t="s9.lead">Nobody is asking you to abandon your trading. Keep your sessions, your
+         structure, your triggers, your risk rules. <b>Change one thing:</b> take your
+         setups at measured levels instead of guessed ones.</p>
+      <p class="body" data-t="s9.body">Your entry was never the problem. <span class="em">The line it was drawn
+         on was.</span> Same skill — real map.</p>
+    </div>
+  </section>
+
+  <!-- ── 10 · THE 5-MINUTE MORNING ────────────────────────────── -->
+  <section class="slide" style="--wash:rgba(255,216,158,.12)">
+    <div class="inner">
+      <div class="kicker"><span class="n">09</span><span data-t="s10.kick">The routine</span></div>
+      <h1 class="head" data-t="s10.head">Five minutes<br>before your session.</h1>
+      <div class="steps">
+        <div class="step"><div class="sn">1</div><div>
+          <h3 data-t="s10.s1t">Open the terminal.</h3>
+          <p data-t="s10.s1p">The data is computed, converted to your CFD prices, and waiting.</p>
+        </div></div>
+        <div class="step"><div class="sn">2</div><div>
+          <h3 data-t="s10.s2t">Glance at the heatmap and cones.</h3>
+          <p data-t="s10.s2p">Sixty seconds. Where are the walls, the magnets, today's band?</p>
+        </div></div>
+        <div class="step"><div class="sn">3</div><div>
+          <h3 data-t="s10.s3t">Mark those levels on your own chart.</h3>
+          <p data-t="s10.s3p">Three lines. Done.</p>
+        </div></div>
+        <div class="step"><div class="sn">4</div><div>
+          <h3 data-t="s10.s4t">Trade your normal way.</h3>
+          <p data-t="s10.s4p">Same entries, same style — at levels that actually exist.</p>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 11 · WHAT CHANGES ────────────────────────────────────── -->
+  <section class="slide" style="--wash:rgba(39,196,154,.10)">
+    <div class="inner">
+      <div class="kicker"><span class="n">10</span><span data-t="s11.kick">What changes</span></div>
+      <h1 class="head" data-t="s11.head">The same trader.<br>A different map.</h1>
+      <div class="vs">
+        <div class="vhead old" data-t="s11.oldh">Before</div>
+        <div class="vhead mid">→</div>
+        <div class="vhead new" data-t="s11.newh">With the terminal</div>
+        <div class="vrow"><div class="vc old" data-t="s11.o1">Guess the level</div><div class="vc mid">→</div><div class="vc new" data-t="s11.n1">See the level</div></div>
+        <div class="vrow"><div class="vc old" data-t="s11.o2">Hope it holds</div><div class="vc mid">→</div><div class="vc new" data-t="s11.n2">Know what's defending it</div></div>
+        <div class="vrow"><div class="vc old" data-t="s11.o3">Fifty concepts &amp; paid mentorships</div><div class="vc mid">→</div><div class="vc new" data-t="s11.n3">Three pictures</div></div>
+        <div class="vrow"><div class="vc old" data-t="s11.o4">"Stop-hunted by smart money"</div><div class="vc mid">→</div><div class="vc new" data-t="s11.n4">You saw the wall hours earlier</div></div>
+        <div class="vrow"><div class="vc old" data-t="s11.o5">Futures data you can't read</div><div class="vc mid">→</div><div class="vc new" data-t="s11.n5">Your broker's CFD prices</div></div>
+        <div class="vrow"><div class="vc old" data-t="s11.o6">Drawing in the dark</div><div class="vc mid">→</div><div class="vc new" data-t="s11.n6">Trading with the lights on</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 12 · CLOSE ───────────────────────────────────────────── -->
+  <section class="slide quote" style="--wash:rgba(255,109,0,.15)">
+    <div class="inner">
+      <div class="kicker" style="justify-content:center"><span class="n">11</span><span data-t="s12.kick">The bottom line</span></div>
+      <div class="big" data-t="s12.big">Stop guessing where the level is.<br><span class="x">Look at it.</span></div>
+      <div class="qsub" data-t="s12.qsub">You were almost right all along.</div>
+      <p class="body" data-t="s12.body">Start with the field guides — <b>Forecast Cones</b> and
+         <b>Options Heatmaps</b> — then open your chart and compare your usual lines to the
+         measured ones. That comparison will make the argument better than this deck ever could.</p>
+      <div class="disc" data-t="s12.disc">⚠ Educational reference. The terminal maps probability and positioning,
+         not certainty — nothing here is a signal, a trade, or financial advice.</div>
+    </div>
+  </section>
+
+</div>
+
+<!-- edge click zones -->
+<div class="zone left"  id="zoneL"></div>
+<div class="zone right" id="zoneR"></div>
+
+<!-- swipe / arrow hint -->
+<div class="swipehint" data-t="hint">use ← →  or click</div>
+
+<!-- bottom controls -->
+<div class="ctrls">
+  <button class="navbtn" id="prev" aria-label="Previous">‹</button>
+  <div class="dots" id="dots"></div>
+  <button class="navbtn" id="next" aria-label="Next">›</button>
+</div>
+
+<script>
+/* ── Deck navigation ──────────────────────────────────────────── */
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const N = slides.length;
+  let i = 0;
+
+  const dotsWrap = document.getElementById('dots');
+  const curEl  = document.getElementById('cur');
+  const totEl  = document.getElementById('tot');
+  const prog   = document.getElementById('progline');
+  const prevB  = document.getElementById('prev');
+  const nextB  = document.getElementById('next');
+  totEl.textContent = N;
+
+  slides.forEach((_, idx) => {
+    const b = document.createElement('button');
+    b.setAttribute('aria-label', 'Slide ' + (idx+1));
+    b.addEventListener('click', () => go(idx));
+    dotsWrap.appendChild(b);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function go(n){
+    n = Math.max(0, Math.min(N-1, n));
+    if (n === i) { render(); return; }
+    const old = slides[i];
+    old.classList.remove('active');
+    old.classList.toggle('prev', n > i);
+    i = n;
+    render();
+  }
+  function render(){
+    slides.forEach((s, idx) => {
+      s.classList.toggle('active', idx === i);
+      if (idx !== i && idx >= i) s.classList.remove('prev');
+    });
+    dots.forEach((d, idx) => d.classList.toggle('on', idx === i));
+    curEl.textContent = i + 1;
+    prog.style.width = ((i) / (N - 1) * 100) + '%';
+    prevB.disabled = i === 0;
+    nextB.disabled = i === N - 1;
+    slides[i].scrollTop = 0;
+  }
+  const nextFn = () => go(i + 1);
+  const prevFn = () => go(i - 1);
+
+  nextB.addEventListener('click', nextFn);
+  prevB.addEventListener('click', prevFn);
+  document.getElementById('zoneR').addEventListener('click', nextFn);
+  document.getElementById('zoneL').addEventListener('click', prevFn);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown' || e.key === 'Enter'){ e.preventDefault(); nextFn(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); prevFn(); }
+    else if (e.key === 'Home'){ e.preventDefault(); go(0); }
+    else if (e.key === 'End'){ e.preventDefault(); go(N-1); }
+  });
+
+  let tx = 0, ty = 0;
+  document.addEventListener('touchstart', (e) => { tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY; }, {passive:true});
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - tx;
+    const dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)) { dx < 0 ? nextFn() : prevFn(); }
+  }, {passive:true});
+
+  render();
+})();
+
+/* ── i18n ─────────────────────────────────────────────────────────
+   EN is the source already in the DOM. We cache every [data-t]
+   element's original innerHTML as its EN value, then swap FR/AR in
+   from TRANSLATIONS. Missing keys fall back to EN. AR flips .deck to
+   RTL (the top bar and bottom controls stay LTR). setLang is global
+   so the top-bar buttons can call it inline.
+   ──────────────────────────────────────────────────────────────── */
+const TRANSLATIONS = {
+  // ── FRANÇAIS ──────────────────────────────────────────────────
+  fr: {
+    'brand.sub': `· APPRENDRE`,
+    'c.title': `ARRÊTEZ DE DEVINER<br>LES NIVEAUX<span class="q">.</span>`,
+    'c.sub': `Pour les traders Fibonacci, ICT &amp; price action.`,
+    'c.fine': `Vous croyez déjà que le prix se retourne sur des lignes invisibles — et vous avez raison. Il s'agit simplement de remplacer les lignes que vous devinez par celles qui existent vraiment.`,
+    'c.cue': `appuyez pour commencer`,
+    's2.kick': `Vous le faites chaque jour`,
+    's2.head': `Vous tradez déjà des niveaux.<br>Vous n'en avez juste jamais vu un.`,
+    's2.lead': `Du sommet au creux. On étire le fib. On marque l'order block, on encadre la liquidité, on attend la kill zone. Puis on mise de l'argent réel sur une ligne que <b>vous avez dessinée</b>.`,
+    's2.cap': `Le retracement que vous tracez chaque matin — un swing choisi à la main, des niveaux dessinés à la main.`,
+    's2.body': `Cet instinct est juste — le prix se retourne réellement sur des niveaux invisibles. Le problème n'a jamais été votre conviction. C'est que vous trouvez ces niveaux <span class="em">en dessinant</span>, alors qu'ils peuvent être <span class="em">mesurés</span>.`,
+    's3.kick': `La question qui dérange`,
+    's3.head': `Parfois ça tient.<br>Parfois non. Pourquoi ?`,
+    's3.lead': `Quand votre 0.618 tient, ce n'est pas parce que le marché adore les ratios. C'est parce que <b>quelque chose de réel se trouvait à ce prix</b> — de la taille qui défendait un niveau. Quand il n'y avait rien de réel, le prix a traversé votre ligne sans s'arrêter.`,
+    's3.body': `La différence entre vos trades gagnants et perdants n'a jamais été le dessin. C'était de savoir si le niveau était réel — <span class="em">et vous n'aviez aucun moyen de le savoir.</span> Jusqu'à maintenant.`,
+    's4.kick': `La révélation`,
+    's4.head': `Le niveau était réel.<br>Votre fib est juste tombé à côté.`,
+    's4.cap': `Même graphique, couche terminal activée. Le mur a été calculé à partir du positionnement d'options en direct — avant l'ouverture de la séance.`,
+    's4.body': `Le rejet que vous auriez attribué au 0.618 s'est produit sur un <b>mur de positionnement d'options bien réel</b> — de la taille obligée de défendre ce prix. C'était mesurable <span class="em">avant l'ouverture de la séance</span>. Vous l'esquissiez à l'aveugle ; le terminal l'avait déjà tracé.`,
+    's5.kick': `La traduction`,
+    's5.head': `Votre vocabulaire pointait<br>vers ceci depuis le début.`,
+    's5.oldh': `Ce que vous appelez`,
+    's5.newh': `Ce que c'est vraiment`,
+    's5.o1': `« Liquidity grab »`,
+    's5.n1': `Couverture des dealers — mécanique et mesurable`,
+    's5.o2': `« Order block »`,
+    's5.n2': `Du positionnement réel laissé par la taille`,
+    's5.o3': `« Smart money »`,
+    's5.n3': `Des market makers forcés de trader à des niveaux connus`,
+    's5.o4': `« Kill zone »`,
+    's5.n4': `La structure de séance et de volatilité, sur une horloge visible`,
+    's5.body': `L'ICT vous a appris à rétro-analyser les ombres sur le mur. <span class="em">Le terminal vous montre ce qui les projette.</span>`,
+    's6.kick': `D'où viennent les données`,
+    's6.head': `Les gros acteurs ne peuvent pas se cacher.<br>Ils doivent se couvrir.`,
+    's6.lead': `Toute grosse position est couverte sur le marché des options. Cette couverture est une <b>donnée publique et mesurable</b> — et elle force des achats et des ventes mécaniques à des prix précis.`,
+    's6.body': `Le terminal calcule ces prix en direct. Et la partie pensée pour vous : <b>tout est déjà converti dans les prix CFD de votre broker.</b> Pas de compte futures, pas de calcul de contrats, pas de conversion. Le niveau affiché dans le terminal est le prix de <span class="em">votre</span> graphique.`,
+    's7.kick': `Dessin contre mesure`,
+    's7.big': `Un dessin n'est pas un niveau.<br><span class="x">Une mesure, oui.</span>`,
+    's7.qsub': `L'un est une supposition qui marche quand elle a de la chance. L'autre existe, que vous le traciez ou non.`,
+    's7.body': `Votre fib a besoin de deux points de swing choisis par vous, et d'espoir. Un mur est calculé à partir du positionnement réel — il est là avant que vous ouvriez le graphique, et il bouge quand l'argent bouge.`,
+    's8.kick': `Le système entier`,
+    's8.head': `Trois images.<br>C'est tout le système.`,
+    's8.c1t': `Le Mur`,
+    's8.c1h': `Le prix cale ici`,
+    's8.c1p': `Un positionnement lourd doit défendre ce prix. Attendez-vous à des blocages, des rejets, des batailles.`,
+    's8.c2t': `L'Aimant`,
+    's8.c2h': `Le prix est attiré ici`,
+    's8.c2p': `Là où le positionnement rapporte, le prix a tendance à dériver. Attendez-vous à de la gravité.`,
+    's8.c3t': `La Bande`,
+    's8.c3h': `Le range normal du jour`,
+    's8.c3p': `Les modèles quantitatifs tracent le normal contre l'étiré. Hors de la bande, les retours deviennent probables.`,
+    's8.body': `Vous n'avez pas besoin des maths — des machines les calculent pour vous, toutes les quelques minutes, toute la séance. <span class="em">Vous lisez trois images.</span> C'est moins à apprendre qu'un seul module de cours ICT.`,
+    's9.kick': `Gardez votre style`,
+    's9.head': `Gardez vos entrées.<br>Améliorez vos niveaux.`,
+    's9.lead': `Personne ne vous demande d'abandonner votre trading. Gardez vos sessions, votre structure, vos déclencheurs, vos règles de risque. <b>Changez une seule chose :</b> prenez vos setups sur des niveaux mesurés plutôt que devinés.`,
+    's9.body': `Votre entrée n'a jamais été le problème. <span class="em">C'était la ligne sur laquelle elle était posée.</span> Même compétence — vraie carte.`,
+    's10.kick': `La routine`,
+    's10.head': `Cinq minutes<br>avant votre séance.`,
+    's10.s1t': `Ouvrez le terminal.`,
+    's10.s1p': `Les données sont calculées, converties dans vos prix CFD, et vous attendent.`,
+    's10.s2t': `Un coup d'œil à la heatmap et aux cônes.`,
+    's10.s2p': `Soixante secondes. Où sont les murs, les aimants, la bande du jour ?`,
+    's10.s3t': `Marquez ces niveaux sur votre propre graphique.`,
+    's10.s3p': `Trois lignes. Terminé.`,
+    's10.s4t': `Tradez comme d'habitude.`,
+    's10.s4p': `Mêmes entrées, même style — sur des niveaux qui existent vraiment.`,
+    's11.kick': `Ce qui change`,
+    's11.head': `Le même trader.<br>Une autre carte.`,
+    's11.oldh': `Avant`,
+    's11.newh': `Avec le terminal`,
+    's11.o1': `Deviner le niveau`,
+    's11.n1': `Voir le niveau`,
+    's11.o2': `Espérer que ça tienne`,
+    's11.n2': `Savoir ce qui le défend`,
+    's11.o3': `Cinquante concepts et mentorats payants`,
+    's11.n3': `Trois images`,
+    's11.o4': `« Chassé par la smart money »`,
+    's11.n4': `Vous aviez vu le mur des heures plus tôt`,
+    's11.o5': `Des données futures illisibles`,
+    's11.n5': `Les prix CFD de votre broker`,
+    's11.o6': `Dessiner dans le noir`,
+    's11.n6': `Trader avec la lumière allumée`,
+    's12.kick': `L'essentiel`,
+    's12.big': `Arrêtez de deviner où est le niveau.<br><span class="x">Regardez-le.</span>`,
+    's12.qsub': `Vous aviez presque raison depuis le début.`,
+    's12.body': `Commencez par les guides — <b>Cônes de prévision</b> et <b>Heatmaps d'options</b> — puis ouvrez votre graphique et comparez vos lignes habituelles aux niveaux mesurés. Cette comparaison sera plus convaincante que ce diaporama.`,
+    's12.disc': `⚠ Référence pédagogique. Le terminal cartographie des probabilités et du positionnement, pas des certitudes — rien ici n'est un signal, un trade, ou un conseil financier.`,
+    'hint': `← →  ou cliquez`,
+  },
+
+  // ── العربية ───────────────────────────────────────────────────
+  ar: {
+    'brand.sub': `· تعلَّم`,
+    'c.title': `توقّف عن تخمين<br>المستويات<span class="q">.</span>`,
+    'c.sub': `لمتداولي فيبوناتشي وICT وحركة السعر.`,
+    'c.fine': `أنت تؤمن أصلًا بأنّ السعر ينعكس عند خطوط غير مرئيّة — وأنت محقّ. الفكرة ببساطة: استبدال الخطوط التي تخمّنها بالخطوط الموجودة فعلًا.`,
+    'c.cue': `اضغط للبدء`,
+    's2.kick': `أنت تفعل هذا كلّ يوم`,
+    's2.head': `أنت تتداول المستويات أصلًا.<br>لكنّك لم ترَ واحدًا حقيقيًّا قط.`,
+    's2.lead': `من القمّة إلى القاع. تمدّ الفيبو. تحدّد الأوردر بلوك، تؤطّر السيولة، تنتظر الـ kill zone. ثم تراهن بمال حقيقيّ على خطّ <b>أنت من رسمه</b>.`,
+    's2.cap': `الارتداد الذي ترسمه كلّ صباح — سوينغ اخترته بيدك، ومستويات رسمتها بيدك.`,
+    's2.body': `هذا الحدس صحيح — السعر ينعكس فعلًا عند مستويات غير مرئيّة. مشكلتك لم تكن يومًا في القناعة، بل في أنّك تبحث عن هذه المستويات <span class="em">بالرسم</span>، بينما يمكن <span class="em">قياسها</span>.`,
+    's3.kick': `السؤال المزعج`,
+    's3.head': `أحيانًا يصمد المستوى.<br>وأحيانًا لا. لماذا؟`,
+    's3.lead': `حين يصمد 0.618 عندك، فليس لأنّ السوق يعشق النسب. بل لأنّ <b>شيئًا حقيقيًّا كان جالسًا عند ذلك السعر</b> — حجمٌ يدافع عن مستوى. وحين لم يكن هناك شيء حقيقيّ، اخترق السعر خطّك دون توقّف.`,
+    's3.body': `الفرق بين صفقاتك الرابحة والخاسرة لم يكن الرسم يومًا. بل ما إذا كان المستوى حقيقيًّا — <span class="em">ولم يكن لديك أيّ وسيلة لمعرفة ذلك.</span> حتى الآن.`,
+    's4.kick': `الكشف`,
+    's4.head': `المستوى كان حقيقيًّا.<br>وفيبوك سقط قربه صدفةً.`,
+    's4.cap': `الرسم البيانيّ نفسه، مع تفعيل طبقة المنصّة. الجدار حُسِب من تموضع الخيارات الحيّ — قبل افتتاح الجلسة.`,
+    's4.body': `الرفض الذي كنت ستنسبه إلى 0.618 حدث عند <b>جدار من تموضع خيارات حقيقيّ</b> — حجمٌ مُجبَر على الدفاع عن ذلك السعر. وكان قابلًا للقياس <span class="em">قبل افتتاح الجلسة</span>. كنت ترسمه أعمى؛ بينما كانت المنصّة قد رسمته فعلًا.`,
+    's5.kick': `الترجمة`,
+    's5.head': `مصطلحاتك كانت تشير<br>إلى هذا منذ البداية.`,
+    's5.oldh': `ما تسمّيه أنت`,
+    's5.newh': `ما هو فعلًا`,
+    's5.o1': `«سحب سيولة»`,
+    's5.n1': `تحوّط صنّاع السوق — ميكانيكيّ وقابل للقياس`,
+    's5.o2': `«أوردر بلوك»`,
+    's5.n2': `تموضع حقيقيّ خلّفه اللاعبون الكبار`,
+    's5.o3': `«السمارت موني»`,
+    's5.n3': `صنّاع سوق مُجبَرون على التداول عند مستويات معروفة`,
+    's5.o4': `«كيل زون»`,
+    's5.n4': `بنية الجلسة والتقلّب على ساعة مرئيّة`,
+    's5.body': `علّمك ICT أن تحلّل الظلال على الجدار. <span class="em">المنصّة تريك الشيء الذي يُلقيها.</span>`,
+    's6.kick': `من أين تأتي البيانات`,
+    's6.head': `الكبار لا يستطيعون الاختباء.<br>عليهم أن يتحوّطوا.`,
+    's6.lead': `كلّ مركز كبير يُحوَّط في سوق الخيارات. وهذا التحوّط <b>بيانات علنيّة قابلة للقياس</b> — ويفرض شراءً وبيعًا ميكانيكيًّا عند أسعار محدّدة.`,
+    's6.body': `المنصّة تحسب هذه الأسعار مباشرة. والجزء المصمَّم لأجلك: <b>كلّ شيء محوَّل مسبقًا إلى أسعار CFD لدى وسيطك.</b> لا حساب فيوتشرز، لا حسابات عقود، لا تحويل. المستوى الظاهر في المنصّة هو السعر على رسمك <span class="em">أنت</span>.`,
+    's7.kick': `رسم مقابل قياس`,
+    's7.big': `الرسم ليس مستوى.<br><span class="x">القياس هو المستوى.</span>`,
+    's7.qsub': `الأوّل تخمين ينجح حين يحالفه الحظّ. والثاني موجود سواء رسمته أم لا.`,
+    's7.body': `فيبوك يحتاج نقطتي سوينغ اخترتهما أنت، وأملًا. أمّا الجدار فيُحسَب من التموضع الفعليّ — إنّه موجود قبل أن تفتح الرسم، ويتحرّك حين يتحرّك المال.`,
+    's8.kick': `النظام كلّه`,
+    's8.head': `ثلاث صور.<br>هذا هو النظام كلّه.`,
+    's8.c1t': `الجدار`,
+    's8.c1h': `السعر يتعثّر هنا`,
+    's8.c1p': `تموضع ثقيل مضطرّ للدفاع عن هذا السعر. توقّع توقّفات ورفضًا ومعارك.`,
+    's8.c2t': `المغناطيس`,
+    's8.c2h': `السعر يُسحَب إلى هنا`,
+    's8.c2p': `حيث يُثمر التموضع، يميل السعر إلى الانجراف. توقّع جاذبيّة.`,
+    's8.c3t': `النطاق`,
+    's8.c3h': `المدى الطبيعيّ لليوم`,
+    's8.c3p': `النماذج الكميّة ترسم الطبيعيّ مقابل الممدود. خارج النطاق تصبح الارتدادات مرجّحة.`,
+    's8.body': `لست بحاجة إلى الرياضيّات — الآلات تحسبها لك كلّ بضع دقائق طوال الجلسة. <span class="em">أنت تقرأ ثلاث صور فقط.</span> وهذا أقلّ ممّا تتعلّمه في وحدة واحدة من دورة ICT.`,
+    's9.kick': `احتفظ بأسلوبك`,
+    's9.head': `احتفظ بدخولاتك.<br>وطوّر مستوياتك.`,
+    's9.lead': `لا أحد يطلب منك التخلّي عن تداولك. احتفظ بجلساتك وبنيتك ومحفّزاتك وقواعد المخاطرة لديك. <b>غيّر شيئًا واحدًا:</b> خذ فرصك عند مستويات مقيسة بدل مستويات مخمَّنة.`,
+    's9.body': `دخولك لم يكن المشكلة يومًا. <span class="em">بل الخطّ الذي رُسم عليه.</span> المهارة نفسها — لكن بخريطة حقيقيّة.`,
+    's10.kick': `الروتين`,
+    's10.head': `خمس دقائق<br>قبل جلستك.`,
+    's10.s1t': `افتح المنصّة.`,
+    's10.s1p': `البيانات محسوبة، محوَّلة إلى أسعار CFD الخاصّة بك، وبانتظارك.`,
+    's10.s2t': `نظرة على الهيت ماب والمخاريط.`,
+    's10.s2p': `ستّون ثانية. أين الجدران؟ أين المغناطيسات؟ وما نطاق اليوم؟`,
+    's10.s3t': `علّم هذه المستويات على رسمك الخاصّ.`,
+    's10.s3p': `ثلاثة خطوط. انتهيت.`,
+    's10.s4t': `تداول كعادتك.`,
+    's10.s4p': `الدخولات نفسها والأسلوب نفسه — لكن عند مستويات موجودة فعلًا.`,
+    's11.kick': `ما الذي يتغيّر`,
+    's11.head': `المتداول نفسه.<br>بخريطة مختلفة.`,
+    's11.oldh': `قبل`,
+    's11.newh': `مع المنصّة`,
+    's11.o1': `تخمين المستوى`,
+    's11.n1': `رؤية المستوى`,
+    's11.o2': `الأمل بأن يصمد`,
+    's11.n2': `معرفة ما يدافع عنه`,
+    's11.o3': `خمسون مفهومًا ودورات مدفوعة`,
+    's11.n3': `ثلاث صور`,
+    's11.o4': `«اصطادتك السمارت موني»`,
+    's11.n4': `رأيتَ الجدار قبل ساعات`,
+    's11.o5': `بيانات فيوتشرز لا تقرأها`,
+    's11.n5': `أسعار CFD لدى وسيطك`,
+    's11.o6': `الرسم في الظلام`,
+    's11.n6': `التداول والأنوار مضاءة`,
+    's12.kick': `الخلاصة`,
+    's12.big': `توقّف عن تخمين مكان المستوى.<br><span class="x">انظر إليه.</span>`,
+    's12.qsub': `كنتَ على وشك الصواب طوال الوقت.`,
+    's12.body': `ابدأ بالأدلّة — <b>مخاريط التوقّع</b> و<b>خرائط حرارة الخيارات</b> — ثم افتح رسمك وقارن خطوطك المعتادة بالمستويات المقيسة. هذه المقارنة ستقنعك أكثر من هذا العرض كلّه.`,
+    's12.disc': `⚠ مرجع تعليميّ. المنصّة ترسم الاحتمالات والتموضع لا اليقين — لا شيء هنا إشارة أو صفقة أو نصيحة ماليّة.`,
+    'hint': `← →  أو انقر`,
+  },
+};
+
+const origin = new Map();
+document.querySelectorAll('[data-t]').forEach(el => origin.set(el, el.innerHTML));
+
+function setLang(l){
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const k = el.getAttribute('data-t');
+    const en = origin.get(el);
+    el.innerHTML = (l === 'en') ? en : ((TRANSLATIONS[l] && TRANSLATIONS[l][k] != null) ? TRANSLATIONS[l][k] : en);
+  });
+  const deck = document.getElementById('deck');
+  if (l === 'ar') { deck.setAttribute('dir', 'rtl'); document.documentElement.lang = 'ar'; }
+  else { deck.removeAttribute('dir'); document.documentElement.lang = l; }
+  document.querySelectorAll('.langsel button').forEach(b =>
+    b.classList.toggle('active', b.getAttribute('data-lang') === l));
+}
+</script>
+</body>
+</html>

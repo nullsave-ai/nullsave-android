@@ -1,0 +1,1098 @@
+�<!DOCTYPE html>
+<!-- version: v4 -->
+<!-- MK.TRADES Learn Presentation — GAMMA EXPOSURE (field guide) -->
+<!-- Self-contained: inline CSS + JS + SVG. Served as a static asset from        -->
+<!-- /learn-presentations/options-gamma/. Screenshots live in ./img/.            -->
+<!-- i18n: EN is the source in the HTML. FR/AR live in TRANSLATIONS (bottom) and  -->
+<!-- are swapped in by data-t keys. AR flips ONLY <main>/<footer> to RTL — the top -->
+<!-- bar never mirrors.                                                           -->
+<!--                                                                              -->
+<!-- ⚠ DRAFT v3 — EN content only. TRANSLATIONS is a documented stub; FR/AR are    -->
+<!-- deliberately NOT written yet so the operator reviews structure + copy first.  -->
+<!-- v2: all 8 screenshots wired from ./img/ (were placeholder frames in v1), and  -->
+<!--     the §2 regime diagram redrawn as two real price paths (v1's arrow-and-    -->
+<!--     label version was too abstract to read).                                  -->
+<!-- v3: audience confirmed = MK Terminal user, essentially all new. Added the     -->
+<!--     "five words first" glossary to §1 (strike/spot/expiry/dealer/OI were used -->
+<!--     20/16/13/x/7 times but never defined) and de-jargoned mean-revert, node,  -->
+<!--     fade and confluence at first use. Register stays single-level throughout. -->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MK.TRADES · Gamma Exposure — Field Guide</title>
+<style>
+  :root{
+    --bg:#000; --panel:#0a0a0a; --card:#111; --hover:#1a1a1a;
+    --border:#222; --borderlt:#333;
+    --white:#fff; --text:#e8ecf1; --soft:#c5cdd9; --gray:#999;
+    --muted:#6b7785; --dim:#4d5866;
+    --orange:#ff6d00; --green:#27c49a; --amber:#f5a623; --blue:#3796ff;
+    --red:#ff5252; --purple:#9b59b6;
+    --gold:#ffd89e; --golddeep:#b8823d;
+    --mono:'Courier New','SF Mono','Monaco','Consolas',monospace;
+    --sans:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:var(--sans);scroll-behavior:smooth;}
+  body{font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .mono{font-family:var(--mono)}
+
+  /* ── Sticky top bar ─────────────────────────────────────────── */
+  header.topbar{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;gap:18px;
+    padding:10px 22px;background:rgba(8,8,8,.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+  }
+  .brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .brand .dot{width:9px;height:9px;border-radius:50%;
+    background:var(--orange);box-shadow:0 0 10px var(--orange)}
+  .brand b{font-family:var(--mono);font-size:13px;letter-spacing:2px;color:#fff}
+  .brand span{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--muted)}
+  nav.secnav{display:flex;gap:4px;flex:1;flex-wrap:wrap;justify-content:center}
+  nav.secnav a{
+    font-family:var(--mono);font-size:10px;letter-spacing:.6px;
+    color:var(--soft);padding:4px 9px;border-radius:3px;border:1px solid transparent;
+    text-transform:uppercase;white-space:nowrap;
+  }
+  nav.secnav a:hover{background:var(--hover);border-color:var(--border);text-decoration:none;color:#fff}
+  .langsel{display:flex;gap:0;flex-shrink:0;border:1px solid var(--golddeep);border-radius:4px;overflow:hidden}
+  .langsel button{
+    font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:1px;
+    padding:5px 11px;background:transparent;color:var(--gold);border:none;cursor:pointer;
+  }
+  .langsel button + button{border-inline-start:1px solid var(--golddeep)}
+  .langsel button.active{background:rgba(255,216,158,.16);color:#fff}
+
+  /* ── Layout shell ───────────────────────────────────────────── */
+  main{max-width:980px;margin:0 auto;padding:0 22px 90px}
+
+  /* ── Hero ───────────────────────────────────────────────────── */
+  .hero{padding:54px 0 30px;border-bottom:1px solid var(--border)}
+  .hero .kicker{font-family:var(--mono);font-size:11px;letter-spacing:3px;
+    color:var(--gold);text-transform:uppercase;margin-bottom:14px}
+  .hero h1{font-family:var(--mono);font-size:44px;line-height:1.05;margin:0 0 14px;
+    color:#fff;letter-spacing:1px;font-weight:800}
+  .hero p.lead{font-size:18px;color:var(--soft);max-width:700px;margin:0 0 22px}
+  .pill-warn{display:inline-flex;align-items:center;gap:9px;
+    padding:7px 14px;border-radius:30px;
+    background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.5);
+    color:var(--amber);font-family:var(--mono);font-size:12px;letter-spacing:.5px}
+
+  /* ── Sections ───────────────────────────────────────────────── */
+  section.block{padding:44px 0;border-bottom:1px solid var(--border)}
+  .sec-tag{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--orange);
+    text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .sec-tag .num{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;
+    border:1px solid var(--orange);color:var(--orange);font-size:11px}
+  h2.sec-title{font-family:var(--mono);font-size:27px;color:#fff;margin:0 0 18px;letter-spacing:.5px;font-weight:800}
+  h3{font-family:var(--mono);font-size:16px;color:var(--gold);margin:26px 0 10px;letter-spacing:.5px}
+  p{margin:0 0 14px;color:var(--soft)}
+  strong,b{color:var(--text)}
+  .em{color:var(--orange);font-weight:700}
+  .lead-in{font-size:17px;color:var(--text)}
+
+  /* ── Cards / callouts ───────────────────────────────────────── */
+  .callout{display:flex;gap:14px;padding:16px 18px;border-radius:6px;margin:18px 0;
+    background:var(--card);border:1px solid var(--border);border-inline-start:3px solid var(--gold)}
+  .callout .ic{font-size:20px;line-height:1.2;flex-shrink:0}
+  .callout.tip{border-inline-start-color:var(--blue)}
+  .callout.danger{border-inline-start-color:var(--red);background:rgba(255,82,82,.06)}
+  .callout.proof{border-inline-start-color:var(--green)}
+  .callout h4{margin:0 0 5px;font-family:var(--mono);font-size:13px;letter-spacing:1px;color:#fff;text-transform:uppercase}
+  .callout p{margin:0;font-size:14px;color:var(--soft)}
+  .callout .body{flex:1}
+
+  /* "common mistake" — the myth/reality pair */
+  .myth{background:var(--card);border:1px solid var(--border);border-radius:8px;
+    overflow:hidden;margin:20px 0}
+  .myth .row{display:grid;grid-template-columns:92px 1fr;gap:0;align-items:start}
+  .myth .row + .row{border-top:1px solid var(--border)}
+  .myth .lbl{font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:1.2px;
+    padding:15px 12px;text-align:center;align-self:stretch;display:grid;place-items:center}
+  .myth .row.bad .lbl{color:var(--red);background:rgba(255,82,82,.08)}
+  .myth .row.good .lbl{color:var(--green);background:rgba(39,196,154,.08)}
+  .myth .txt{padding:14px 18px;font-size:14px;color:var(--soft)}
+  .myth .row.good .txt{color:var(--text)}
+
+  /* two regimes */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+  .grid2 figure{margin:0}
+  .grid2 figcaption{font-size:11px;line-height:1.6}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr}}
+  .rcard{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:18px}
+  .rcard .rt{font-family:var(--mono);font-size:15px;font-weight:800;letter-spacing:1px;margin-bottom:2px}
+  .rcard .rsub{font-family:var(--mono);font-size:10px;letter-spacing:.8px;color:var(--muted);margin-bottom:12px}
+  .rcard.pos{border-color:rgba(39,196,154,.35)}
+  .rcard.pos .rt{color:var(--green)}
+  .rcard.neg{border-color:rgba(255,82,82,.35)}
+  .rcard.neg .rt{color:var(--red)}
+  .rcard p{font-size:13.5px;margin:6px 0 0}
+  .rcard ul{margin:10px 0 0;padding-inline-start:18px}
+  .rcard li{font-size:13px;color:var(--soft);margin-bottom:6px}
+
+  /* first-words glossary */
+  .gloss{background:var(--card);border:1px solid var(--border);border-radius:8px;
+    padding:6px 20px;margin:18px 0}
+  .gloss .gh{font-family:var(--mono);font-size:10.5px;letter-spacing:1.6px;color:var(--gold);
+    text-transform:uppercase;font-weight:800;padding:12px 0 4px}
+  .gloss dl{margin:0;padding:0 0 12px}
+  .gloss dt{font-family:var(--mono);font-size:13px;font-weight:800;color:#fff;
+    letter-spacing:.5px;margin-top:13px}
+  .gloss dd{margin:3px 0 0;font-size:13.5px;color:var(--soft);line-height:1.6}
+
+  /* formula block */
+  .formula{background:#070707;border:1px solid var(--borderlt);border-radius:8px;
+    padding:20px 18px;margin:18px 0;text-align:center;font-family:var(--mono)}
+  .formula .f{font-size:16px;color:#fff;letter-spacing:.5px;line-height:1.9}
+  .formula .f .k{color:var(--gold)}
+  .formula .f .op{color:var(--muted)}
+  .formula .note{font-size:11px;color:var(--muted);margin-top:12px;letter-spacing:.3px}
+
+  /* colour legend chips */
+  .legendrow{display:flex;gap:16px;flex-wrap:wrap;margin:14px 0;font-family:var(--mono);font-size:12px;color:var(--soft)}
+  .legendrow .chip{display:flex;align-items:center;gap:8px}
+  .legendrow .sw{width:26px;height:12px;border-radius:3px;display:inline-block}
+
+  ul.ticks{list-style:none;padding:0;margin:14px 0}
+  ul.ticks li{position:relative;padding-inline-start:26px;margin-bottom:10px;color:var(--soft);font-size:14px}
+  ul.ticks li::before{content:"▸";position:absolute;inset-inline-start:0;color:var(--gold)}
+
+  /* compact reference table */
+  table.ref{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}
+  table.ref th,table.ref td{padding:11px 13px;border:1px solid var(--border);text-align:start;vertical-align:top}
+  table.ref th{font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;
+    color:var(--gold);background:var(--card);font-weight:800}
+  table.ref td{color:var(--soft)}
+  table.ref td b{color:var(--text)}
+  .tblwrap{overflow-x:auto}
+
+  /* ── Figure / SVG / screenshot ──────────────────────────────── */
+  figure{margin:22px 0;background:#070707;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  figure svg{display:block;width:100%;height:auto;background:#070707}
+  figure img{display:block;width:100%;height:auto}
+  figcaption{font-family:var(--mono);font-size:11px;color:var(--muted);padding:10px 14px;border-top:1px solid var(--border);letter-spacing:.3px}
+  figcaption b{color:var(--gold)}
+
+  /* screenshot placeholder (pending operator image) */
+  .shot{margin:16px 0}
+  .shot .frame{border:1.5px dashed var(--borderlt);border-radius:8px;background:
+    repeating-linear-gradient(45deg,#0a0a0a,#0a0a0a 10px,#0c0c0c 10px,#0c0c0c 20px);
+    min-height:200px;display:grid;place-items:center;text-align:center;padding:26px}
+  .shot .frame .ph{font-family:var(--mono)}
+  .shot .frame .ph .ic{font-size:32px;display:block;margin-bottom:10px;opacity:.5}
+  .shot .frame .ph .lbl{font-size:13px;color:var(--gold);letter-spacing:1px;font-weight:800}
+  .shot .frame .ph .ask{font-size:11px;color:var(--muted);margin-top:8px;max-width:440px;line-height:1.6}
+  .shot .frame .ph .fn{font-size:10px;color:var(--dim);margin-top:10px}
+  .shot img{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--border)}
+  .shot figcaption{border:none;padding:8px 2px 0}
+
+  footer{max-width:980px;margin:0 auto;padding:30px 22px 60px;color:var(--dim);font-family:var(--mono);font-size:11px;line-height:1.8}
+  footer .src{margin-top:10px}
+
+  /* RTL — content only (main/footer); the top bar never mirrors */
+  main[dir="rtl"] .hero h1,
+  main[dir="rtl"] h1,
+  main[dir="rtl"] h2.sec-title,
+  main[dir="rtl"] h3{letter-spacing:0}
+  main[dir="rtl"] .mono{direction:ltr;unicode-bidi:embed}
+  main[dir="rtl"] .formula{direction:ltr}
+  main[dir="rtl"] figure svg{direction:ltr}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="dot"></span>
+    <b>MK.TRADES</b>
+    <span data-t="brand.sub">· LEARN</span>
+  </div>
+  <nav class="secnav">
+    <a href="#what"    data-t="nav.what">What it is</a>
+    <a href="#regimes" data-t="nav.regimes">Two regimes</a>
+    <a href="#profile" data-t="nav.profile">The profile</a>
+    <a href="#split"   data-t="nav.split">Call γ / Put γ</a>
+    <a href="#time"    data-t="nav.time">Time</a>
+    <a href="#cousins" data-t="nav.cousins">Vanna &amp; Charm</a>
+    <a href="#use"     data-t="nav.use">How to use</a>
+    <a href="#notes"   data-t="nav.notes">Honest caveats</a>
+  </nav>
+  <div class="langsel">
+    <button data-lang="en" class="active" onclick="setLang('en')">EN</button>
+    <button data-lang="fr" onclick="setLang('fr')">FR</button>
+    <button data-lang="ar" onclick="setLang('ar')">AR</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── HERO ─────────────────────────────────────────────────── -->
+  <div class="hero">
+    <div class="kicker" data-t="hero.kicker">Quant Field Guide · No. 03</div>
+    <h1 data-t="hero.title">Gamma Exposure</h1>
+    <p class="lead" data-t="hero.lead">Every day, the banks on the other side of the options market are forced to buy and sell the underlying — not because they have a view, but because their risk makes them. Gamma exposure is the map of that forced flow. It tells you when the market has brakes, and when it has none.</p>
+    <span class="pill-warn"><span>γ</span><span data-t="hero.warn">One number decides the whole character of the tape: <b>are you above the flip, or below it?</b></span></span>
+  </div>
+
+  <!-- ── 1 · WHAT IT IS ───────────────────────────────────────── -->
+  <section class="block" id="what">
+    <div class="sec-tag"><span class="num">1</span><span data-t="s1.tag">What gamma exposure is</span></div>
+    <h2 class="sec-title" data-t="s1.title">Somebody has to hedge</h2>
+
+    <div class="gloss">
+      <div class="gh" data-t="s1.gloss.h">Five words first — everything below is built from these</div>
+      <dl>
+        <dt data-t="s1.gloss.t1">STRIKE</dt>
+        <dd data-t="s1.gloss.d1">A fixed price level where option contracts exist. The options market is organised into these rungs — 4010, 4021, 4032 and so on. <b>Every level in this guide sits at a strike.</b></dd>
+        <dt data-t="s1.gloss.t2">SPOT</dt>
+        <dd data-t="s1.gloss.d2">Simply where the market is trading <em>right now</em>. On every screen in this guide it's drawn as a horizontal line, so you can instantly see which levels are above price and which are below.</dd>
+        <dt data-t="s1.gloss.t3">EXPIRY</dt>
+        <dd data-t="s1.gloss.d3">The date a batch of option contracts dies. Options are grouped into expiries, and when one passes, every contract in it — and every effect it had on price — <b>disappears</b>.</dd>
+        <dt data-t="s1.gloss.t4">DEALER</dt>
+        <dd data-t="s1.gloss.d4">The professional firm on the other side of your option trade. A bank or market maker. They aren't betting on direction — they're managing risk, and that difference is what this whole guide rests on.</dd>
+        <dt data-t="s1.gloss.t5">OPEN INTEREST</dt>
+        <dd data-t="s1.gloss.d5">How many option contracts currently exist at a strike. Think of it as inventory parked at that price level.</dd>
+      </dl>
+    </div>
+
+    <p class="lead-in" data-t="s1.p1">When you buy an option, someone sold it to you. That someone is usually a <b>dealer</b> — a market maker whose business is providing the contract, not betting on direction. They don't want the directional risk they just took on, so they hedge it by trading the underlying.</p>
+
+    <p data-t="s1.p2">Here's the part that matters: <b>that hedge is not set-and-forget.</b> As price moves, the amount of underlying they need shifts, so they must keep re-trading. They are <em class="em">forced</em> buyers and sellers, every single day, in size, and entirely without a view on where price should go.</p>
+
+    <p data-t="s1.p3"><b>Gamma</b> is the rate at which that hedging requirement changes. <b>Gamma exposure (GEX)</b> is that rate, multiplied out across every open contract in the market — the total size of the forced flow waiting at each price level.</p>
+
+    <figure>
+      <svg viewBox="0 0 900 210" role="img" aria-label="Open interest multiplied by gamma per contract equals gamma exposure">
+        <defs>
+          <marker id="ar1" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="#6b7785"/>
+          </marker>
+        </defs>
+        <rect x="30" y="55" width="215" height="92" rx="7" fill="#111" stroke="#3796ff" stroke-width="1.4"/>
+        <text x="137" y="88" text-anchor="middle" font-family="Courier New,monospace" font-size="14" font-weight="bold" fill="#3796ff">OPEN INTEREST</text>
+        <text x="137" y="110" text-anchor="middle" font-family="Courier New,monospace" font-size="11" fill="#c5cdd9">how many contracts</text>
+        <text x="137" y="127" text-anchor="middle" font-family="Courier New,monospace" font-size="11" fill="#c5cdd9">sit at this strike</text>
+
+        <line x1="255" y1="101" x2="315" y2="101" stroke="#6b7785" stroke-width="1.5" marker-end="url(#ar1)"/>
+        <text x="285" y="90" text-anchor="middle" font-family="Courier New,monospace" font-size="17" fill="#ffd89e">×</text>
+
+        <rect x="325" y="55" width="215" height="92" rx="7" fill="#111" stroke="#f5a623" stroke-width="1.4"/>
+        <text x="432" y="88" text-anchor="middle" font-family="Courier New,monospace" font-size="14" font-weight="bold" fill="#f5a623">GAMMA</text>
+        <text x="432" y="110" text-anchor="middle" font-family="Courier New,monospace" font-size="11" fill="#c5cdd9">how much hedging</text>
+        <text x="432" y="127" text-anchor="middle" font-family="Courier New,monospace" font-size="11" fill="#c5cdd9">each one forces</text>
+
+        <line x1="550" y1="101" x2="610" y2="101" stroke="#6b7785" stroke-width="1.5" marker-end="url(#ar1)"/>
+        <text x="580" y="90" text-anchor="middle" font-family="Courier New,monospace" font-size="17" fill="#ffd89e">=</text>
+
+        <rect x="620" y="45" width="250" height="112" rx="7" fill="#0d1512" stroke="#27c49a" stroke-width="1.8"/>
+        <text x="745" y="82" text-anchor="middle" font-family="Courier New,monospace" font-size="15" font-weight="bold" fill="#27c49a">GAMMA EXPOSURE</text>
+        <text x="745" y="106" text-anchor="middle" font-family="Courier New,monospace" font-size="11" fill="#e8ecf1">the size of the forced</text>
+        <text x="745" y="123" text-anchor="middle" font-family="Courier New,monospace" font-size="11" fill="#e8ecf1">flow at this price level</text>
+        <text x="745" y="142" text-anchor="middle" font-family="Courier New,monospace" font-size="10" fill="#6b7785">signed: + or −</text>
+
+        <text x="450" y="188" text-anchor="middle" font-family="Courier New,monospace" font-size="11.5" fill="#6b7785">GEX is open interest, weighted by how much hedging each contract actually forces.</text>
+      </svg>
+      <figcaption data-t="s1.fig">The <b>OPEN INTEREST</b> tab shows you the raw contract counts. The <b>GEX PROFILE</b> tab shows you the same book after weighting — which is why the two screens rhyme, but never look identical. Raw inventory vs. inventory that actually moves the market.</figcaption>
+    </figure>
+
+    <div class="shot">
+      <img src="img/s1_open_interest.png" alt="The OPEN INTEREST tab as a mirror histogram, put open interest fanning left and call open interest fanning right, with the call wall marked" />
+      <figcaption data-t="s1.shot.cap">This is the raw ingredient: the <b>OPEN INTEREST</b> tab, puts fanning left and calls fanning right. The tall call stack at <b>4141</b> is the same wall you'll see dominate the gamma profile. One caution that matters later — open interest counts <b>contracts</b>, and every contract is one buyer <em>and</em> one seller, so this screen can never tell you who is long and who is short.</figcaption>
+    </div>
+
+    <div class="callout tip">
+      <span class="ic">🧭</span>
+      <div class="body">
+        <h4 data-t="s1.co.h">No conspiracy required</h4>
+        <p data-t="s1.co.p">Nobody sits in a room deciding to walk price to a level. Dealers hedge <b>mechanically</b>, because their risk limits require it. The price effects you're about to learn are a <em>byproduct</em> of that plumbing — not anyone's plan. That's exactly why it's reliable enough to trade around.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 2 · TWO REGIMES ──────────────────────────────────────── -->
+  <section class="block" id="regimes">
+    <div class="sec-tag"><span class="num">2</span><span data-t="s2.tag">The two regimes</span></div>
+    <h2 class="sec-title" data-t="s2.title">Brakes, or no brakes</h2>
+
+    <p class="lead-in" data-t="s2.p1">Everything in this guide reduces to one question. Dealers are either <b>long gamma</b> or <b>short gamma</b> — and the answer completely inverts how the market behaves.</p>
+
+    <figure>
+      <svg viewBox="0 0 900 360" role="img" aria-label="Two price paths: under positive gamma price oscillates and pins to the level; under negative gamma price breaks away and accelerates in either direction">
+        <defs>
+          <marker id="agr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path d="M0,0 L7,3.5 L0,7 z" fill="#27c49a"/>
+          </marker>
+          <marker id="ard" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path d="M0,0 L7,3.5 L0,7 z" fill="#ff5252"/>
+          </marker>
+        </defs>
+
+        <!-- ══ LEFT PANEL · POSITIVE GAMMA ══ -->
+        <rect x="14" y="14" width="424" height="332" rx="9" fill="#0b1310" stroke="rgba(39,196,154,.45)" stroke-width="1.4"/>
+        <text x="226" y="44" text-anchor="middle" font-family="Courier New,monospace" font-size="15" font-weight="bold" fill="#27c49a">POSITIVE γ · dealers LONG gamma</text>
+        <text x="226" y="63" text-anchor="middle" font-family="Courier New,monospace" font-size="10.5" fill="#6b7785">hedging OPPOSES the move</text>
+
+        <!-- the strike band -->
+        <rect x="40" y="188" width="372" height="15" fill="rgba(39,196,154,.16)"/>
+        <line x1="40" y1="195.5" x2="412" y2="195.5" stroke="#27c49a" stroke-width="1.6" stroke-dasharray="6 4"/>
+        <text x="46" y="184" font-family="Courier New,monospace" font-size="9.5" fill="#27c49a">GREEN STRIKE</text>
+
+        <!-- decaying oscillation into the level -->
+        <polyline points="40,108 78,262 116,138 154,246 192,158 230,228 268,175 306,213 344,186 382,201 412,195"
+                  fill="none" stroke="#e8ecf1" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+
+        <!-- dealer flow arrows: always back toward the band -->
+        <line x1="78" y1="278" x2="78" y2="238" stroke="#27c49a" stroke-width="2" marker-end="url(#agr)"/>
+        <text x="78" y="294" text-anchor="middle" font-family="Courier New,monospace" font-size="9" font-weight="bold" fill="#27c49a">BUYS</text>
+        <line x1="116" y1="112" x2="116" y2="152" stroke="#ff5252" stroke-width="2" marker-end="url(#ard)"/>
+        <text x="116" y="104" text-anchor="middle" font-family="Courier New,monospace" font-size="9" font-weight="bold" fill="#ff5252">SELLS</text>
+        <line x1="154" y1="272" x2="154" y2="240" stroke="#27c49a" stroke-width="2" marker-end="url(#agr)"/>
+        <line x1="192" y1="132" x2="192" y2="164" stroke="#ff5252" stroke-width="2" marker-end="url(#ard)"/>
+
+        <text x="226" y="322" text-anchor="middle" font-family="Courier New,monospace" font-size="13.5" font-weight="bold" fill="#27c49a">BRAKE · swings shrink, price PINS</text>
+        <text x="226" y="338" text-anchor="middle" font-family="Courier New,monospace" font-size="10" fill="#6b7785">it does not bounce off — it gets stuck on</text>
+
+        <!-- ══ RIGHT PANEL · NEGATIVE GAMMA ══ -->
+        <rect x="462" y="14" width="424" height="332" rx="9" fill="#140b0b" stroke="rgba(255,82,82,.45)" stroke-width="1.4"/>
+        <text x="674" y="44" text-anchor="middle" font-family="Courier New,monospace" font-size="15" font-weight="bold" fill="#ff5252">NEGATIVE γ · dealers SHORT gamma</text>
+        <text x="674" y="63" text-anchor="middle" font-family="Courier New,monospace" font-size="10.5" fill="#6b7785">hedging JOINS the move</text>
+
+        <rect x="488" y="188" width="372" height="15" fill="rgba(255,82,82,.16)"/>
+        <line x1="488" y1="195.5" x2="860" y2="195.5" stroke="#ff5252" stroke-width="1.6" stroke-dasharray="6 4"/>
+        <text x="494" y="184" font-family="Courier New,monospace" font-size="9.5" fill="#ff5252">RED STRIKE</text>
+
+        <!-- approach -->
+        <polyline points="488,152 528,168 568,182 608,193 638,196"
+                  fill="none" stroke="#e8ecf1" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="638" cy="196" r="4" fill="#fff"/>
+
+        <!-- fork UP — steepening -->
+        <polyline points="638,196 672,176 706,146 740,106 774,72 800,58"
+                  fill="none" stroke="#27c49a" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+        <line x1="812" y1="112" x2="812" y2="74" stroke="#27c49a" stroke-width="2" marker-end="url(#agr)"/>
+        <text x="828" y="98" font-family="Courier New,monospace" font-size="9" font-weight="bold" fill="#27c49a">BUYS</text>
+
+        <!-- fork DOWN — steepening -->
+        <polyline points="638,196 672,216 706,246 740,286 774,318 800,332"
+                  fill="none" stroke="#ff5252" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+        <line x1="812" y1="280" x2="812" y2="318" stroke="#ff5252" stroke-width="2" marker-end="url(#ard)"/>
+        <text x="828" y="304" font-family="Courier New,monospace" font-size="9" font-weight="bold" fill="#ff5252">SELLS</text>
+
+        <text x="566" y="128" text-anchor="middle" font-family="Courier New,monospace" font-size="10.5" fill="#6b7785">EITHER WAY</text>
+        <text x="566" y="264" text-anchor="middle" font-family="Courier New,monospace" font-size="13.5" font-weight="bold" fill="#ff5252">ACCELERANT</text>
+        <text x="566" y="282" text-anchor="middle" font-family="Courier New,monospace" font-size="10" fill="#6b7785">no braking side —</text>
+        <text x="566" y="296" text-anchor="middle" font-family="Courier New,monospace" font-size="10" fill="#6b7785">it is a speed zone,</text>
+        <text x="566" y="310" text-anchor="middle" font-family="Courier New,monospace" font-size="10" fill="#6b7785">not a level</text>
+      </svg>
+      <figcaption data-t="s2.fig">The white line is <b>price</b>. Left: every swing meets opposing dealer flow, so the swings shrink and price settles <em>onto</em> the level — a pin, not a bounce. Right: dealer flow joins the move instead, so price leaves the level and <b>steepens</b> — and it does that <b>in either direction</b>, which is the part almost everyone gets wrong.</figcaption>
+    </figure>
+
+    <div class="grid2">
+      <div class="rcard pos">
+        <div class="rt" data-t="s2.pos.t">POSITIVE γ</div>
+        <div class="rsub" data-t="s2.pos.sub">spot above the flip</div>
+        <p data-t="s2.pos.p">Dealers are net stabilisers. Every rally meets selling, every dip meets buying.</p>
+        <ul>
+          <li data-t="s2.pos.l1">Volatility <b>compresses</b></li>
+          <li data-t="s2.pos.l2">Ranges hold, edges get respected</li>
+          <li data-t="s2.pos.l3">Breakouts <b>fail</b> and price snaps back</li>
+          <li data-t="s2.pos.l4">Trading style: <b>fade the extremes</b> — sell the highs, buy the lows</li>
+        </ul>
+      </div>
+      <div class="rcard neg">
+        <div class="rt" data-t="s2.neg.t">NEGATIVE γ</div>
+        <div class="rsub" data-t="s2.neg.sub">spot below the flip</div>
+        <p data-t="s2.neg.p">Dealers are net accelerants. Every move gets amplified by their own hedging.</p>
+        <ul>
+          <li data-t="s2.neg.l1">Volatility <b>expands</b></li>
+          <li data-t="s2.neg.l2">Ranges break, levels give way</li>
+          <li data-t="s2.neg.l3">Trends <b>run</b> further than they should</li>
+          <li data-t="s2.neg.l4">Trading style: <b>stop fading</b> — go with the move</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 data-t="s2.h.strip">The GAMMA REGIME strip tells you which one you're in</h3>
+    <p data-t="s2.p2">You don't have to work this out yourself. The terminal prints the answer as a single line, with three markers on it:</p>
+
+    <div class="tblwrap">
+    <table class="ref">
+      <thead><tr>
+        <th data-t="s2.tbl.h1">Marker</th>
+        <th data-t="s2.tbl.h2">What it is</th>
+        <th data-t="s2.tbl.h3">Why you care</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><b class="mono" style="color:var(--amber)">ZERO Γ</b></td>
+          <td data-t="s2.tbl.r1a">The flip point — where total gamma crosses zero.</td>
+          <td data-t="s2.tbl.r1b">Above it you have brakes. Below it you don't. <b>The single most important level on the screen.</b></td>
+        </tr>
+        <tr>
+          <td><b class="mono">SPOT</b></td>
+          <td data-t="s2.tbl.r2a">Where price is now.</td>
+          <td data-t="s2.tbl.r2b">Its position relative to ZERO Γ <em>is</em> the regime. Distance matters too — sitting 0.2% above the flip is not the same as 3% above.</td>
+        </tr>
+        <tr>
+          <td><b class="mono" style="color:var(--blue)">VOL TRIGGER</b></td>
+          <td data-t="s2.tbl.r3a">Our approximation of the single biggest cluster of stabilising gamma.</td>
+          <td data-t="s2.tbl.r3b">Roughly the ceiling of the stabilised zone — where the pinning pressure is strongest.</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="shot">
+      <img src="img/s2_gamma_regime.png" alt="The GAMMA REGIME strip showing POSITIVE gamma, with ZERO gamma at 4006.5, spot at 4070.4 and the vol trigger at 4119.3" />
+      <figcaption data-t="s2.shot.cap">Read it left to right: red zone below the flip, green zone above. Here spot <b>4070.4</b> sits <b>+1.59%</b> above ZERO Γ <b>4006.5</b> — comfortably in the stabilised regime, with the VOL TRIGGER at <b>4119.3</b> marking the top of the pinning zone. Where the SPOT marker falls decides how you trade the entire session.</figcaption>
+    </div>
+
+    <div class="callout">
+      <span class="ic">📏</span>
+      <div class="body">
+        <h4 data-t="s2.co.h">Distance is a dial, not a switch</h4>
+        <p data-t="s2.co.p">The flip isn't a light switch that clicks at the exact price. Gamma fades <em>gradually</em> as you approach it. Sitting far above the flip means strong brakes; hovering just above it means weak brakes and a regime that could invert on a single bad candle. Watch the gap, not just the sign.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 3 · THE PROFILE ──────────────────────────────────────── -->
+  <section class="block" id="profile">
+    <div class="sec-tag"><span class="num">3</span><span data-t="s3.tag">Reading the GEX profile</span></div>
+    <h2 class="sec-title" data-t="s3.title">Green bars, red bars, and one big line</h2>
+
+    <p class="lead-in" data-t="s3.p1">The <b>GEX PROFILE</b> tab breaks the total down strike by strike. Each bar is the net gamma sitting at that price. The colour is the sign — and the sign is everything.</p>
+
+    <div class="legendrow">
+      <span class="chip"><span class="sw" style="background:#27c49a"></span> <span data-t="s3.leg.g">positive γ — support / pin</span></span>
+      <span class="chip"><span class="sw" style="background:#ff5252"></span> <span data-t="s3.leg.r">negative γ — acceleration</span></span>
+      <span class="chip"><span class="sw" style="background:#3796ff"></span> <span data-t="s3.leg.b">cumulative Σ — flip = zero-cross</span></span>
+    </div>
+
+    <div class="shot">
+      <img src="img/s3_gex_profile.png" alt="The GEX PROFILE tab in SWING mode, showing green positive-gamma bars, red negative-gamma bars near the flip, the blue cumulative curve, and the call wall, spot, max pain and GEX flip marker lines" />
+      <figcaption data-t="s3.shot.cap">Bars run left (negative) and right (positive) from the centre line; the dashed markers are <b>CALL WALL 4142</b>, <b>SPOT 4068.9</b>, <b>MAX PAIN 4011</b> and <b>GEX FLIP 3994</b>. Note the structure: a heavy green cluster at <b>4001–4033</b> sitting <em>below</em> price, thin bars between spot and 4033, and the red bars at 3979–3990 tucked just under the flip.</figcaption>
+    </div>
+
+    <h3 data-t="s3.h.green">Green bars — the brake</h3>
+    <p data-t="s3.p2">A green bar marks a strike where dealers are long gamma. Price approaching it from <em>either</em> side meets opposing flow. It slows down.</p>
+
+    <div class="myth">
+      <div class="row bad">
+        <div class="lbl" data-t="s3.m1.bad">MYTH</div>
+        <div class="txt" data-t="s3.m1.badt">"A green bar pushes price away — it's a bounce level. I'll buy the touch and target a reversal."</div>
+      </div>
+      <div class="row good">
+        <div class="lbl" data-t="s3.m1.good">REALITY</div>
+        <div class="txt" data-t="s3.m1.goodt">A green bar is a <b>brake and a magnet</b>, not a trampoline. Dealer selling into a rally doesn't shove price back down — it <em>stalls</em> it. Dealer buying into a dip doesn't launch it — it <em>cushions</em> it. Price gets <b>stuck around</b> the level, not rejected from it. Expect a pin and trade the chop; expect a bounce and you'll sit in a losing reversal while price grinds sideways on the level for hours.</div>
+      </div>
+    </div>
+
+    <h3 data-t="s3.h.red">Red bars — no brakes</h3>
+    <p data-t="s3.p3">A red bar marks a strike where dealers are short gamma. Here their hedging <em>joins</em> the move instead of opposing it.</p>
+
+    <div class="myth">
+      <div class="row bad">
+        <div class="lbl" data-t="s3.m2.bad">MYTH</div>
+        <div class="txt" data-t="s3.m2.badt">"A red bar is support from above — and if it breaks, the move accelerates downward. Coming from below it's resistance, but breaking it upward is fine."</div>
+      </div>
+      <div class="row good">
+        <div class="lbl" data-t="s3.m2.good">REALITY</div>
+        <div class="txt" data-t="s3.m2.goodt">Negative gamma is <b>completely symmetric</b>. It has no directional bias at all. Price <em>falling</em> into red gets sold into and accelerates down. Price <em>rallying</em> into red gets bought into and accelerates up. There is no braking side. A red bar is not support, not resistance — it's a <b>speed zone</b>. Leaning on one as a level is the expensive version of this mistake.</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="ic">💡</span>
+      <div class="body">
+        <h4 data-t="s3.co.h">Why almost everyone gets this backwards</h4>
+        <p data-t="s3.co.p">Red bars nearly always sit <em>below</em> spot, because customers are net buyers of puts and dealers end up short them. So in practice you only ever <em>experience</em> negative gamma as a downside accelerant, and it's natural to generalise from that. But when price does trade <b>up</b> through a negative-gamma pocket, it goes fast — that's a large part of what a melt-up or a short squeeze actually is, mechanically.</p>
+      </div>
+    </div>
+
+    <h3 data-t="s3.h.lines">The four marker lines</h3>
+    <div class="tblwrap">
+    <table class="ref">
+      <thead><tr>
+        <th data-t="s3.tbl.h1">Line</th>
+        <th data-t="s3.tbl.h2">What it means</th>
+      </tr></thead>
+      <tbody>
+        <tr><td><b class="mono" style="color:var(--amber)">GEX FLIP</b></td><td data-t="s3.tbl.r1">The zero-cross of the blue cumulative curve. The regime boundary. <b>Outranks every individual bar on the chart.</b></td></tr>
+        <tr><td><b class="mono" style="color:var(--red)">CALL WALL</b></td><td data-t="s3.tbl.r2">The largest positive-gamma strike above spot. Acts as a hard ceiling <em>and</em> an upside magnet into expiry. A different animal from a normal green bar purely because of its size.</td></tr>
+        <tr><td><b class="mono" style="color:var(--green)">PUT WALL</b></td><td data-t="s3.tbl.r3">The mirror below spot — the strike that tends to act as the floor.</td></tr>
+        <tr><td><b class="mono" style="color:var(--purple)">MAX PAIN</b></td><td data-t="s3.tbl.r4"><b>Not a gamma level.</b> It's an <em>open-interest</em> calculation — the strike where the most option value expires worthless. A weak drift target that strengthens as expiry approaches. Keep it mentally separate from everything else on this screen.</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="callout">
+      <span class="ic">🔵</span>
+      <div class="body">
+        <h4 data-t="s3.co2.h">The blue cumulative line</h4>
+        <p data-t="s3.co2.p">It's a running total of gamma across strikes. Only one thing on it really matters — <b>where it crosses zero</b>, because that's the flip. But its <em>slope</em> is a useful second read: a steep curve means gamma stacks up fast as price moves, so the regime is firmly held. A flat curve means the flip is fragile.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 4 · CALL γ vs PUT γ ──────────────────────────────────── -->
+  <section class="block" id="split">
+    <div class="sec-tag"><span class="num">4</span><span data-t="s4.tag">Call γ vs Put γ</span></div>
+    <h2 class="sec-title" data-t="s4.title">The net profile, taken apart</h2>
+
+    <p class="lead-in" data-t="s4.p1">The GEX profile shows you the <b>net</b> at each strike — calls and puts already added together. The <b>CALL / PUT Γ</b> tab un-does that addition and shows you the two halves side by side.</p>
+
+    <p data-t="s4.p2">This matters because a small net bar can hide two enormous opposing stacks. A strike showing near-zero net gamma might be genuinely empty — or it might be a battleground with huge call gamma and huge put gamma cancelling out. Those two situations behave completely differently when one side unwinds.</p>
+
+    <div class="shot">
+      <img src="img/s4_call_put_gamma.png" alt="The CALL / PUT gamma tab, with call gamma fanning right in green and put gamma fanning left in red, and the GEX flip line marked at the lower strikes" />
+      <figcaption data-t="s4.shot.cap">Call γ to the right, put γ to the left. <b>Call-γ stacking above spot + put-γ below</b> is the classic pin structure. Look at <b>4087</b> and <b>4032</b> here — both carry a heavy stack on <em>each</em> side. Those are battleground strikes, and the net profile alone would never have shown you that.</figcaption>
+    </div>
+
+    <ul class="ticks">
+      <li data-t="s4.l1"><b>Calls above, puts below</b> — the textbook stable structure. Price is boxed in and pinning is likely.</li>
+      <li data-t="s4.l2"><b>One side dominating</b> — the box is lopsided. The thin side is where a break will run.</li>
+      <li data-t="s4.l3"><b>Both sides huge at one strike</b> — a battleground. High friction now, high energy release later.</li>
+      <li data-t="s4.l4"><b>Both sides thin</b> — genuine air. Price travels through this zone quickly and without much fuss.</li>
+    </ul>
+  </section>
+
+  <!-- ── 5 · TIME ─────────────────────────────────────────────── -->
+  <section class="block" id="time">
+    <div class="sec-tag"><span class="num">5</span><span data-t="s5.tag">The time dimension</span></div>
+    <h2 class="sec-title" data-t="s5.title">Gamma has a shelf life</h2>
+
+    <p class="lead-in" data-t="s5.p1">A gamma level is not a permanent feature of the market. It belongs to an <b>expiry</b> — and when that expiry passes, the level simply stops existing. This is the part most people miss entirely.</p>
+
+    <div class="grid2">
+      <div class="rcard">
+        <div class="rt" style="color:var(--orange)" data-t="s5.dte.t">0DTE</div>
+        <div class="rsub" data-t="s5.dte.sub">expires today</div>
+        <p data-t="s5.dte.p">Gamma is <b>enormous</b> here — it concentrates violently as expiry approaches. These are the tightest, most powerful pins you'll see. And they <b>evaporate completely at the close.</b> Tomorrow they're gone.</p>
+      </div>
+      <div class="rcard">
+        <div class="rt" style="color:var(--blue)" data-t="s5.swing.t">SWING</div>
+        <div class="rsub" data-t="s5.swing.sub">the aggregate book</div>
+        <p data-t="s5.swing.p">The blend across expiries. Weaker per-strike, but far more <b>persistent</b> — these levels survive days and weeks. This is your structural map.</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="ic">⏱</span>
+      <div class="body">
+        <h4 data-t="s5.co.h">How to combine them</h4>
+        <p data-t="s5.co.p">Use <b>SWING</b> to draw the map — the walls and the flip that define the week. Then switch to <b>0DTE</b> to time entries against the levels the market is actually fighting over today. When a 0DTE level lands on a SWING level, that price is doubly important.</p>
+      </div>
+    </div>
+
+    <h3 data-t="s5.h.heat">The strike × expiry heatmap</h3>
+    <p data-t="s5.p2">The profile collapses every expiry into one column. The <b>GEX heatmap</b> un-collapses it: strikes run up the side, <b>each column is a separate expiry</b>, and colour shows call-heavy (green, support) vs put-heavy (red, acceleration) at that intersection.</p>
+
+    <div class="callout danger">
+      <span class="ic">⚠</span>
+      <div class="body">
+        <h4 data-t="s5.co2.h">The columns are expiries, not days</h4>
+        <p data-t="s5.co2.p">This trips up everyone on first look. The columns are the <b>8 nearest expiration dates</b> — leftmost is nearest (often today's 0DTE), rightmost is furthest out (~2–3 weeks). They are <em>not</em> evenly spaced in time and they are <b>not a count of days.</b> The bar underneath each column is that expiry's recency weight — the swing aggregate leans hardest on the nearest dates.</p>
+      </div>
+    </div>
+
+    <div class="shot">
+      <img src="img/s5_gex_heatmap.png" alt="The GEX heatmap laid out as strikes against the eight nearest expiry dates, with the orange spot line running across it and blue expiry-weight bars along the bottom" />
+      <figcaption data-t="s5.shot.cap">Reading it: scan <b>along the orange spot line</b> to see how the regime changes as you look further out in time. Here the near columns (07/22, 07/24) run green around spot while the later ones (07/31, 08/03) turn red — the brakes are a near-term feature, and they thin out as you go right. A level that's green near-term but red further out is <b>a wall with an expiry date on it</b>.</figcaption>
+    </div>
+  </section>
+
+  <!-- ── 6 · VANNA & CHARM ────────────────────────────────────── -->
+  <section class="block" id="cousins">
+    <div class="sec-tag"><span class="num">6</span><span data-t="s6.tag">Vanna &amp; Charm</span></div>
+    <h2 class="sec-title" data-t="s6.title">The two cousins of gamma</h2>
+
+    <p class="lead-in" data-t="s6.p1">Gamma answers one question: <em>how does the dealer's hedge change when <b>price</b> moves?</em> But price isn't the only thing that changes. Two other forces move that hedge — and both get their own tab.</p>
+
+    <div class="tblwrap">
+    <table class="ref">
+      <thead><tr>
+        <th data-t="s6.tbl.h1">Greek</th>
+        <th data-t="s6.tbl.h2">Hedge changes when…</th>
+        <th data-t="s6.tbl.h3">What it drives</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><b class="mono" style="color:var(--green)">GAMMA</b></td>
+          <td data-t="s6.tbl.r1a"><b>Price</b> moves</td>
+          <td data-t="s6.tbl.r1b">Pinning and acceleration. The main event.</td>
+        </tr>
+        <tr>
+          <td><b class="mono" style="color:var(--purple)">VANNA</b></td>
+          <td data-t="s6.tbl.r2a"><b>Implied volatility</b> moves</td>
+          <td data-t="s6.tbl.r2b">Flows triggered by a vol spike or a vol crush — <em>even if price hasn't moved at all.</em> Marks the strikes where a change in fear forces the most re-hedging.</td>
+        </tr>
+        <tr>
+          <td><b class="mono" style="color:var(--amber)">CHARM</b></td>
+          <td data-t="s6.tbl.r3a"><b>Time</b> passes</td>
+          <td data-t="s6.tbl.r3b">The classic drift into expiry. Hedges unwind on their own as the clock runs down — this is why Fridays have a character of their own.</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="callout">
+      <span class="ic">🌀</span>
+      <div class="body">
+        <h4 data-t="s6.co.h">Why vanna looks upside-down compared to gamma</h4>
+        <p data-t="s6.co.p">Vanna <b>flips sign around spot</b> and concentrates in the <em>wings</em> and in <em>longer-dated</em> expiries — the opposite of gamma, which peaks at 0DTE and near the money. So a vanna map that looks inverted next to your gamma map isn't broken; it's measuring a different force. Gamma is the near-term price story. Vanna is the volatility story, and it lives further out.</p>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="shot">
+        <img src="img/s6_vanna.png" alt="Per-strike vanna exposure, positive above spot and negative below" />
+        <figcaption data-t="s6.shot.v"><b>VANNA</b> — green above spot, red below. Big stacks mark where a <b>vol</b> change forces the most re-hedging.</figcaption>
+      </div>
+      <div class="shot">
+        <img src="img/s6_charm.png" alt="Per-strike charm exposure, negative above spot and positive below" />
+        <figcaption data-t="s6.shot.c"><b>CHARM</b> — and note it's the exact mirror. Big stacks mark where <b>time decay</b> alone will drag hedges into the close.</figcaption>
+      </div>
+    </div>
+
+    <p data-t="s6.p2">You don't need these to trade gamma. Treat them as the second layer: when gamma tells you the regime and vanna or charm agrees on the same strike, conviction goes up.</p>
+
+    <div class="shot">
+      <img src="img/s6_vex_heatmap.png" alt="The same strike-by-expiry heatmap switched to VEX mode, showing vanna exposure concentrated in the wings and the longer-dated expiries" />
+      <figcaption data-t="s6.shot.vex">The same heatmap switched to <b>VEX</b>. Compare it against the GEX version above — the colour has moved <em>outward and rightward</em>, into the wings and the longer-dated expiries. That's the visual proof that vanna is a different force living on a different part of the board.</figcaption>
+    </div>
+  </section>
+
+  <!-- ── 7 · HOW TO USE ───────────────────────────────────────── -->
+  <section class="block" id="use">
+    <div class="sec-tag"><span class="num">7</span><span data-t="s7.tag">How to use it</span></div>
+    <h2 class="sec-title" data-t="s7.title">A four-step routine</h2>
+
+    <p class="lead-in" data-t="s7.p1">Gamma doesn't give signals. It gives you <em class="em">the rules of the session</em> — how the market is going to behave when it reaches a level. You still bring the trade.</p>
+
+    <ul class="ticks">
+      <li data-t="s7.l1"><b>1 · Check the regime first.</b> Open GAMMA REGIME. Is spot above or below ZERO Γ, and by how much? This decides whether you're a fader or a follower today. Nothing else matters until you've answered it.</li>
+      <li data-t="s7.l2"><b>2 · Map the walls on SWING.</b> Call wall above, put wall below. That's your box for the week. Note where the big green clusters sit — those are your magnets.</li>
+      <li data-t="s7.l3"><b>3 · Find the air.</b> Look for the <em>thin</em> zones between clusters. Price crosses those fast. Thin gaps are where you give a trade room; heavy clusters are where you take profit.</li>
+      <li data-t="s7.l4"><b>4 · Time it on 0DTE.</b> Switch expiry and find the level today's book is actually defending. When a 0DTE level lands on the same price as a SWING level — two independent things pointing at one number, which traders call <em>confluence</em> — that's your highest-conviction price.</li>
+    </ul>
+
+    <div class="callout proof">
+      <span class="ic">✓</span>
+      <div class="body">
+        <h4 data-t="s7.co.h">The one-sentence version</h4>
+        <p data-t="s7.co.p">Above the flip, sell the highs and buy the lows into green clusters and expect them to stall. Below the flip, stop doing that — respect the direction and let it run.</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="ic">🔗</span>
+      <div class="body">
+        <h4 data-t="s7.co2.h">Confluence with the rest of the terminal</h4>
+        <p data-t="s7.co2.p">A gamma wall landing on a <b>forecast cone</b> band (Field Guide No. 01) or on an <b>options heatmap</b> wall (No. 02) is a high-conviction level — independent models agreeing. And the <b>expected move</b> band tells you whether reaching that wall today is even realistic: if the wall sits outside the ±1σ range, it's a target for later in the week, not a level for this session.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 8 · CAVEATS ──────────────────────────────────────────── -->
+  <section class="block" id="notes" style="border-bottom:none">
+    <div class="sec-tag"><span class="num">8</span><span data-t="s8.tag">Honest caveats</span></div>
+    <h2 class="sec-title" data-t="s8.title">What gamma can't tell you</h2>
+
+    <ul class="ticks">
+      <li data-t="s8.l1"><b>Who's short what is an assumption.</b> Open interest counts contracts, never sides — every contract is one long and one short. Turning that into dealer positioning requires a standard convention about which side dealers are on. It's a good assumption and it's the industry standard, but it <em>is</em> an assumption, and it's the single biggest source of error in all dealer-gamma analysis.</li>
+      <li data-t="s8.l2"><b>Levels, not promises.</b> A wall is where a reaction is <em>likely</em>, not guaranteed. Big enough real-world flow runs straight through any gamma level. Always wait for price to confirm.</li>
+      <li data-t="s8.l3"><b>Gamma is not direction.</b> It never tells you which way price will go — only how it will <em>behave</em> when it gets somewhere. Anyone selling gamma as a directional signal is selling you something else.</li>
+      <li data-t="s8.l4"><b>Freshness matters.</b> Over weekends and holidays the options data can go stale. The terminal flags staleness — don't lean on a frozen map.</li>
+      <li data-t="s8.l5"><b>Max pain is a different animal.</b> It appears on the gamma screen but it's computed from open interest, not gamma. Don't blend the two readings.</li>
+      <li data-t="s8.l6"><b>Not every asset has a full book.</b> Coverage and expiry depth vary by instrument. A thin chain produces a thin, less reliable gamma map.</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div data-t="foot.disc">⚠ Educational reference. Gamma maps show where reactions are likely, not certain — always cross-check the live terminal before acting. Nothing here is financial advice.</div>
+  <div class="src">MK.TRADES · Learn · Gamma Exposure · v1 &nbsp;|&nbsp; <span data-t="foot.lang">Language: English</span></div>
+</footer>
+
+<script>
+/* ──────────────────────────────────────────────────────────────
+   i18n. EN is the source already in the DOM. On first run we cache
+   every [data-t] element's original innerHTML as its EN value. FR/AR
+   are swapped in from TRANSLATIONS; missing keys fall back to EN.
+   RTL (Arabic) is applied to <main>/<footer> only — the top bar
+   never mirrors.
+
+   v4 — FR + AR complete, all 159 keys in each. Latin technical tokens
+   (GEX, 0DTE, SWING, VEX, ZERO Γ, CALL WALL, MAX PAIN, VANNA, CHARM)
+   are left untranslated on purpose: they are the literal labels the
+   trader reads off the terminal UI, so translating them would break
+   the mapping between guide and screen.
+   ────────────────────────────────────────────────────────────── */
+const TRANSLATIONS = {
+  // ══ FRANÇAIS ═══════════════════════════════════════════════════
+  fr: {
+    'brand.sub': `· APPRENDRE`,
+    'nav.what': `Définition`,
+    'nav.regimes': `Deux régimes`,
+    'nav.profile': `Le profil`,
+    'nav.split': `Call γ / Put γ`,
+    'nav.time': `Le temps`,
+    'nav.cousins': `Vanna &amp; Charm`,
+    'nav.use': `Utilisation`,
+    'nav.notes': `Réserves`,
+    'hero.kicker': `Guide quant · N° 03`,
+    'hero.title': `Exposition Gamma`,
+    'hero.lead': `Chaque jour, les banques situées de l'autre côté du marché des options sont contraintes d'acheter et de vendre le sous-jacent — non pas parce qu'elles ont une opinion, mais parce que leur risque les y oblige. L'exposition gamma est la carte de ce flux forcé. Elle vous dit quand le marché a des freins, et quand il n'en a aucun.`,
+    'hero.warn': `Un seul chiffre décide du caractère de toute la séance : <b>êtes-vous au-dessus du point de bascule, ou en dessous ?</b>`,
+    's1.tag': `Ce qu'est l'exposition gamma`,
+    's1.title': `Quelqu'un doit se couvrir`,
+    's1.gloss.h': `Cinq mots d'abord — tout ce qui suit repose dessus`,
+    's1.gloss.t1': `STRIKE`,
+    's1.gloss.d1': `Un niveau de prix fixe où existent des contrats d'options — le prix d'exercice. Le marché des options est organisé en ces échelons : 4010, 4021, 4032, etc. <b>Chaque niveau de ce guide se situe sur un strike.</b>`,
+    's1.gloss.t2': `SPOT`,
+    's1.gloss.d2': `Simplement le niveau auquel le marché se négocie <em>en ce moment</em>. Sur chaque écran de ce guide il est tracé en ligne horizontale, pour voir immédiatement quels niveaux sont au-dessus du prix et lesquels sont en dessous.`,
+    's1.gloss.t3': `ÉCHÉANCE`,
+    's1.gloss.d3': `La date à laquelle un lot de contrats d'options expire. Les options sont regroupées par échéances, et quand l'une passe, chaque contrat qu'elle contient — et chaque effet qu'il avait sur le prix — <b>disparaît</b>.`,
+    's1.gloss.t4': `DEALER`,
+    's1.gloss.d4': `L'établissement professionnel de l'autre côté de votre transaction sur options. Une banque ou un teneur de marché. Il ne parie pas sur la direction — il gère un risque, et c'est sur cette différence que repose tout ce guide.`,
+    's1.gloss.t5': `OPEN INTEREST`,
+    's1.gloss.d5': `Le nombre de contrats d'options existant actuellement sur un strike — les positions ouvertes. Voyez-le comme un stock garé à ce niveau de prix.`,
+    's1.p1': `Quand vous achetez une option, quelqu'un vous l'a vendue. Ce quelqu'un est généralement un <b>dealer</b> — un teneur de marché dont le métier est de fournir le contrat, pas de parier sur la direction. Il ne veut pas du risque directionnel qu'il vient de prendre, alors il le couvre en négociant le sous-jacent.`,
+    's1.p2': `Voici ce qui compte : <b>cette couverture n'est pas figée.</b> À mesure que le prix bouge, la quantité de sous-jacent nécessaire change, et il doit donc re-négocier en permanence. Ce sont des acheteurs et des vendeurs <em class="em">forcés</em>, chaque jour, en volume, et sans la moindre opinion sur la direction du prix.`,
+    's1.p3': `Le <b>gamma</b> est la vitesse à laquelle ce besoin de couverture change. L'<b>exposition gamma (GEX)</b> est cette vitesse, multipliée sur l'ensemble des contrats ouverts du marché — la taille totale du flux forcé qui attend à chaque niveau de prix.`,
+    's1.fig': `L'onglet <b>OPEN INTEREST</b> vous montre le nombre brut de contrats. L'onglet <b>GEX PROFILE</b> vous montre le même carnet après pondération — d'où la ressemblance entre les deux écrans, sans qu'ils soient jamais identiques. Stock brut contre stock qui fait réellement bouger le marché.`,
+    's1.shot.cap': `Voici l'ingrédient brut : l'onglet <b>OPEN INTEREST</b>, les puts s'étalant à gauche et les calls à droite. L'empilement de calls à <b>4141</b> est le mur même qui dominera le profil gamma. Une mise en garde importante pour la suite — l'open interest compte des <b>contrats</b>, et chaque contrat a un acheteur <em>et</em> un vendeur, donc cet écran ne peut jamais vous dire qui est long et qui est short.`,
+    's1.co.h': `Aucun complot nécessaire`,
+    's1.co.p': `Personne ne décide dans une salle de conduire le prix vers un niveau. Les dealers se couvrent <b>mécaniquement</b>, parce que leurs limites de risque l'exigent. Les effets de prix que vous allez apprendre sont un <em>sous-produit</em> de cette plomberie — pas le plan de qui que ce soit. C'est précisément pour cela qu'ils sont assez fiables pour trader autour.`,
+    's2.tag': `Les deux régimes`,
+    's2.title': `Avec freins, ou sans freins`,
+    's2.p1': `Tout ce guide se ramène à une seule question. Les dealers sont soit <b>long gamma</b>, soit <b>short gamma</b> — et la réponse inverse complètement le comportement du marché.`,
+    's2.fig': `La ligne blanche est le <b>prix</b>. À gauche : chaque oscillation rencontre un flux de dealer opposé, donc les oscillations rétrécissent et le prix se pose <em>sur</em> le niveau — un aimantage, pas un rebond. À droite : le flux du dealer accompagne le mouvement, donc le prix quitte le niveau et <b>s'accélère</b> — et il le fait <b>dans les deux sens</b>, ce que presque tout le monde comprend de travers.`,
+    's2.pos.t': `γ POSITIF`,
+    's2.pos.sub': `spot au-dessus du point de bascule`,
+    's2.pos.p': `Les dealers sont globalement stabilisateurs. Chaque hausse rencontre des ventes, chaque repli rencontre des achats.`,
+    's2.pos.l1': `La volatilité se <b>comprime</b>`,
+    's2.pos.l2': `Les ranges tiennent, les bornes sont respectées`,
+    's2.pos.l3': `Les cassures <b>échouent</b> et le prix revient`,
+    's2.pos.l4': `Style de trading : <b>fader les extrêmes</b> — vendre les hauts, acheter les bas`,
+    's2.neg.t': `γ NÉGATIF`,
+    's2.neg.sub': `spot sous le point de bascule`,
+    's2.neg.p': `Les dealers sont globalement accélérateurs. Chaque mouvement est amplifié par leur propre couverture.`,
+    's2.neg.l1': `La volatilité <b>s'étend</b>`,
+    's2.neg.l2': `Les ranges cassent, les niveaux cèdent`,
+    's2.neg.l3': `Les tendances <b>courent</b> plus loin que de raison`,
+    's2.neg.l4': `Style de trading : <b>arrêter de fader</b> — accompagner le mouvement`,
+    's2.h.strip': `La bande GAMMA REGIME vous dit dans lequel vous êtes`,
+    's2.p2': `Vous n'avez pas à le calculer vous-même. Le terminal affiche la réponse sur une seule ligne, avec trois repères :`,
+    's2.tbl.h1': `Repère`,
+    's2.tbl.h2': `Ce que c'est`,
+    's2.tbl.h3': `Pourquoi ça compte`,
+    's2.tbl.r1a': `Le point de bascule — là où le gamma total traverse zéro.`,
+    's2.tbl.r1b': `Au-dessus, vous avez des freins. En dessous, non. <b>Le niveau le plus important de l'écran.</b>`,
+    's2.tbl.r2a': `Où se trouve le prix maintenant.`,
+    's2.tbl.r2b': `Sa position par rapport à ZERO Γ <em>est</em> le régime. La distance compte aussi — être 0,2 % au-dessus du point de bascule n'est pas la même chose qu'être 3 % au-dessus.`,
+    's2.tbl.r3a': `Notre approximation du plus gros amas de gamma stabilisateur.`,
+    's2.tbl.r3b': `Grossièrement le plafond de la zone stabilisée — là où la pression d'aimantage est la plus forte.`,
+    's2.shot.cap': `Lisez de gauche à droite : zone rouge sous le point de bascule, zone verte au-dessus. Ici le spot <b>4070.4</b> se situe <b>+1,59 %</b> au-dessus de ZERO Γ <b>4006.5</b> — confortablement en régime stabilisé, avec le VOL TRIGGER à <b>4119.3</b> marquant le sommet de la zone d'aimantage. La position du repère SPOT décide de votre façon de trader toute la séance.`,
+    's2.co.h': `La distance est un curseur, pas un interrupteur`,
+    's2.co.p': `Le point de bascule n'est pas un interrupteur qui claque à un prix exact. Le gamma s'estompe <em>progressivement</em> à mesure que vous en approchez. Être loin au-dessus signifie des freins puissants ; le survoler de peu signifie des freins faibles et un régime qui peut s'inverser sur une seule mauvaise bougie. Surveillez l'écart, pas seulement le signe.`,
+    's3.tag': `Lire le profil GEX`,
+    's3.title': `Barres vertes, barres rouges, et une grande ligne`,
+    's3.p1': `L'onglet <b>GEX PROFILE</b> décompose le total strike par strike. Chaque barre est le gamma net présent à ce prix. La couleur est le signe — et le signe est tout.`,
+    's3.leg.g': `γ positif — support / aimantage`,
+    's3.leg.r': `γ négatif — accélération`,
+    's3.leg.b': `Σ cumulé — bascule = passage à zéro`,
+    's3.shot.cap': `Les barres partent à gauche (négatif) et à droite (positif) depuis l'axe central ; les repères pointillés sont <b>CALL WALL 4142</b>, <b>SPOT 4068.9</b>, <b>MAX PAIN 4011</b> et <b>GEX FLIP 3994</b>. Notez la structure : un amas vert épais à <b>4001–4033</b> situé <em>sous</em> le prix, des barres fines entre le spot et 4033, et les barres rouges à 3979–3990 blotties juste sous la bascule.`,
+    's3.h.green': `Barres vertes — le frein`,
+    's3.p2': `Une barre verte marque un strike où les dealers sont long gamma. Le prix qui s'en approche, de <em>n'importe quel</em> côté, rencontre un flux opposé. Il ralentit.`,
+    's3.m1.bad': `MYTHE`,
+    's3.m1.badt': `« Une barre verte repousse le prix — c'est un niveau de rebond. J'achète au contact et je vise un retournement. »`,
+    's3.m1.good': `RÉALITÉ`,
+    's3.m1.goodt': `Une barre verte est un <b>frein et un aimant</b>, pas un trampoline. La vente du dealer dans une hausse ne repousse pas le prix vers le bas — elle le <em>bloque</em>. Son achat dans un repli ne le propulse pas — il l'<em>amortit</em>. Le prix reste <b>collé autour</b> du niveau, il n'en est pas rejeté. Attendez-vous à un aimantage et tradez le range ; attendez-vous à un rebond et vous resterez sur un retournement perdant pendant que le prix pilonne le niveau latéralement des heures durant.`,
+    's3.h.red': `Barres rouges — aucun frein`,
+    's3.p3': `Une barre rouge marque un strike où les dealers sont short gamma. Ici leur couverture <em>accompagne</em> le mouvement au lieu de s'y opposer.`,
+    's3.m2.bad': `MYTHE`,
+    's3.m2.badt': `« Une barre rouge est un support par le haut — et si elle casse, le mouvement accélère à la baisse. Par le bas c'est une résistance, mais la casser à la hausse est sans risque. »`,
+    's3.m2.good': `RÉALITÉ`,
+    's3.m2.goodt': `Le gamma négatif est <b>parfaitement symétrique</b>. Il n'a aucun biais directionnel. Un prix qui <em>chute</em> dans le rouge est vendu et accélère à la baisse. Un prix qui <em>monte</em> dans le rouge est acheté et accélère à la hausse. Il n'y a aucun côté freineur. Une barre rouge n'est ni un support ni une résistance — c'est une <b>zone de vitesse</b>. S'y appuyer comme sur un niveau est la version coûteuse de cette erreur.`,
+    's3.co.h': `Pourquoi presque tout le monde l'inverse`,
+    's3.co.p': `Les barres rouges se situent presque toujours <em>sous</em> le spot, parce que les clients sont acheteurs nets de puts et que les dealers finissent short dessus. Donc en pratique vous ne <em>vivez</em> le gamma négatif que comme un accélérateur baissier, et il est naturel de généraliser. Mais quand le prix traverse une poche de gamma négatif <b>vers le haut</b>, ça va vite — c'est en grande partie ce qu'est mécaniquement une envolée ou un short squeeze.`,
+    's3.h.lines': `Les quatre lignes de repère`,
+    's3.tbl.h1': `Ligne`,
+    's3.tbl.h2': `Ce que ça signifie`,
+    's3.tbl.r1': `Le passage à zéro de la courbe cumulée bleue. La frontière de régime. <b>Prime sur chaque barre individuelle du graphique.</b>`,
+    's3.tbl.r2': `Le plus gros strike à gamma positif au-dessus du spot. Agit comme un plafond dur <em>et</em> comme un aimant haussier à l'approche de l'échéance. Un autre animal qu'une barre verte ordinaire, uniquement par sa taille.`,
+    's3.tbl.r3': `Le miroir sous le spot — le strike qui tend à faire office de plancher.`,
+    's3.tbl.r4': `<b>Pas un niveau de gamma.</b> C'est un calcul d'<em>open interest</em> — le strike où le plus de valeur d'options expire sans valeur. Une cible de dérive faible qui se renforce à l'approche de l'échéance. Gardez-la mentalement séparée de tout le reste de cet écran.`,
+    's3.co2.h': `La ligne cumulée bleue`,
+    's3.co2.p': `C'est un cumul du gamma à travers les strikes. Une seule chose y compte vraiment — <b>là où elle traverse zéro</b>, car c'est la bascule. Mais sa <em>pente</em> est une seconde lecture utile : une courbe raide signifie que le gamma s'empile vite quand le prix bouge, donc le régime tient fermement. Une courbe plate signifie que la bascule est fragile.`,
+    's4.tag': `Call γ contre Put γ`,
+    's4.title': `Le profil net, démonté`,
+    's4.p1': `Le profil GEX vous montre le <b>net</b> à chaque strike — calls et puts déjà additionnés. L'onglet <b>CALL / PUT Γ</b> défait cette addition et vous montre les deux moitiés côte à côte.`,
+    's4.p2': `C'est important parce qu'une petite barre nette peut cacher deux empilements opposés énormes. Un strike affichant un gamma net proche de zéro peut être réellement vide — ou être un champ de bataille où un gamma call énorme et un gamma put énorme s'annulent. Ces deux situations se comportent très différemment quand un côté se dénoue.`,
+    's4.shot.cap': `Le γ call à droite, le γ put à gauche. <b>Le γ call empilé au-dessus du spot + le γ put en dessous</b> est la structure d'aimantage classique. Regardez <b>4087</b> et <b>4032</b> ici — les deux portent un empilement épais de <em>chaque</em> côté. Ce sont des strikes de champ de bataille, et le profil net seul ne vous l'aurait jamais montré.`,
+    's4.l1': `<b>Calls au-dessus, puts en dessous</b> — la structure stable de manuel. Le prix est encadré et l'aimantage est probable.`,
+    's4.l2': `<b>Un côté domine</b> — la boîte est déséquilibrée. Le côté mince est celui où une cassure courra.`,
+    's4.l3': `<b>Les deux côtés énormes sur un strike</b> — un champ de bataille. Forte friction maintenant, forte libération d'énergie plus tard.`,
+    's4.l4': `<b>Les deux côtés minces</b> — du vide véritable. Le prix traverse cette zone vite et sans histoire.`,
+    's5.tag': `La dimension temps`,
+    's5.title': `Le gamma a une date de péremption`,
+    's5.p1': `Un niveau de gamma n'est pas une caractéristique permanente du marché. Il appartient à une <b>échéance</b> — et quand cette échéance passe, le niveau cesse simplement d'exister. C'est la partie que la plupart des gens ratent complètement.`,
+    's5.dte.t': `0DTE`,
+    's5.dte.sub': `expire aujourd'hui`,
+    's5.dte.p': `Le gamma est <b>énorme</b> ici — il se concentre violemment à l'approche de l'échéance. Ce sont les aimantages les plus serrés et les plus puissants que vous verrez. Et ils <b>s'évaporent complètement à la clôture.</b> Demain ils ont disparu.`,
+    's5.swing.t': `SWING`,
+    's5.swing.sub': `le carnet agrégé`,
+    's5.swing.p': `Le mélange de toutes les échéances. Plus faible par strike, mais bien plus <b>persistant</b> — ces niveaux survivent des jours et des semaines. C'est votre carte structurelle.`,
+    's5.co.h': `Comment les combiner`,
+    's5.co.p': `Utilisez <b>SWING</b> pour dessiner la carte — les murs et la bascule qui définissent la semaine. Puis passez en <b>0DTE</b> pour minuter les entrées sur les niveaux que le marché se dispute réellement aujourd'hui. Quand un niveau 0DTE tombe sur un niveau SWING, ce prix est doublement important.`,
+    's5.h.heat': `La heatmap strike × échéance`,
+    's5.p2': `Le profil écrase toutes les échéances en une seule colonne. La <b>heatmap GEX</b> les redéploie : les strikes montent sur le côté, <b>chaque colonne est une échéance distincte</b>, et la couleur montre la dominance call (vert, support) contre la dominance put (rouge, accélération) à cette intersection.`,
+    's5.co2.h': `Les colonnes sont des échéances, pas des jours`,
+    's5.co2.p': `Cela piège tout le monde au premier regard. Les colonnes sont les <b>8 dates d'expiration les plus proches</b> — la plus à gauche est la plus proche (souvent le 0DTE du jour), la plus à droite la plus lointaine (~2–3 semaines). Elles ne sont <em>pas</em> régulièrement espacées dans le temps et ce n'est <b>pas un décompte de jours.</b> La barre sous chaque colonne est le poids de récence de cette échéance — l'agrégat swing s'appuie le plus sur les dates les plus proches.`,
+    's5.shot.cap': `Comment la lire : balayez <b>le long de la ligne orange du spot</b> pour voir comment le régime change à mesure que vous regardez plus loin dans le temps. Ici les colonnes proches (07/22, 07/24) sont vertes autour du spot tandis que les suivantes (07/31, 08/03) virent au rouge — les freins sont un phénomène de court terme, et ils s'amincissent vers la droite. Un niveau vert à court terme mais rouge plus loin est <b>un mur avec une date de péremption</b>.`,
+    's6.tag': `Vanna &amp; Charm`,
+    's6.title': `Les deux cousins du gamma`,
+    's6.p1': `Le gamma répond à une question : <em>comment la couverture du dealer change-t-elle quand le <b>prix</b> bouge ?</em> Mais le prix n'est pas la seule chose qui change. Deux autres forces déplacent cette couverture — et chacune a son propre onglet.`,
+    's6.tbl.h1': `Grecque`,
+    's6.tbl.h2': `La couverture change quand…`,
+    's6.tbl.h3': `Ce que ça provoque`,
+    's6.tbl.r1a': `Le <b>prix</b> bouge`,
+    's6.tbl.r1b': `Aimantage et accélération. L'événement principal.`,
+    's6.tbl.r2a': `La <b>volatilité implicite</b> bouge`,
+    's6.tbl.r2b': `Des flux déclenchés par un pic ou un effondrement de volatilité — <em>même si le prix n'a pas bougé du tout.</em> Marque les strikes où un changement de peur force le plus de re-couverture.`,
+    's6.tbl.r3a': `Le <b>temps</b> passe`,
+    's6.tbl.r3b': `La dérive classique vers l'échéance. Les couvertures se dénouent d'elles-mêmes à mesure que l'horloge tourne — c'est pourquoi les vendredis ont un caractère bien à eux.`,
+    's6.co.h': `Pourquoi le vanna paraît à l'envers du gamma`,
+    's6.co.p': `Le vanna <b>change de signe autour du spot</b> et se concentre dans les <em>ailes</em> et sur les échéances <em>plus lointaines</em> — l'inverse du gamma, qui culmine en 0DTE et près de la monnaie. Donc une carte vanna qui paraît inversée à côté de votre carte gamma n'est pas cassée ; elle mesure une autre force. Le gamma est l'histoire du prix à court terme. Le vanna est l'histoire de la volatilité, et il vit plus loin.`,
+    's6.shot.v': `<b>VANNA</b> — vert au-dessus du spot, rouge en dessous. Les gros empilements marquent où un changement de <b>volatilité</b> force le plus de re-couverture.`,
+    's6.shot.c': `<b>CHARM</b> — et notez que c'est exactement le miroir. Les gros empilements marquent où la <b>décote temporelle</b> seule tirera les couvertures vers la clôture.`,
+    's6.p2': `Vous n'en avez pas besoin pour trader le gamma. Traitez-les comme la seconde couche : quand le gamma vous donne le régime et que le vanna ou le charm confirme sur le même strike, la conviction monte.`,
+    's6.shot.vex': `La même heatmap basculée en <b>VEX</b>. Comparez-la à la version GEX ci-dessus — la couleur s'est déplacée <em>vers l'extérieur et vers la droite</em>, dans les ailes et les échéances plus lointaines. C'est la preuve visuelle que le vanna est une force différente vivant sur une autre partie du plateau.`,
+    's7.tag': `Comment l'utiliser`,
+    's7.title': `Une routine en quatre étapes`,
+    's7.p1': `Le gamma ne donne pas de signaux. Il vous donne <em class="em">les règles de la séance</em> — comment le marché va se comporter quand il atteindra un niveau. C'est vous qui apportez le trade.`,
+    's7.l1': `<b>1 · Vérifiez le régime d'abord.</b> Ouvrez GAMMA REGIME. Le spot est-il au-dessus ou en dessous de ZERO Γ, et de combien ? Cela décide si vous êtes fadeur ou suiveur aujourd'hui. Rien d'autre ne compte tant que vous n'y avez pas répondu.`,
+    's7.l2': `<b>2 · Cartographiez les murs en SWING.</b> Mur call au-dessus, mur put en dessous. Voilà votre boîte pour la semaine. Notez où se situent les gros amas verts — ce sont vos aimants.`,
+    's7.l3': `<b>3 · Trouvez le vide.</b> Cherchez les zones <em>minces</em> entre les amas. Le prix les traverse vite. Les trous minces sont là où vous donnez de l'air à un trade ; les amas épais sont là où vous prenez vos gains.`,
+    's7.l4': `<b>4 · Minutez en 0DTE.</b> Changez d'échéance et trouvez le niveau que le carnet du jour défend réellement. Quand un niveau 0DTE tombe sur le même prix qu'un niveau SWING — deux éléments indépendants pointant un même chiffre, ce que les traders appellent la <em>confluence</em> — c'est votre prix à plus forte conviction.`,
+    's7.co.h': `La version en une phrase`,
+    's7.co.p': `Au-dessus de la bascule, vendez les hauts et achetez les bas vers les amas verts, et attendez-vous à ce qu'ils bloquent. Sous la bascule, arrêtez tout ça — respectez la direction et laissez courir.`,
+    's7.co2.h': `Confluence avec le reste du terminal`,
+    's7.co2.p': `Un mur de gamma tombant sur une bande de <b>cône de prévision</b> (Guide N° 01) ou sur un mur de <b>heatmap d'options</b> (N° 02) est un niveau à forte conviction — des modèles indépendants qui s'accordent. Et la bande de <b>mouvement attendu</b> vous dit si atteindre ce mur aujourd'hui est même réaliste : si le mur est hors de la plage ±1σ, c'est une cible pour plus tard dans la semaine, pas un niveau pour cette séance.`,
+    's8.tag': `Réserves honnêtes`,
+    's8.title': `Ce que le gamma ne peut pas vous dire`,
+    's8.l1': `<b>Qui est short sur quoi est une hypothèse.</b> L'open interest compte des contrats, jamais des côtés — chaque contrat est un long et un short. Le transformer en positionnement de dealer exige une convention standard sur le côté que tiennent les dealers. C'est une bonne hypothèse et c'est le standard de l'industrie, mais c'<em>est</em> une hypothèse, et c'est la première source d'erreur de toute analyse de gamma dealer.`,
+    's8.l2': `<b>Des niveaux, pas des promesses.</b> Un mur est là où une réaction est <em>probable</em>, pas garantie. Un flux réel assez gros traverse n'importe quel niveau de gamma. Attendez toujours la confirmation du prix.`,
+    's8.l3': `<b>Le gamma n'est pas une direction.</b> Il ne vous dit jamais où le prix ira — seulement comment il se <em>comportera</em> une fois arrivé. Quiconque vous vend le gamma comme un signal directionnel vous vend autre chose.`,
+    's8.l4': `<b>La fraîcheur compte.</b> Les week-ends et jours fériés, les données d'options peuvent se périmer. Le terminal signale la péremption — ne vous appuyez pas sur une carte figée.`,
+    's8.l5': `<b>Le max pain est un autre animal.</b> Il apparaît sur l'écran gamma mais il est calculé à partir de l'open interest, pas du gamma. Ne mélangez pas les deux lectures.`,
+    's8.l6': `<b>Tous les actifs n'ont pas un carnet complet.</b> La couverture et la profondeur d'échéances varient selon l'instrument. Une chaîne mince produit une carte gamma mince et moins fiable.`,
+    'foot.disc': `⚠ Référence pédagogique. Les cartes gamma montrent où les réactions sont probables, pas certaines — vérifiez toujours le terminal en direct avant d'agir. Rien ici ne constitue un conseil financier.`,
+    'foot.lang': `Langue : Français`
+  },
+
+  // ══ العربية ════════════════════════════════════════════════════
+  ar: {
+    'brand.sub': `· تعلَّم`,
+    'nav.what': `ما هو`,
+    'nav.regimes': `النظامان`,
+    'nav.profile': `الملف`,
+    'nav.split': `Call γ / Put γ`,
+    'nav.time': `الزمن`,
+    'nav.cousins': `Vanna و Charm`,
+    'nav.use': `طريقة الاستخدام`,
+    'nav.notes': `تحفّظات`,
+    'hero.kicker': `دليل الكوانت · رقم 03`,
+    'hero.title': `الانكشاف على الغاما`,
+    'hero.lead': `كل يوم، تُجبَر البنوك الواقفة على الجانب الآخر من سوق الخيارات على شراء الأصل الأساسي وبيعه — لا لأن لديها رأياً، بل لأن مخاطرها تُلزمها بذلك. الانكشاف على الغاما هو خريطة هذا التدفّق القسري. يخبرك متى يملك السوق مكابح، ومتى لا يملك أياً منها.`,
+    'hero.warn': `رقم واحد يُحدّد طابع الجلسة بأكملها: <b>هل أنت فوق نقطة الانقلاب أم تحتها؟</b>`,
+    's1.tag': `ما هو الانكشاف على الغاما`,
+    's1.title': `لا بدّ لأحدهم أن يتحوّط`,
+    's1.gloss.h': `خمس كلمات أولاً — كل ما يلي مبنيّ عليها`,
+    's1.gloss.t1': `STRIKE — سعر التنفيذ`,
+    's1.gloss.d1': `مستوى سعري ثابت توجد عنده عقود خيارات. سوق الخيارات منظَّم على هذه الدرجات: 4010 و4021 و4032 وهكذا. <b>كل مستوى في هذا الدليل يقع عند سعر تنفيذ.</b>`,
+    's1.gloss.t2': `SPOT — السعر الآني`,
+    's1.gloss.d2': `ببساطة المستوى الذي يتداول عنده السوق <em>الآن</em>. في كل شاشة من هذا الدليل يُرسَم كخط أفقي، لترى فوراً أي المستويات فوق السعر وأيها تحته.`,
+    's1.gloss.t3': `EXPIRY — تاريخ الاستحقاق`,
+    's1.gloss.d3': `التاريخ الذي تنتهي عنده دفعة من عقود الخيارات. الخيارات مجمّعة في استحقاقات، وحين يمرّ أحدها فإن كل عقد فيه — وكل أثر كان له على السعر — <b>يختفي</b>.`,
+    's1.gloss.t4': `DEALER — صانع السوق`,
+    's1.gloss.d4': `المؤسسة المحترفة على الجانب الآخر من صفقتك على الخيارات. بنك أو صانع سوق. هو لا يراهن على الاتجاه — بل يُدير مخاطرة، وعلى هذا الفارق يقوم الدليل كله.`,
+    's1.gloss.t5': `OPEN INTEREST — المراكز المفتوحة`,
+    's1.gloss.d5': `عدد عقود الخيارات القائمة حالياً عند سعر تنفيذ ما. اعتبره مخزوناً مركوناً عند ذلك المستوى السعري.`,
+    's1.p1': `حين تشتري خياراً، فقد باعه لك أحدهم. وهذا الأحد عادةً <b>صانع سوق (dealer)</b> — عمله توفير العقد، لا المراهنة على الاتجاه. وهو لا يريد المخاطرة الاتجاهية التي التقطها للتوّ، فيتحوّط منها بتداول الأصل الأساسي.`,
+    's1.p2': `وهنا بيت القصيد: <b>هذا التحوّط ليس أمراً يُضبَط ثم يُنسى.</b> فكلما تحرّك السعر تغيّرت كمية الأصل التي يحتاجها، فيضطر إلى إعادة التداول باستمرار. إنهم مشترون وبائعون <em class="em">مُجبَرون</em>، كل يوم، وبأحجام كبيرة، ودون أي رأي في اتجاه السعر.`,
+    's1.p3': `<b>الغاما</b> هي معدّل تغيّر هذه الحاجة إلى التحوّط. و<b>الانكشاف على الغاما (GEX)</b> هو هذا المعدّل مضروباً عبر كل عقد مفتوح في السوق — الحجم الكلي للتدفّق القسري المنتظر عند كل مستوى سعري.`,
+    's1.fig': `تبويب <b>OPEN INTEREST</b> يعرض أعداد العقود الخام. وتبويب <b>GEX PROFILE</b> يعرض الدفتر نفسه بعد الترجيح — ولهذا تتشابه الشاشتان دون أن تتطابقا أبداً. مخزون خام مقابل مخزون يُحرّك السوق فعلاً.`,
+    's1.shot.cap': `هذا هو المكوّن الخام: تبويب <b>OPEN INTEREST</b>، البوتات تتمدّد يساراً والكولات يميناً. وكومة الكولات المرتفعة عند <b>4141</b> هي الجدار نفسه الذي ستراه يهيمن على ملف الغاما. تنبيه يهمّ لاحقاً — المراكز المفتوحة تعدّ <b>عقوداً</b>، وكل عقد له مشترٍ <em>وبائع</em>، لذا لا تستطيع هذه الشاشة أبداً أن تخبرك مَن هو في مركز شراء ومَن في مركز بيع.`,
+    's1.co.h': `لا حاجة لأي مؤامرة`,
+    's1.co.p': `لا أحد يجلس في غرفة ليقرّر سَوق السعر إلى مستوى ما. صانعو السوق يتحوّطون <b>آلياً</b>، لأن حدود المخاطر تُلزمهم. وآثار السعر التي ستتعلّمها <em>نتيجة جانبية</em> لهذه السباكة — لا خطة لأحد. ولهذا بالضبط هي موثوقة بما يكفي للتداول حولها.`,
+    's2.tag': `النظامان`,
+    's2.title': `بمكابح، أو بلا مكابح`,
+    's2.p1': `كل ما في هذا الدليل يعود إلى سؤال واحد. صانعو السوق إمّا <b>في غاما موجبة</b> أو <b>في غاما سالبة</b> — والجواب يقلب سلوك السوق رأساً على عقب.`,
+    's2.fig': `الخط الأبيض هو <b>السعر</b>. يساراً: كل تأرجح يقابله تدفّق معاكس من صانع السوق، فتتقلّص التأرجحات ويستقرّ السعر <em>على</em> المستوى — تثبيت، لا ارتداد. يميناً: تدفّق صانع السوق ينضمّ إلى الحركة بدل أن يعاكسها، فيغادر السعر المستوى و<b>يتسارع</b> — ويفعل ذلك <b>في كلا الاتجاهين</b>، وهذا ما يخطئ فيه الجميع تقريباً.`,
+    's2.pos.t': `γ موجبة`,
+    's2.pos.sub': `السعر فوق نقطة الانقلاب`,
+    's2.pos.p': `صانعو السوق مُثبِّتون في المحصّلة. كل صعود يقابله بيع، وكل هبوط يقابله شراء.`,
+    's2.pos.l1': `التذبذب <b>ينضغط</b>`,
+    's2.pos.l2': `النطاقات تصمد، والحدود تُحترَم`,
+    's2.pos.l3': `الاختراقات <b>تفشل</b> والسعر يرتدّ`,
+    's2.pos.l4': `أسلوب التداول: <b>معاكسة الأطراف</b> — بيع القمم وشراء القيعان`,
+    's2.neg.t': `γ سالبة`,
+    's2.neg.sub': `السعر تحت نقطة الانقلاب`,
+    's2.neg.p': `صانعو السوق مُسرِّعون في المحصّلة. وكل حركة يُضخّمها تحوّطهم نفسه.`,
+    's2.neg.l1': `التذبذب <b>يتمدّد</b>`,
+    's2.neg.l2': `النطاقات تنكسر والمستويات تنهار`,
+    's2.neg.l3': `الاتجاهات <b>تجري</b> أبعد مما ينبغي`,
+    's2.neg.l4': `أسلوب التداول: <b>توقّف عن المعاكسة</b> — سِر مع الحركة`,
+    's2.h.strip': `شريط GAMMA REGIME يخبرك في أيّهما أنت`,
+    's2.p2': `لست مضطراً لحساب ذلك بنفسك. المنصّة تطبع الجواب في سطر واحد، عليه ثلاث علامات:`,
+    's2.tbl.h1': `العلامة`,
+    's2.tbl.h2': `ما هي`,
+    's2.tbl.h3': `لماذا تهمّك`,
+    's2.tbl.r1a': `نقطة الانقلاب — حيث تعبر الغاما الكلية الصفر.`,
+    's2.tbl.r1b': `فوقها لديك مكابح. وتحتها لا مكابح. <b>أهمّ مستوى على الشاشة إطلاقاً.</b>`,
+    's2.tbl.r2a': `موضع السعر الآن.`,
+    's2.tbl.r2b': `موقعه بالنسبة إلى ZERO Γ <em>هو</em> النظام نفسه. والمسافة تهمّ أيضاً — الوقوف 0.2% فوق نقطة الانقلاب ليس كالوقوف 3% فوقها.`,
+    's2.tbl.r3a': `تقديرنا لأكبر تجمّع منفرد من الغاما المُثبِّتة.`,
+    's2.tbl.r3b': `تقريباً سقف المنطقة المستقرّة — حيث يكون ضغط التثبيت أقوى ما يكون.`,
+    's2.shot.cap': `اقرأه من اليسار إلى اليمين: منطقة حمراء تحت نقطة الانقلاب، وخضراء فوقها. هنا السعر <b>4070.4</b> يقع <b>+1.59%</b> فوق ZERO Γ <b>4006.5</b> — في قلب النظام المستقرّ، مع VOL TRIGGER عند <b>4119.3</b> يُعلّم قمة منطقة التثبيت. وموضع علامة SPOT يُقرّر كيف تتداول الجلسة كلها.`,
+    's2.co.h': `المسافة مؤشّر متدرّج، لا مفتاح تشغيل`,
+    's2.co.p': `نقطة الانقلاب ليست مفتاحاً يُطقطق عند سعر بعينه. الغاما تخفت <em>تدريجياً</em> كلما اقتربت منها. والوقوف بعيداً فوقها يعني مكابح قوية؛ والتحليق فوقها بقليل يعني مكابح ضعيفة ونظاماً قد ينقلب بشمعة سيئة واحدة. راقب الفجوة، لا الإشارة وحدها.`,
+    's3.tag': `قراءة ملف GEX`,
+    's3.title': `أعمدة خضراء، أعمدة حمراء، وخط واحد كبير`,
+    's3.p1': `تبويب <b>GEX PROFILE</b> يفكّك الإجمالي سعر تنفيذ تلو الآخر. كل عمود هو صافي الغاما عند ذلك السعر. واللون هو الإشارة — والإشارة هي كل شيء.`,
+    's3.leg.g': `γ موجبة — دعم / تثبيت`,
+    's3.leg.r': `γ سالبة — تسارع`,
+    's3.leg.b': `Σ التراكمي — الانقلاب = عبور الصفر`,
+    's3.shot.cap': `الأعمدة تمتدّ يساراً (سالب) ويميناً (موجب) من الخط المركزي؛ والعلامات المتقطّعة هي <b>CALL WALL 4142</b> و<b>SPOT 4068.9</b> و<b>MAX PAIN 4011</b> و<b>GEX FLIP 3994</b>. لاحظ البنية: تجمّع أخضر كثيف عند <b>4001–4033</b> يقع <em>تحت</em> السعر، وأعمدة رفيعة بين السعر و4033، وأعمدة حمراء عند 3979–3990 متوارية تحت نقطة الانقلاب مباشرة.`,
+    's3.h.green': `الأعمدة الخضراء — المكبح`,
+    's3.p2': `العمود الأخضر يُعلّم سعر تنفيذ يكون صانعو السوق عنده في غاما موجبة. والسعر المقترب منه من <em>أي</em> جهة يواجه تدفّقاً معاكساً. فيتباطأ.`,
+    's3.m1.bad': `خرافة`,
+    's3.m1.badt': `«العمود الأخضر يدفع السعر بعيداً — إنه مستوى ارتداد. سأشتري عند اللمسة وأستهدف انعكاساً.»`,
+    's3.m1.good': `الحقيقة`,
+    's3.m1.goodt': `العمود الأخضر <b>مكبح ومغناطيس</b>، لا ترامبولين. بيع صانع السوق في الصعود لا يدفع السعر إلى الأسفل — بل <em>يوقفه</em>. وشراؤه في الهبوط لا يقذفه إلى الأعلى — بل <em>يمتصّه</em>. السعر <b>يلتصق حول</b> المستوى ولا يُرفَض منه. توقّع تثبيتاً وتداول التذبذب؛ أما إن توقّعت ارتداداً فستجلس على انعكاس خاسر بينما يطحن السعر المستوى أفقياً لساعات.`,
+    's3.h.red': `الأعمدة الحمراء — لا مكابح`,
+    's3.p3': `العمود الأحمر يُعلّم سعر تنفيذ يكون صانعو السوق عنده في غاما سالبة. وهنا تحوّطهم <em>ينضمّ</em> إلى الحركة بدل أن يعاكسها.`,
+    's3.m2.bad': `خرافة`,
+    's3.m2.badt': `«العمود الأحمر دعم من الأعلى — وإن كُسِر تسارعت الحركة هبوطاً. ومن الأسفل هو مقاومة، لكن كسره صعوداً لا ضرر فيه.»`,
+    's3.m2.good': `الحقيقة`,
+    's3.m2.goodt': `الغاما السالبة <b>متماثلة تماماً</b>. وليس لها أي انحياز اتجاهي على الإطلاق. فالسعر <em>الهابط</em> إلى الأحمر يُباع عليه فيتسارع نزولاً. والسعر <em>الصاعد</em> إلى الأحمر يُشترى فيه فيتسارع صعوداً. لا يوجد جانب يكبح. العمود الأحمر ليس دعماً ولا مقاومة — إنه <b>منطقة سرعة</b>. والاتّكاء عليه كمستوى هو النسخة المكلفة من هذا الخطأ.`,
+    's3.co.h': `لماذا يعكس الجميع تقريباً هذه النقطة`,
+    's3.co.p': `الأعمدة الحمراء تقع دائماً تقريباً <em>تحت</em> السعر، لأن العملاء مشترون صافون للبوتات وينتهي صانعو السوق في مركز بيع عليها. فعملياً أنت لا <em>تختبر</em> الغاما السالبة إلا كمُسرِّع هبوطي، ومن الطبيعي أن تُعمّم من ذلك. لكن حين يعبر السعر جيباً من الغاما السالبة <b>صعوداً</b>، فإنه ينطلق بسرعة — وهذا جزء كبير مما يكون عليه ميكانيكياً الانفجار الصاعد أو ضغط المكشوفين.`,
+    's3.h.lines': `خطوط العلامات الأربعة`,
+    's3.tbl.h1': `الخط`,
+    's3.tbl.h2': `ماذا يعني`,
+    's3.tbl.r1': `نقطة عبور الصفر للمنحنى التراكمي الأزرق. حدّ النظام. <b>يعلو على كل عمود منفرد في الرسم.</b>`,
+    's3.tbl.r2': `أكبر سعر تنفيذ بغاما موجبة فوق السعر الآني. يعمل كسقف صلب <em>وكذلك</em> كمغناطيس صاعد مع اقتراب الاستحقاق. كائن مختلف عن العمود الأخضر العادي لمجرّد حجمه.`,
+    's3.tbl.r3': `المرآة تحت السعر — سعر التنفيذ الذي يميل إلى العمل كأرضية.`,
+    's3.tbl.r4': `<b>ليس مستوى غاما.</b> إنه حساب مبنيّ على <em>المراكز المفتوحة</em> — سعر التنفيذ الذي تنتهي عنده أكبر قيمة من الخيارات بلا قيمة. هدف انجراف ضعيف يقوى مع اقتراب الاستحقاق. أبقِه منفصلاً ذهنياً عن كل ما عداه في هذه الشاشة.`,
+    's3.co2.h': `الخط التراكمي الأزرق`,
+    's3.co2.p': `إنه مجموع جارٍ للغاما عبر أسعار التنفيذ. وشيء واحد فيه يهمّ حقاً — <b>أين يعبر الصفر</b>، لأن تلك هي نقطة الانقلاب. لكن <em>ميله</em> قراءة ثانية مفيدة: المنحنى الحادّ يعني أن الغاما تتراكم بسرعة مع حركة السعر، فالنظام مُحكَم. والمنحنى المسطّح يعني أن نقطة الانقلاب هشّة.`,
+    's4.tag': `Call γ مقابل Put γ`,
+    's4.title': `الملف الصافي، مفكوكاً`,
+    's4.p1': `ملف GEX يعرض لك <b>الصافي</b> عند كل سعر تنفيذ — الكولات والبوتات مجموعة سلفاً. وتبويب <b>CALL / PUT Γ</b> يفكّ هذا الجمع ويعرض النصفين جنباً إلى جنب.`,
+    's4.p2': `وهذا مهمّ لأن عموداً صافياً صغيراً قد يُخفي كومتين متعارضتين هائلتين. فسعر تنفيذ يُظهر غاما صافية قرب الصفر قد يكون فارغاً فعلاً — أو قد يكون ساحة معركة تتعادل فيها غاما كولات ضخمة مع غاما بوتات ضخمة. والحالتان تتصرّفان تصرّفاً مختلفاً تماماً حين يفكّ أحد الطرفين مركزه.`,
+    's4.shot.cap': `غاما الكولات يميناً، وغاما البوتات يساراً. <b>تراكم غاما الكولات فوق السعر + غاما البوتات تحته</b> هو بنية التثبيت الكلاسيكية. انظر إلى <b>4087</b> و<b>4032</b> هنا — كلاهما يحمل كومة ثقيلة على <em>كل</em> جانب. هذه أسعار تنفيذ ساحة معركة، والملف الصافي وحده ما كان ليُظهر لك ذلك أبداً.`,
+    's4.l1': `<b>كولات فوق، بوتات تحت</b> — البنية المستقرّة كما في الكتب. السعر محاصر والتثبيت مرجّح.`,
+    's4.l2': `<b>جانب واحد يهيمن</b> — الصندوق مائل. والجانب الرفيع هو حيث سيجري الاختراق.`,
+    's4.l3': `<b>الجانبان ضخمان عند سعر واحد</b> — ساحة معركة. احتكاك عالٍ الآن، وإطلاق طاقة عالٍ لاحقاً.`,
+    's4.l4': `<b>الجانبان رفيعان</b> — فراغ حقيقي. السعر يعبر هذه المنطقة بسرعة ودون عناء.`,
+    's5.tag': `بُعد الزمن`,
+    's5.title': `للغاما تاريخ صلاحية`,
+    's5.p1': `مستوى الغاما ليس سمة دائمة في السوق. إنه ينتمي إلى <b>استحقاق</b> — وحين يمرّ ذلك الاستحقاق يتوقّف المستوى ببساطة عن الوجود. وهذا هو الجزء الذي يفوت معظم الناس تماماً.`,
+    's5.dte.t': `0DTE`,
+    's5.dte.sub': `ينتهي اليوم`,
+    's5.dte.p': `الغاما <b>هائلة</b> هنا — تتركّز بعنف مع اقتراب الاستحقاق. وهذه أشدّ عمليات التثبيت إحكاماً وقوّة ستراها. وهي <b>تتبخّر تماماً عند الإغلاق.</b> وغداً تكون قد اختفت.`,
+    's5.swing.t': `SWING`,
+    's5.swing.sub': `الدفتر المُجمَّع`,
+    's5.swing.p': `المزيج عبر الاستحقاقات. أضعف لكل سعر تنفيذ، لكنه أكثر <b>ثباتاً</b> بكثير — هذه المستويات تصمد أياماً وأسابيع. وهي خريطتك البنيوية.`,
+    's5.co.h': `كيف تجمع بينهما`,
+    's5.co.p': `استخدم <b>SWING</b> لرسم الخريطة — الجدران ونقطة الانقلاب التي تُعرّف الأسبوع. ثم انتقل إلى <b>0DTE</b> لتوقيت الدخول عند المستويات التي يتصارع عليها السوق فعلاً اليوم. وحين يقع مستوى 0DTE على مستوى SWING، فذلك السعر مهمّ مضاعفاً.`,
+    's5.h.heat': `خريطة الحرارة: سعر التنفيذ × الاستحقاق`,
+    's5.p2': `الملف يطوي كل الاستحقاقات في عمود واحد. و<b>خريطة GEX الحرارية</b> تفكّ هذا الطيّ: أسعار التنفيذ تصعد على الجانب، و<b>كل عمود استحقاق مستقلّ</b>، واللون يُظهر هيمنة الكولات (أخضر، دعم) مقابل هيمنة البوتات (أحمر، تسارع) عند ذلك التقاطع.`,
+    's5.co2.h': `الأعمدة استحقاقات، لا أيام`,
+    's5.co2.p': `هذه توقع الجميع في النظرة الأولى. الأعمدة هي <b>أقرب 8 تواريخ استحقاق</b> — أقصى اليسار هو الأقرب (غالباً 0DTE اليوم)، وأقصى اليمين هو الأبعد (نحو 2–3 أسابيع). وهي <em>ليست</em> متباعدة بانتظام في الزمن، وهي <b>ليست عدّاً للأيام.</b> والشريط أسفل كل عمود هو وزن حداثة ذلك الاستحقاق — فتجميعة swing تستند أكثر ما تستند إلى أقرب التواريخ.`,
+    's5.shot.cap': `كيف تقرأها: امسح <b>على امتداد خط السعر البرتقالي</b> لترى كيف يتغيّر النظام كلما نظرت أبعد في الزمن. هنا الأعمدة القريبة (07/22 و07/24) خضراء حول السعر بينما تتحوّل اللاحقة (07/31 و08/03) إلى الأحمر — فالمكابح ظاهرة قصيرة الأجل، وتخفّ كلما اتجهت يميناً. والمستوى الأخضر قريباً والأحمر بعيداً هو <b>جدار له تاريخ انتهاء</b>.`,
+    's6.tag': `Vanna و Charm`,
+    's6.title': `ابنا عمّ الغاما`,
+    's6.p1': `الغاما تُجيب على سؤال واحد: <em>كيف يتغيّر تحوّط صانع السوق حين يتحرّك <b>السعر</b>؟</em> لكن السعر ليس الشيء الوحيد الذي يتغيّر. فقوّتان أخريان تُحرّكان ذلك التحوّط — ولكلٍّ منهما تبويبها الخاص.`,
+    's6.tbl.h1': `الحرف اليوناني`,
+    's6.tbl.h2': `التحوّط يتغيّر حين…`,
+    's6.tbl.h3': `ماذا يُحرّك`,
+    's6.tbl.r1a': `يتحرّك <b>السعر</b>`,
+    's6.tbl.r1b': `التثبيت والتسارع. الحدث الرئيسي.`,
+    's6.tbl.r2a': `يتحرّك <b>التذبذب الضمني</b>`,
+    's6.tbl.r2b': `تدفّقات يُطلقها ارتفاع مفاجئ في التذبذب أو انهياره — <em>حتى لو لم يتحرّك السعر إطلاقاً.</em> تُعلّم أسعار التنفيذ التي يفرض عندها تغيّرُ الخوف أكبر قدر من إعادة التحوّط.`,
+    's6.tbl.r3a': `يمرّ <b>الزمن</b>`,
+    's6.tbl.r3b': `الانجراف الكلاسيكي نحو الاستحقاق. التحوّطات تُفكّ من تلقاء نفسها مع دوران الساعة — ولهذا لأيام الجمعة طابعها الخاص.`,
+    's6.co.h': `لماذا يبدو الـ vanna مقلوباً مقارنةً بالغاما`,
+    's6.co.p': `الـ vanna <b>يعكس إشارته حول السعر الآني</b> ويتركّز في <em>الأجنحة</em> وفي الاستحقاقات <em>الأبعد</em> — عكس الغاما التي تبلغ ذروتها عند 0DTE وقرب سعر التنفيذ. فخريطة vanna تبدو مقلوبة بجانب خريطة الغاما ليست معطوبة؛ إنها تقيس قوّة أخرى. الغاما قصة السعر قصيرة الأجل. والـ vanna قصة التذبذب، وهي تسكن أبعد.`,
+    's6.shot.v': `<b>VANNA</b> — أخضر فوق السعر، وأحمر تحته. الأكوام الكبيرة تُعلّم حيث يفرض تغيّر <b>التذبذب</b> أكبر قدر من إعادة التحوّط.`,
+    's6.shot.c': `<b>CHARM</b> — ولاحظ أنه المرآة تماماً. الأكوام الكبيرة تُعلّم حيث سيسحب <b>تآكل الزمن</b> وحده التحوّطات نحو الإغلاق.`,
+    's6.p2': `لست بحاجة إليهما لتتداول الغاما. تعامل معهما كطبقة ثانية: حين تُخبرك الغاما بالنظام ويتّفق معها الـ vanna أو الـ charm على سعر التنفيذ نفسه، ترتفع القناعة.`,
+    's6.shot.vex': `الخريطة الحرارية نفسها محوّلة إلى <b>VEX</b>. قارنها بنسخة GEX أعلاه — اللون انتقل <em>إلى الخارج وإلى اليمين</em>، نحو الأجنحة والاستحقاقات الأبعد. وهذا هو الدليل البصري على أن الـ vanna قوّة مختلفة تعيش في جزء آخر من اللوحة.`,
+    's7.tag': `كيف تستخدمها`,
+    's7.title': `روتين من أربع خطوات`,
+    's7.p1': `الغاما لا تُعطي إشارات. بل تُعطيك <em class="em">قواعد الجلسة</em> — كيف سيتصرّف السوق حين يبلغ مستوى ما. أما الصفقة فأنت من يأتي بها.`,
+    's7.l1': `<b>1 · تحقّق من النظام أولاً.</b> افتح GAMMA REGIME. هل السعر فوق ZERO Γ أم تحته، وبكم؟ هذا يُقرّر إن كنت اليوم مُعاكِساً أم مُتابِعاً. ولا شيء آخر يهمّ قبل أن تُجيب عنه.`,
+    's7.l2': `<b>2 · ارسم الجدران على SWING.</b> جدار الكولات فوق، وجدار البوتات تحت. هذا صندوقك للأسبوع. ولاحظ أين تقع التجمّعات الخضراء الكبيرة — تلك مغناطيساتك.`,
+    's7.l3': `<b>3 · ابحث عن الفراغ.</b> ابحث عن المناطق <em>الرفيعة</em> بين التجمّعات. السعر يعبرها بسرعة. الفجوات الرفيعة هي حيث تمنح الصفقة مساحة؛ والتجمّعات الكثيفة هي حيث تجني الأرباح.`,
+    's7.l4': `<b>4 · وقّت الدخول على 0DTE.</b> بدّل الاستحقاق وجِد المستوى الذي يدافع عنه دفتر اليوم فعلاً. وحين يقع مستوى 0DTE على السعر نفسه لمستوى SWING — عنصران مستقلّان يشيران إلى رقم واحد، وهو ما يسمّيه المتداولون <em>التقاء (confluence)</em> — فذلك سعرك الأعلى قناعةً.`,
+    's7.co.h': `النسخة في جملة واحدة`,
+    's7.co.p': `فوق نقطة الانقلاب: بِع القمم واشترِ القيعان باتجاه التجمّعات الخضراء وتوقّع أن تتوقّف عندها. وتحت نقطة الانقلاب: توقّف عن ذلك — احترم الاتجاه ودَعه يجري.`,
+    's7.co2.h': `التقاء مع بقية المنصّة`,
+    's7.co2.p': `جدار غاما يقع على نطاق <b>مخروط التوقّع</b> (الدليل رقم 01) أو على جدار <b>خريطة حرارة الخيارات</b> (رقم 02) هو مستوى عالي القناعة — نماذج مستقلّة تتّفق. وشريط <b>الحركة المتوقّعة</b> يخبرك إن كان بلوغ ذلك الجدار اليوم واقعياً أصلاً: فإن وقع الجدار خارج نطاق ±1σ فهو هدف لوقت لاحق من الأسبوع، لا مستوى لهذه الجلسة.`,
+    's8.tag': `تحفّظات صادقة`,
+    's8.title': `ما لا تستطيع الغاما إخبارك به`,
+    's8.l1': `<b>مَن هو البائع ولماذا — افتراض.</b> المراكز المفتوحة تعدّ عقوداً، لا أطرافاً — فكل عقد فيه طرف شارٍ وطرف بائع. وتحويل ذلك إلى تموضع لصانعي السوق يتطلّب اتفاقاً معيارياً على الجانب الذي يقفون فيه. إنه افتراض جيّد وهو معيار الصناعة، لكنه <em>يبقى</em> افتراضاً، وهو المصدر الأول للخطأ في كل تحليل لغاما صانعي السوق.`,
+    's8.l2': `<b>مستويات، لا وعود.</b> الجدار هو حيث يكون ردّ الفعل <em>محتمَلاً</em>، لا مضموناً. وتدفّق حقيقي كبير بما يكفي يعبر أي مستوى غاما مباشرةً. انتظر دائماً تأكيد السعر.`,
+    's8.l3': `<b>الغاما ليست اتجاهاً.</b> هي لا تخبرك أبداً إلى أين سيذهب السعر — بل فقط كيف <em>سيتصرّف</em> حين يصل. ومن يبيعك الغاما كإشارة اتجاهية إنما يبيعك شيئاً آخر.`,
+    's8.l4': `<b>الحداثة مهمّة.</b> في العطل ونهايات الأسبوع قد تتقادم بيانات الخيارات. والمنصّة تُنبّه إلى التقادم — لا تعتمد على خريطة مجمّدة.`,
+    's8.l5': `<b>الـ max pain كائن مختلف.</b> يظهر على شاشة الغاما لكنه يُحسَب من المراكز المفتوحة لا من الغاما. لا تخلط القراءتين.`,
+    's8.l6': `<b>ليست كل الأصول لها دفتر كامل.</b> التغطية وعمق الاستحقاقات يختلفان بحسب الأداة. والسلسلة الرفيعة تُنتج خريطة غاما رفيعة وأقلّ موثوقية.`,
+    'foot.disc': `⚠ مرجع تعليمي. خرائط الغاما تُظهر أين يُرجَّح حدوث ردود الفعل لا أين تتأكّد — تحقّق دائماً من المنصّة المباشرة قبل التصرّف. لا شيء هنا يُعدّ نصيحة مالية.`,
+    'foot.lang': `اللغة: العربية`
+  }
+};
+
+let _enCache = null;
+function cacheEN(){
+  _enCache = {};
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    _enCache[el.getAttribute('data-t')] = el.innerHTML;
+  });
+}
+function setLang(lang){
+  if(!_enCache) cacheEN();
+  document.documentElement.lang = lang;
+  const dir = (lang === 'ar') ? 'rtl' : 'ltr';
+  document.querySelectorAll('main, footer').forEach(el => el.setAttribute('dir', dir));
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    const key = el.getAttribute('data-t');
+    if(lang === 'en'){ el.innerHTML = _enCache[key]; return; }
+    const dict = TRANSLATIONS[lang] || {};
+    el.innerHTML = (key in dict) ? dict[key] : _enCache[key];
+  });
+  document.querySelectorAll('.langsel button').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+  });
+  try{ localStorage.setItem('mk_learn_gamma_lang', lang); }catch(e){}
+}
+window.addEventListener('DOMContentLoaded', ()=>{
+  cacheEN();
+  let saved = 'en';
+  try{ saved = localStorage.getItem('mk_learn_gamma_lang') || 'en'; }catch(e){}
+  if(saved !== 'en') setLang(saved);
+});
+</script>
+</body>
+</html>
