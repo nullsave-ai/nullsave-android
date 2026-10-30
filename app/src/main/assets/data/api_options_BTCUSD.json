@@ -1,0 +1,139 @@
+{
+  "ticker": "BTCUSD",
+  "status": "ok",
+  "spot": 75474.47,
+  "iv_skew": {
+    "call_iv": 16.5,
+    "put_iv": 18.2,
+    "skew": -1.7
+  },
+  "composite_verdict": {
+    "intraday": {
+      "setups": [
+        {
+          "setup_id": "setup-intra-BTCUSD",
+          "name": "GEX Reversal Bounce",
+          "direction": "CALL",
+          "mode": "intraday",
+          "entry": 75323.52,
+          "target": 76078.27,
+          "stop": 74946.15,
+          "confidence": 0.85
+        }
+      ],
+      "experimental_setups": []
+    },
+    "swing": {
+      "setups": [
+        {
+          "setup_id": "setup-swing-BTCUSD",
+          "name": "Gamma Regime Breakout",
+          "direction": "CALL",
+          "mode": "swing",
+          "entry": 75625.42,
+          "target": 77361.33,
+          "stop": 74719.73,
+          "confidence": 0.88
+        }
+      ],
+      "experimental_setups": []
+    }
+  },
+  "setups_history": [],
+  "gex": {
+    "net_gex": 2572331,
+    "flip_point": 75399.0,
+    "call_gex": 9333047,
+    "put_gex": -6760716,
+    "strikes": [
+      {
+        "strike": 73587.61,
+        "call_gex": 297104,
+        "put_gex": -193633,
+        "net_gex": 103471,
+        "call_oi": 1188,
+        "put_oi": 968
+      },
+      {
+        "strike": 73964.98,
+        "call_gex": 516033,
+        "put_gex": -377161,
+        "net_gex": 138872,
+        "call_oi": 2064,
+        "put_oi": 1885
+      },
+      {
+        "strike": 74342.35,
+        "call_gex": 777087,
+        "put_gex": -563447,
+        "net_gex": 213640,
+        "call_oi": 3108,
+        "put_oi": 2817
+      },
+      {
+        "strike": 74719.73,
+        "call_gex": 1036835,
+        "put_gex": -741337,
+        "net_gex": 295498,
+        "call_oi": 4147,
+        "put_oi": 3706
+      },
+      {
+        "strike": 75097.1,
+        "call_gex": 1279433,
+        "put_gex": -930673,
+        "net_gex": 348760,
+        "call_oi": 5117,
+        "put_oi": 4653
+      },
+      {
+        "strike": 75474.47,
+        "call_gex": 1534278,
+        "put_gex": -1100222,
+        "net_gex": 434056,
+        "call_oi": 6137,
+        "put_oi": 5501
+      },
+      {
+        "strike": 75851.84,
+        "call_gex": 1291287,
+        "put_gex": -927393,
+        "net_gex": 363894,
+        "call_oi": 5165,
+        "put_oi": 4636
+      },
+      {
+        "strike": 76229.21,
+        "call_gex": 1049829,
+        "put_gex": -747291,
+        "net_gex": 302538,
+        "call_oi": 4199,
+        "put_oi": 3736
+      },
+      {
+        "strike": 76606.59,
+        "call_gex": 762519,
+        "put_gex": -569128,
+        "net_gex": 193391,
+        "call_oi": 3050,
+        "put_oi": 2845
+      },
+      {
+        "strike": 76983.96,
+        "call_gex": 523332,
+        "put_gex": -393983,
+        "net_gex": 129349,
+        "call_oi": 2093,
+        "put_oi": 1969
+      },
+      {
+        "strike": 77361.33,
+        "call_gex": 265310,
+        "put_gex": -216448,
+        "net_gex": 48862,
+        "call_oi": 1061,
+        "put_oi": 1082
+      }
+    ]
+  }
+}

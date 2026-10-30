@@ -1,0 +1,258 @@
+{
+  "universe": {
+    "active_tickers": [
+      "XAUUSD",
+      "BTCUSD",
+      "EURUSD",
+      "GBPUSD",
+      "US500",
+      "USTEC",
+      "GER40",
+      "UK100",
+      "USDCAD",
+      "USDCHF",
+      "USDJPY",
+      "XAGUSD",
+      "XTIUSD"
+    ],
+    "hidden_tickers": [],
+    "display_order": [
+      "XAUUSD",
+      "BTCUSD",
+      "EURUSD",
+      "GBPUSD",
+      "US500",
+      "USTEC",
+      "GER40",
+      "UK100",
+      "USDCAD",
+      "USDCHF",
+      "USDJPY",
+      "XAGUSD",
+      "XTIUSD"
+    ],
+    "custom_tickers": {}
+  },
+  "asset_metadata": {
+    "XAUUSD": {
+      "class": "COMMODITY",
+      "decimals": 2,
+      "description": "Gold vs US Dollar"
+    },
+    "BTCUSD": {
+      "class": "CRYPTO",
+      "decimals": 2,
+      "description": "Bitcoin vs US Dollar"
+    },
+    "EURUSD": {
+      "class": "FOREX",
+      "decimals": 5,
+      "description": "Euro vs US Dollar"
+    },
+    "GBPUSD": {
+      "class": "FOREX",
+      "decimals": 5,
+      "description": "British Pound vs US Dollar"
+    },
+    "US500": {
+      "class": "INDEX",
+      "decimals": 2,
+      "description": "S&P 500 Index"
+    },
+    "USTEC": {
+      "class": "INDEX",
+      "decimals": 2,
+      "description": "Nasdaq 100 Index"
+    },
+    "GER40": {
+      "class": "INDEX",
+      "decimals": 2,
+      "description": "DAX 40 Index"
+    },
+    "UK100": {
+      "class": "INDEX",
+      "decimals": 2,
+      "description": "FTSE 100 Index"
+    },
+    "USDCAD": {
+      "class": "FOREX",
+      "decimals": 5,
+      "description": "USD vs Canadian Dollar"
+    },
+    "USDCHF": {
+      "class": "FOREX",
+      "decimals": 5,
+      "description": "USD vs Swiss Franc"
+    },
+    "USDJPY": {
+      "class": "FOREX",
+      "decimals": 3,
+      "description": "USD vs Japanese Yen"
+    },
+    "XAGUSD": {
+      "class": "COMMODITY",
+      "decimals": 3,
+      "description": "Silver vs US Dollar"
+    },
+    "XTIUSD": {
+      "class": "COMMODITY",
+      "decimals": 2,
+      "description": "WTI Crude Oil"
+    }
+  },
+  "quant_supported_tickers": [
+    "XAUUSD",
+    "BTCUSD",
+    "EURUSD",
+    "GBPUSD",
+    "US500",
+    "USTEC",
+    "GER40",
+    "UK100",
+    "USDCAD",
+    "USDCHF",
+    "USDJPY",
+    "XAGUSD",
+    "XTIUSD"
+  ],
+  "quant_data_types": {
+    "XAUUSD": [
+      "candles",
+      "gex",
+      "cones",
+      "regime",
+      "signals"
+    ],
+    "BTCUSD": [
+      "candles",
+      "gex",
+      "cones",
+      "regime",
+      "signals"
+    ],
+    "EURUSD": [
+      "candles",
+      "gex",
+      "cones",
+      "regime",
+      "signals"
+    ],
+    "GBPUSD": [
+      "candles",
+      "gex",
+      "cones",
+      "regime",
+      "signals"
+    ],
+    "US500": [
+      "candles",
+      "gex",
+      "cones",
+      "regime",
+      "signals"
+    ],
+    "USTEC": [
+      "candles",
+      "gex",
+      "cones",
+      "regime",
+      "signals"
+    ],
+    "GER40": [
+      "candles",
+      "gex",
+      "cones",
+      "regime",
+      "signals"
+    ],
+    "UK100": [
+      "candles",
+      "gex",
+      "cones",
+      "regime",
+      "signals"
+    ],
+    "USDCAD": [
+      "candles",
+      "gex",
+      "cones",
+      "regime",
+      "signals"
+    ],
+    "USDCHF": [
+      "candles",
+      "gex",
+      "cones",
+      "regime",
+      "signals"
+    ],
+    "USDJPY": [
+      "candles",
+      "gex",
+      "cones",
+      "regime",
+      "signals"
+    ],
+    "XAGUSD": [
+      "candles",
+      "gex",
+      "cones",
+      "regime",
+      "signals"
+    ],
+    "XTIUSD": [
+      "candles",
+      "gex",
+      "cones",
+      "regime",
+      "signals"
+    ]
+  },
+  "display": {
+    "theme": "dark",
+    "default_timeframe": "M15",
+    "default_lookback_bars": 200,
+    "chart_height": 450,
+    "visible_panels": {
+      "quant": true,
+      "signals": true,
+      "options": true,
+      "risk": true
+    },
+    "chart_layers": {}
+  },
+  "providers": {
+    "active_data": "nullsave_core",
+    "active_execution": "nullsave_core",
+    "accounts": {},
+    "status": {
+      "nullsave_core": {
+        "connected": true,
+        "status": "ONLINE"
+      }
+    }
+  },
+  "modules": {
+    "enabled": [
+      "quant",
+      "signals",
+      "options",
+      "fundamental",
+      "risk"
+    ]
+  },
+  "profiles": {},
+  "available_timeframes": [
+    "M1",
+    "M5",
+    "M15",
+    "M30",
+    "H1",
+    "H4",
+    "D1",
+    "W1"
+  ],
+  "available_provider_types": [
+    "nullsave"
+  ]
+}

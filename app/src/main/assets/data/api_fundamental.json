@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "macro": {
+    "inflation_trend": "COOLING",
+    "fed_policy": "NEUTRAL",
+    "yield_curve": "NORMALIZING",
+    "dxy_sentiment": "BEARISH"
+  },
+  "money_flow": {
+    "COMMODITIES": 0.65,
+    "CRYPTO": 0.78,
+    "EQUITIES": 0.58,
+    "BONDS": -0.32
+  }
+}

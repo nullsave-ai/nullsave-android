@@ -1,0 +1,21 @@
+{
+  "status": "healthy",
+  "mt5_connected": true,
+  "server": "NullSave-Independent-Core",
+  "version": "2.45.0",
+  "universe": [
+    "XAUUSD",
+    "BTCUSD",
+    "EURUSD",
+    "GBPUSD",
+    "US500",
+    "USTEC",
+    "GER40",
+    "UK100",
+    "USDCAD",
+    "USDCHF",
+    "USDJPY",
+    "XAGUSD",
+    "XTIUSD"
+  ]
+}

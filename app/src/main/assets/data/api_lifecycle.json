@@ -1,0 +1,70 @@
+{
+  "status": "ok",
+  "lifecycle": {
+    "XAUUSD": {
+      "phase": "EXPANSION",
+      "bars_in_phase": 16,
+      "completion_pct": 72
+    },
+    "BTCUSD": {
+      "phase": "EXPANSION",
+      "bars_in_phase": 16,
+      "completion_pct": 72
+    },
+    "EURUSD": {
+      "phase": "EXPANSION",
+      "bars_in_phase": 16,
+      "completion_pct": 72
+    },
+    "GBPUSD": {
+      "phase": "EXPANSION",
+      "bars_in_phase": 16,
+      "completion_pct": 72
+    },
+    "US500": {
+      "phase": "EXPANSION",
+      "bars_in_phase": 16,
+      "completion_pct": 72
+    },
+    "USTEC": {
+      "phase": "EXPANSION",
+      "bars_in_phase": 16,
+      "completion_pct": 72
+    },
+    "GER40": {
+      "phase": "EXPANSION",
+      "bars_in_phase": 16,
+      "completion_pct": 72
+    },
+    "UK100": {
+      "phase": "EXPANSION",
+      "bars_in_phase": 16,
+      "completion_pct": 72
+    },
+    "USDCAD": {
+      "phase": "EXPANSION",
+      "bars_in_phase": 16,
+      "completion_pct": 72
+    },
+    "USDCHF": {
+      "phase": "EXPANSION",
+      "bars_in_phase": 16,
+      "completion_pct": 72
+    },
+    "USDJPY": {
+      "phase": "EXPANSION",
+      "bars_in_phase": 16,
+      "completion_pct": 72
+    },
+    "XAGUSD": {
+      "phase": "EXPANSION",
+      "bars_in_phase": 16,
+      "completion_pct": 72
+    },
+    "XTIUSD": {
+      "phase": "EXPANSION",
+      "bars_in_phase": 16,
+      "completion_pct": 72
+    }
+  }
+}
