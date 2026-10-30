@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
                 val url = request.url.toString()
                 val path = request.url.path ?: ""
 
-                // 1. Independent Local API Engine (Zero Third-Party Calls)
+                // 1. Independent Local API Engine (100% Offline & Private)
                 if (url.contains("/api/")) {
                     val apiPath = url.substring(url.indexOf("/api/"))
                     val jsonResponse = handleLocalApi(apiPath, request.method)
@@ -93,50 +93,65 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleLocalApi(apiPath: String, method: String): String {
         return when {
-            apiPath.contains("auth/status") -> {
-                """{"ok": true, "authenticated": true, "user": {"email": "admin@nullsave.app", "plan": "PRO", "expires": "2035-12-31"}}"""
+            apiPath.contains("auth/register") -> {
+                """{"status": "ok", "message": "Account created successfully. You can now sign in."}"""
             }
-            apiPath.contains("auth/login") || apiPath.contains("auth/register") -> {
-                """{"ok": true, "token": "nullsave-jwt-token-local", "user": {"email": "admin@nullsave.app", "plan": "PRO"}}"""
+            apiPath.contains("auth/verify-otp") -> {
+                """{"status": "ok", "message": "Account verified! You can now sign in."}"""
+            }
+            apiPath.contains("auth/login") -> {
+                """{"status": "ok", "token": "nullsave-jwt-token-local", "user_email": "admin@nullsave.app", "subscription_status": "active", "subscription_type": "pro", "is_whitelist": true, "trial_expires_at": "2035-12-31T23:59:59Z", "subscription_expires_at": "2035-12-31T23:59:59Z"}"""
+            }
+            apiPath.contains("auth/status") -> {
+                """{"status": "ok", "authenticated": true, "user_email": "admin@nullsave.app", "subscription_status": "active", "subscription_type": "pro", "is_whitelist": true}"""
+            }
+            apiPath.contains("consumer/status") -> {
+                """{"status": "ready", "connected": true, "version": "2.45.0"}"""
+            }
+            apiPath.contains("sync/status") -> {
+                """{"format_version_ok": true, "last_synced_at": "2026-10-30T08:00:00Z"}"""
+            }
+            apiPath.contains("sync/refresh") -> {
+                """{"ok": true, "status": "ok"}"""
             }
             apiPath.contains("account/status") -> {
-                """{"ok": true, "status": "active", "tier": "PRO", "max_devices": 10, "devices": 1}"""
+                """{"status": "ok", "ok": true, "tier": "PRO", "max_devices": 10, "devices": 1}"""
             }
             apiPath.contains("account/settings") -> {
-                """{"ok": true, "theme": "dark", "notifications": true, "currency": "USD"}"""
+                """{"status": "ok", "ok": true, "theme": "dark", "notifications": true, "currency": "USD"}"""
             }
             apiPath.contains("config/tickers") -> {
-                """{"ok": true, "tickers": ["BTCUSD", "ETHUSD", "XAUUSD", "EURUSD", "GBPUSD", "US500", "USTEC", "GER40", "USDCAD", "USDJPY", "XAGUSD", "XTIUSD"]}"""
+                """{"status": "ok", "ok": true, "tickers": ["BTCUSD", "ETHUSD", "XAUUSD", "EURUSD", "GBPUSD", "US500", "USTEC", "GER40", "USDCAD", "USDJPY", "XAGUSD", "XTIUSD"]}"""
             }
             apiPath.contains("config/profiles") -> {
-                """{"ok": true, "profiles": [{"id": "default", "name": "Default NullSave Profile"}]}"""
+                """{"status": "ok", "ok": true, "profiles": [{"id": "default", "name": "Default NullSave Profile"}]}"""
             }
             apiPath.contains("chart-presets") -> {
-                """{"ok": true, "presets": []}"""
+                """{"status": "ok", "ok": true, "presets": []}"""
             }
             apiPath.contains("chart-templates") -> {
-                """{"ok": true, "templates": []}"""
+                """{"status": "ok", "ok": true, "templates": []}"""
             }
             apiPath.contains("regime/macro") || apiPath.contains("pulse") -> {
-                """{"ok": true, "regime": "ACCUMULATION", "volatility": "NORMAL", "pulse": 0.85, "gex_sentiment": "BULLISH"}"""
+                """{"status": "ok", "ok": true, "regime": "ACCUMULATION", "volatility": "NORMAL", "pulse": 0.85, "gex_sentiment": "BULLISH"}"""
             }
             apiPath.contains("signals") -> {
-                """{"ok": true, "signals": []}"""
+                """{"status": "ok", "ok": true, "signals": []}"""
             }
             apiPath.contains("orders") -> {
-                """{"ok": true, "orders": [], "pending": []}"""
+                """{"status": "ok", "ok": true, "orders": [], "pending": []}"""
             }
             apiPath.contains("positions") -> {
-                """{"ok": true, "positions": []}"""
+                """{"status": "ok", "ok": true, "positions": []}"""
             }
             apiPath.contains("messages") -> {
-                """{"ok": true, "messages": [], "unread": 0}"""
+                """{"status": "ok", "ok": true, "messages": [], "unread": 0}"""
             }
             apiPath.contains("health") -> {
                 """{"status": "healthy", "server": "NullSave-Independent-Core", "version": "2.45.0"}"""
             }
             else -> {
-                """{"ok": true, "status": "success", "data": {}}"""
+                """{"status": "ok", "ok": true, "data": {}}"""
             }
         }
     }
