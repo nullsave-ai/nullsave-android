@@ -15,16 +15,16 @@
       "adf_pvalue": 0.02,
       "cone_bias": "BULLISH",
       "cone_upside_prob": 0.68,
-      "cone_sd1_low_terminal": 2716.7,
-      "cone_sd1_high_terminal": 2799.8,
-      "cone_current_price": 2709.48,
+      "cone_sd1_low_terminal": 2663.49,
+      "cone_sd1_high_terminal": 2744.96,
+      "cone_current_price": 2656.41,
       "garch_forecast_vol": 14.5,
       "garch_vol_regime": "NORMAL",
       "wf_sd1_coverage": 0.72,
       "wf_direction_hit": 0.76,
       "wf_param_window": "D1",
       "cone_model": "GBM",
-      "computed_at": 1793352198
+      "computed_at": "2026-10-30T09:49:29Z"
     },
     "BTCUSD": {
       "regime_label": "EXPANSION",
@@ -41,16 +41,16 @@
       "adf_pvalue": 0.02,
       "cone_bias": "BULLISH",
       "cone_upside_prob": 0.68,
-      "cone_sd1_low_terminal": 75675.52,
-      "cone_sd1_high_terminal": 77990.5,
-      "cone_current_price": 75474.47,
+      "cone_sd1_low_terminal": 77365.95,
+      "cone_sd1_high_terminal": 79732.65,
+      "cone_current_price": 77160.41,
       "garch_forecast_vol": 14.5,
       "garch_vol_regime": "NORMAL",
       "wf_sd1_coverage": 0.72,
       "wf_direction_hit": 0.76,
       "wf_param_window": "D1",
       "cone_model": "GBM",
-      "computed_at": 1793352198
+      "computed_at": "2026-10-30T09:49:29Z"
     },
     "EURUSD": {
       "regime_label": "EXPANSION",
@@ -67,16 +67,16 @@
       "adf_pvalue": 0.02,
       "cone_bias": "BULLISH",
       "cone_upside_prob": 0.68,
-      "cone_sd1_low_terminal": 1.07079,
-      "cone_sd1_high_terminal": 1.10355,
-      "cone_current_price": 1.06795,
+      "cone_sd1_low_terminal": 1.06405,
+      "cone_sd1_high_terminal": 1.0966,
+      "cone_current_price": 1.06122,
       "garch_forecast_vol": 14.5,
       "garch_vol_regime": "NORMAL",
       "wf_sd1_coverage": 0.72,
       "wf_direction_hit": 0.76,
       "wf_param_window": "D1",
       "cone_model": "GBM",
-      "computed_at": 1793352198
+      "computed_at": "2026-10-30T09:49:29Z"
     },
     "GBPUSD": {
       "regime_label": "EXPANSION",
@@ -93,16 +93,16 @@
       "adf_pvalue": 0.02,
       "cone_bias": "BULLISH",
       "cone_upside_prob": 0.68,
-      "cone_sd1_low_terminal": 1.27291,
-      "cone_sd1_high_terminal": 1.31185,
-      "cone_current_price": 1.26953,
+      "cone_sd1_low_terminal": 1.27201,
+      "cone_sd1_high_terminal": 1.31092,
+      "cone_current_price": 1.26863,
       "garch_forecast_vol": 14.5,
       "garch_vol_regime": "NORMAL",
       "wf_sd1_coverage": 0.72,
       "wf_direction_hit": 0.76,
       "wf_param_window": "D1",
       "cone_model": "GBM",
-      "computed_at": 1793352198
+      "computed_at": "2026-10-30T09:49:29Z"
     },
     "US500": {
       "regime_label": "EXPANSION",
@@ -119,16 +119,16 @@
       "adf_pvalue": 0.02,
       "cone_bias": "BULLISH",
       "cone_upside_prob": 0.68,
-      "cone_sd1_low_terminal": 5731.34,
-      "cone_sd1_high_terminal": 5906.66,
-      "cone_current_price": 5716.11,
+      "cone_sd1_low_terminal": 5700.85,
+      "cone_sd1_high_terminal": 5875.24,
+      "cone_current_price": 5685.7,
       "garch_forecast_vol": 14.5,
       "garch_vol_regime": "NORMAL",
       "wf_sd1_coverage": 0.72,
       "wf_direction_hit": 0.76,
       "wf_param_window": "D1",
       "cone_model": "GBM",
-      "computed_at": 1793352198
+      "computed_at": "2026-10-30T09:49:29Z"
     },
     "USTEC": {
       "regime_label": "EXPANSION",
@@ -145,16 +145,16 @@
       "adf_pvalue": 0.02,
       "cone_bias": "BULLISH",
       "cone_upside_prob": 0.68,
-      "cone_sd1_low_terminal": 19875.51,
-      "cone_sd1_high_terminal": 20483.52,
-      "cone_current_price": 19822.71,
+      "cone_sd1_low_terminal": 19879.87,
+      "cone_sd1_high_terminal": 20488.02,
+      "cone_current_price": 19827.06,
       "garch_forecast_vol": 14.5,
       "garch_vol_regime": "NORMAL",
       "wf_sd1_coverage": 0.72,
       "wf_direction_hit": 0.76,
       "wf_param_window": "D1",
       "cone_model": "GBM",
-      "computed_at": 1793352198
+      "computed_at": "2026-10-30T09:49:29Z"
     },
     "GER40": {
       "regime_label": "EXPANSION",
@@ -171,16 +171,16 @@
       "adf_pvalue": 0.02,
       "cone_bias": "BULLISH",
       "cone_upside_prob": 0.68,
-      "cone_sd1_low_terminal": 19197.0,
-      "cone_sd1_high_terminal": 19784.26,
-      "cone_current_price": 19146.0,
+      "cone_sd1_low_terminal": 18971.6,
+      "cone_sd1_high_terminal": 19551.96,
+      "cone_current_price": 18921.2,
       "garch_forecast_vol": 14.5,
       "garch_vol_regime": "NORMAL",
       "wf_sd1_coverage": 0.72,
       "wf_direction_hit": 0.76,
       "wf_param_window": "D1",
       "cone_model": "GBM",
-      "computed_at": 1793352198
+      "computed_at": "2026-10-30T09:49:29Z"
     },
     "UK100": {
       "regime_label": "EXPANSION",
@@ -197,16 +197,16 @@
       "adf_pvalue": 0.02,
       "cone_bias": "BULLISH",
       "cone_upside_prob": 0.68,
-      "cone_sd1_low_terminal": 8152.74,
-      "cone_sd1_high_terminal": 8402.14,
-      "cone_current_price": 8131.08,
+      "cone_sd1_low_terminal": 8223.78,
+      "cone_sd1_high_terminal": 8475.35,
+      "cone_current_price": 8201.93,
       "garch_forecast_vol": 14.5,
       "garch_vol_regime": "NORMAL",
       "wf_sd1_coverage": 0.72,
       "wf_direction_hit": 0.76,
       "wf_param_window": "D1",
       "cone_model": "GBM",
-      "computed_at": 1793352198
+      "computed_at": "2026-10-30T09:49:29Z"
     },
     "USDCAD": {
       "regime_label": "EXPANSION",
@@ -223,16 +223,16 @@
       "adf_pvalue": 0.02,
       "cone_bias": "BULLISH",
       "cone_upside_prob": 0.68,
-      "cone_sd1_low_terminal": 1.3505,
-      "cone_sd1_high_terminal": 1.39181,
-      "cone_current_price": 1.34691,
+      "cone_sd1_low_terminal": 1.37699,
+      "cone_sd1_high_terminal": 1.41911,
+      "cone_current_price": 1.37333,
       "garch_forecast_vol": 14.5,
       "garch_vol_regime": "NORMAL",
       "wf_sd1_coverage": 0.72,
       "wf_direction_hit": 0.76,
       "wf_param_window": "D1",
       "cone_model": "GBM",
-      "computed_at": 1793352198
+      "computed_at": "2026-10-30T09:49:29Z"
     },
     "USDCHF": {
       "regime_label": "EXPANSION",
@@ -249,16 +249,16 @@
       "adf_pvalue": 0.02,
       "cone_bias": "BULLISH",
       "cone_upside_prob": 0.68,
-      "cone_sd1_low_terminal": 0.84899,
-      "cone_sd1_high_terminal": 0.87496,
-      "cone_current_price": 0.84673,
+      "cone_sd1_low_terminal": 0.84453,
+      "cone_sd1_high_terminal": 0.87037,
+      "cone_current_price": 0.84229,
       "garch_forecast_vol": 14.5,
       "garch_vol_regime": "NORMAL",
       "wf_sd1_coverage": 0.72,
       "wf_direction_hit": 0.76,
       "wf_param_window": "D1",
       "cone_model": "GBM",
-      "computed_at": 1793352198
+      "computed_at": "2026-10-30T09:49:29Z"
     },
     "USDJPY": {
       "regime_label": "EXPANSION",
@@ -275,16 +275,16 @@
       "adf_pvalue": 0.02,
       "cone_bias": "BULLISH",
       "cone_upside_prob": 0.68,
-      "cone_sd1_low_terminal": 149.741,
-      "cone_sd1_high_terminal": 154.322,
-      "cone_current_price": 149.343,
+      "cone_sd1_low_terminal": 149.302,
+      "cone_sd1_high_terminal": 153.869,
+      "cone_current_price": 148.905,
       "garch_forecast_vol": 14.5,
       "garch_vol_regime": "NORMAL",
       "wf_sd1_coverage": 0.72,
       "wf_direction_hit": 0.76,
       "wf_param_window": "D1",
       "cone_model": "GBM",
-      "computed_at": 1793352198
+      "computed_at": "2026-10-30T09:49:29Z"
     },
     "XAGUSD": {
       "regime_label": "EXPANSION",
@@ -301,16 +301,16 @@
       "adf_pvalue": 0.02,
       "cone_bias": "BULLISH",
       "cone_upside_prob": 0.68,
-      "cone_sd1_low_terminal": 33.343,
-      "cone_sd1_high_terminal": 34.363,
-      "cone_current_price": 33.254,
+      "cone_sd1_low_terminal": 34.198,
+      "cone_sd1_high_terminal": 35.244,
+      "cone_current_price": 34.107,
       "garch_forecast_vol": 14.5,
       "garch_vol_regime": "NORMAL",
       "wf_sd1_coverage": 0.72,
       "wf_direction_hit": 0.76,
       "wf_param_window": "D1",
       "cone_model": "GBM",
-      "computed_at": 1793352198
+      "computed_at": "2026-10-30T09:49:29Z"
     },
     "XTIUSD": {
       "regime_label": "EXPANSION",
@@ -327,17 +327,17 @@
       "adf_pvalue": 0.02,
       "cone_bias": "BULLISH",
       "cone_upside_prob": 0.68,
-      "cone_sd1_low_terminal": 69.09,
-      "cone_sd1_high_terminal": 71.21,
-      "cone_current_price": 68.91,
+      "cone_sd1_low_terminal": 69.97,
+      "cone_sd1_high_terminal": 72.11,
+      "cone_current_price": 69.78,
       "garch_forecast_vol": 14.5,
       "garch_vol_regime": "NORMAL",
       "wf_sd1_coverage": 0.72,
       "wf_direction_hit": 0.76,
       "wf_param_window": "D1",
       "cone_model": "GBM",
-      "computed_at": 1793352198
+      "computed_at": "2026-10-30T09:49:29Z"
     }
   },
-  "computed_at": 1793352198
+  "computed_at": "2026-10-30T09:49:29Z"
 }

@@ -23,6 +23,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var webView: WebView
     private val random = Random()
     private var allBarsJson: JSONObject? = null
+    private var allConesJson: JSONObject? = null
+    private var allBandsJson: JSONObject? = null
     private var cachedPayload: String? = null
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -32,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         webView = WebView(this)
         setContentView(webView)
 
-        loadBarsData()
+        loadStaticData()
 
         val settings = webView.settings
         settings.javaScriptEnabled = true
@@ -109,13 +111,27 @@ class MainActivity : AppCompatActivity() {
         webView.loadUrl("https://nullsave.local/index.html")
     }
 
-    private fun loadBarsData() {
+    private fun loadStaticData() {
         try {
-            val stream = assets.open("data/all_bars.json")
-            val text = stream.bufferedReader(StandardCharsets.UTF_8).use { it.readText() }
-            allBarsJson = JSONObject(text)
+            assets.open("data/all_bars.json").bufferedReader(StandardCharsets.UTF_8).use {
+                allBarsJson = JSONObject(it.readText())
+            }
         } catch (e: Exception) {
             Log.e("NullSave", "Failed to load all_bars.json", e)
+        }
+        try {
+            assets.open("data/all_cones.json").bufferedReader(StandardCharsets.UTF_8).use {
+                allConesJson = JSONObject(it.readText())
+            }
+        } catch (e: Exception) {
+            Log.e("NullSave", "Failed to load all_cones.json", e)
+        }
+        try {
+            assets.open("data/all_bands.json").bufferedReader(StandardCharsets.UTF_8).use {
+                allBandsJson = JSONObject(it.readText())
+            }
+        } catch (e: Exception) {
+            Log.e("NullSave", "Failed to load all_bands.json", e)
         }
     }
 
@@ -125,6 +141,16 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.e("NullSave", "Asset read error: $filename", e)
             """{"status": "ok", "ok": true}"""
+        }
+    }
+
+    private fun extractTicker(apiPath: String, prefix: String): String {
+        return try {
+            val after = apiPath.substringAfter(prefix).substringBefore("?").substringBefore("/")
+            val clean = after.trim().uppercase()
+            if (clean.isNotEmpty()) clean else "XAUUSD"
+        } catch (e: Exception) {
+            "XAUUSD"
         }
     }
 
@@ -182,6 +208,26 @@ class MainActivity : AppCompatActivity() {
                 cachedPayload!!
             }
 
+            // Historical Bars
+            apiPath.contains("bars") -> {
+                handleBarsRequest(apiPath)
+            }
+
+            // Cones (Probability cones & projections)
+            apiPath.contains("quarterly_cones") || apiPath.contains("historical_cones") || apiPath.contains("cones") -> {
+                handleConesRequest(apiPath)
+            }
+
+            // Volatility Bands
+            apiPath.contains("bands") -> {
+                handleBandsRequest(apiPath)
+            }
+
+            // Options Cockpit & GEX
+            apiPath.contains("options") -> {
+                handleOptionsRequest(apiPath)
+            }
+
             // State (Weekly / Regime / Quant Model States)
             apiPath.contains("state") && !apiPath.contains("fundamental") -> {
                 readDataAsset("api_state.json")
@@ -200,21 +246,6 @@ class MainActivity : AppCompatActivity() {
             // Fundamental & Macro Flows
             apiPath.contains("fundamental") || apiPath.contains("macro") -> {
                 readDataAsset("api_fundamental.json")
-            }
-
-            // Historical Bars
-            apiPath.contains("bars") -> {
-                handleBarsRequest(apiPath)
-            }
-
-            // Options Cockpit & GEX
-            apiPath.contains("options") -> {
-                handleOptionsRequest(apiPath)
-            }
-
-            // Cones
-            apiPath.contains("cones") -> {
-                """{"status": "ok", "cones": {}}"""
             }
 
             // MT5 & Execution
@@ -245,9 +276,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleBarsRequest(apiPath: String): String {
         return try {
-            // Path pattern: /api/bars/{ticker}?timeframe={tf}&count={count}
-            val clean = apiPath.substringAfter("bars/").substringBefore("?")
-            val ticker = clean.replace("/", "").trim().uppercase()
+            val ticker = extractTicker(apiPath, "bars/")
             val bars = allBarsJson?.optJSONArray(ticker) ?: allBarsJson?.optJSONArray("XAUUSD")
             if (bars != null) {
                 """{"status": "ok", "bars": $bars}"""
@@ -256,6 +285,40 @@ class MainActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             """{"status": "ok", "bars": []}"""
+        }
+    }
+
+    private fun handleConesRequest(apiPath: String): String {
+        return try {
+            val prefix = when {
+                apiPath.contains("quarterly_cones/") -> "quarterly_cones/"
+                apiPath.contains("historical_cones/") -> "historical_cones/"
+                else -> "cones/"
+            }
+            val ticker = extractTicker(apiPath, prefix)
+            val coneObj = allConesJson?.optJSONObject(ticker) ?: allConesJson?.optJSONObject("XAUUSD")
+            if (coneObj != null) {
+                coneObj.toString()
+            } else {
+                """{"status": "ok", "cones": {}}"""
+            }
+        } catch (e: Exception) {
+            """{"status": "ok", "cones": {}}"""
+        }
+    }
+
+    private fun handleBandsRequest(apiPath: String): String {
+        return try {
+            val prefix = if (apiPath.contains("bands_replay/")) "bands_replay/" else "bands/"
+            val ticker = extractTicker(apiPath, prefix)
+            val bandObj = allBandsJson?.optJSONObject(ticker) ?: allBandsJson?.optJSONObject("XAUUSD")
+            if (bandObj != null) {
+                bandObj.toString()
+            } else {
+                """{"status": "ok", "timestamps": []}"""
+            }
+        } catch (e: Exception) {
+            """{"status": "ok", "timestamps": []}"""
         }
     }
 
