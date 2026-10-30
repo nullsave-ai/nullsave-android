@@ -20,13 +20,13 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: "temurin"
-          java-version: "17"
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "8.9"
+          gradle-version: '8.9'
 
       - name: Build Debug APK
         run: |
@@ -44,7 +44,7 @@ jobs:
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, "refs/heads/")
+        if: startsWith(github.ref, 'refs/heads/')
         with:
           tag_name: v1.0.0-${{ github.run_number }}
           name: Nullsave APK v1.0.0 (Build ${{ github.run_number }})
