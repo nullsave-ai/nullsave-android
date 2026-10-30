@@ -1,1 +1,100 @@
-}<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Nullsave</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;overflow:hidden}</style><script defer="defer" src="/static/js/main.8f9b6f5f.js"></script><link href="/static/css/main.c335e7bf.css" rel="stylesheet"></head><body><div id="root"></div></body></html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+  <title>Nullsave</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body, #root { width:100%; height:100%; background:#0a0e17; color:#fff; overflow:hidden; }
+    #loading-splash {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; background: #0a0e17;
+      color: #00e5ff; font-family: monospace; font-size: 16px; z-index: 99999;
+      transition: opacity 0.5s ease;
+    }
+    .spinner {
+      width: 42px; height: 42px; border: 3px solid rgba(0,229,255,0.2);
+      border-top-color: #00e5ff; border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+  <script>
+    // Electron Polyfill for Mobile Environment
+    window.mkElectron = {
+      isElectron: true,
+      launchSecret: "nullsave-mobile-bridge",
+      openInNewWindow: function(data) { console.log("[Nullsave] openInNewWindow:", data); },
+      openExternal: function(url) { window.open(url, "_blank"); },
+      saveScreenshot: async function() { return { saved: false }; },
+      exportLog: async function() { return { saved: false }; },
+      fetchTrumpNews: async function() { return { ok: true, articles: [] }; },
+      getTermsAcceptance: async function() { return { version: 2, at: Date.now(), appVersion: "2.45.0" }; },
+      openAgreementView: async function() { return { ok: true }; },
+      openReportWindow: async function(key) { console.log("[Nullsave] openReportWindow:", key); return { ok: true }; },
+      openLearnWindow: async function(slug) { console.log("[Nullsave] openLearnWindow:", slug); return { ok: true }; },
+      googleSignIn: async function() { return { ok: false, error: "not_supported" }; },
+      appleSignIn: async function() { return { ok: false, error: "not_supported" }; },
+      secureSavePassword: async function(email, password) {
+        try {
+          localStorage.setItem("__ns_email", email);
+          localStorage.setItem("__ns_pass", password);
+        } catch(e) {}
+        return { ok: true };
+      },
+      secureLoadPassword: async function() {
+        try {
+          return {
+            ok: true,
+            email: localStorage.getItem("__ns_email") || "",
+            password: localStorage.getItem("__ns_pass") || ""
+          };
+        } catch(e) {
+          return { ok: true, email: "", password: "" };
+        }
+      },
+      secureClearPassword: async function() {
+        try {
+          localStorage.removeItem("__ns_email");
+          localStorage.removeItem("__ns_pass");
+        } catch(e) {}
+        return { ok: true };
+      },
+      downloadAndInstall: async function() { return { ok: false }; }
+    };
+
+    // Auto-remove splash when React mounts
+    window.addEventListener("DOMContentLoaded", function() {
+      var checkInterval = setInterval(function() {
+        var root = document.getElementById("root");
+        if (root && root.children.length > 0) {
+          var splash = document.getElementById("loading-splash");
+          if (splash) {
+            splash.style.opacity = "0";
+            setTimeout(function() { splash.remove(); }, 500);
+          }
+          clearInterval(checkInterval);
+        }
+      }, 100);
+      setTimeout(function() {
+        var splash = document.getElementById("loading-splash");
+        if (splash) { splash.remove(); }
+      }, 8000);
+    });
+
+    window.onerror = function(msg, url, line, col, error) {
+      console.error("[Nullsave JS Error]", msg, "at", url, ":", line);
+    };
+  </script>
+  <script defer="defer" src="/static/js/main.8f9b6f5f.js"></script>
+  <link href="/static/css/main.c335e7bf.css" rel="stylesheet"/>
+</head>
+<body>
+  <div id="loading-splash">
+    <div class="spinner"></div>
+    <div>NULLSAVE TERMINAL</div>
+  </div>
+  <div id="root"></div>
+</body>
+</html>
